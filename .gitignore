@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Project data is shared separately (out-of-band, not via git).
+# Drop the received `data/` folder into the repo root before running scripts.
+data/
+
+# Data archives shared out-of-band (e.g., a zipped data/ snapshot)
+*.zip
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
