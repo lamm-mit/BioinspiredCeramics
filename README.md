@@ -1,4 +1,4 @@
-# Multiagent Discovery in Bioinspired Ceramics
+# Multiagent Discovery for Bioinspired Ceramics
 
 > A research project exploring multi-agent AI for materials discovery in
 > bioinspired ceramic composites. **This repository currently contains
