@@ -1,13 +1,10 @@
 # Multiagent Discovery for Bioinspired Ceramics
 
-> A research project exploring multi-agent AI for materials discovery in
+> Ongoing research exploring multi-agent AI for materials discovery in
 > bioinspired ceramic composites. **This repository currently contains
 > the foundation:** an end-to-end pipeline that turns a Web of Science
 > search into a deduplicated, community-clustered knowledge graph of
-> scientific concepts. Multi-agent reasoning over the graph and
-> hypothesis-generation tooling are planned follow-up work and will
-> appear as additional top-level modules (`agents/`, `discovery/`) when
-> their development begins.
+> scientific concepts. 
 
 ![Knowledge graph — top concepts of a deduplicated example corpus, with each community placed in its own region of the canvas and theme labels on the highest-degree node per community](docs/kg_cover.png)
 
@@ -32,7 +29,7 @@ graph from any Web of Science search. Given a WoS export, the pipeline:
 4. Strips front/back matter and non-figure images
 5. Extracts a concept-relationship knowledge graph using the
    [`graphPrompt`](https://github.com/lamm-mit/GraphReasoning) pipeline
-   from the LAMM lab at MIT (Buehler group)
+   from the LAMM lab at MIT 
 6. Merges synonymous nodes via embedding-based clustering and runs Louvain
    community detection on the result
 
@@ -149,11 +146,7 @@ WoS export (.xls/.csv)
 * **Coverage is bounded by what your institution's TDM agreements allow.**
   Publishers without bulk text-and-data-mining APIs (Taylor & Francis,
   IOP, ACS without institutional IP, etc.) typically return only
-  abstracts through programmatic routes. Legitimate alternatives —
-  interlibrary loan, your institution's library proxy in a browser,
-  Unpaywall fallback (built into `02_download_pdfs.py`), and
-  author-deposited preprints via CrossRef — are documented in
-  `docs/api_setup.md`.
+  abstracts through programmatic routes. 
 * Marker occasionally fails on scanned or heavily image-based PDFs. Rerun
   with `--force-ocr` to force the OCR path.
 * Embedding-based dedup at threshold 0.88 with EmbeddingGemma's STS prompt
@@ -166,7 +159,7 @@ WoS export (.xls/.csv)
 ## Attribution
 
 The triplet-extraction prompt and the dedup design follow the
-[LAMM lab](https://github.com/lamm-mit) (Markus Buehler group, MIT)
+[LAMM lab](https://github.com/lamm-mit)
 [`GraphReasoning`](https://github.com/lamm-mit/GraphReasoning) and
 [`GraphAgents`](https://github.com/lamm-mit/GraphAgents) work. The pipeline
 here uses [`sentence_transformers.util.community_detection`](https://sbert.net/docs/package_reference/util.html)
