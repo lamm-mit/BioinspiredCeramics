@@ -1,0 +1,7 @@
+langgraph==1.2.12
+openai==3.22.1
+numpy==2.5.3
+jax[cuda13]==0.11.2; sys_platform == "linux"
+jax==0.11.2; sys_platform != "linux"
+# Only for benchmark/make_charts.py and benchmark/report.py
+matplotlib
