@@ -3,7 +3,7 @@
 
 # Project data is shared separately (out-of-band, not via git).
 # Drop the received `data/` folder into the repo root before running scripts.
-data/
+/data/
 
 # Data archives shared out-of-band (e.g., a zipped data/ snapshot)
 *.zip
@@ -24,3 +24,14 @@ env/
 .idea/
 .vscode/
 *.swp
+
+# Pipeline run outputs and cached embeddings
+runs/
+*.npy
+
+# Paper text and figures are kept out of the repo. A local copy placed here for a run is not committed.
+pipeline/examples/
+pipeline/benchmark/data/figures/
+pipeline/benchmark/data/figures.jsonl
+pipeline/benchmark/data/passages.jsonl
+pipeline/benchmark/data/ATTRIBUTION.md
