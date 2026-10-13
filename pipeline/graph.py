@@ -1,18 +1,20 @@
 """The agent graph. Each node is one agent with its own model and instructions.
 
-planner -> retriever -> figure_reader -> designer -> engineer <-> tools -> reporter
+planner -> retriever -> figure_reader -> designer -> geometry -> engineer <-> tools -> reporter
 
 The designer can send the retriever back once, for design fields that lack evidence. A check
 compares each design value with the source the designer cites, and the designer gets one repair
 with its findings. A field that still fails is dropped. A design that is still incomplete goes
-straight to the reporter, so no simulation runs on it. The engineer calls tools until it has
-every result. The prompts are generic, and the problem
-itself is defined by design.py and the tools package.
+straight to the reporter, so no simulation runs on it. A complete design gets its geometry as
+STL files. The engineer then calls tools until it has every result, and each call is recorded
+in one handoff file per tool. The prompts are generic, and the problem itself is defined by
+design.py and the tools package.
 """
 
 import json
 import operator
 import re
+from pathlib import Path
 from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -20,7 +22,8 @@ from langgraph.graph import END, START, StateGraph
 from tools import RUN, TOOLS
 
 from . import corpus as cp
-from .design import ASK, DESIGN, RANGE, SCALE, UNIT, design_errors
+from . import handoff
+from .design import ASK, DESIGN, RANGE, SCALE, UNIT, design_errors, make_geometry
 from .llm import ask_json, chat, user
 
 # Model and reasoning effort per agent. A text model does the four text jobs and a vision model
@@ -62,9 +65,9 @@ Cite the evidence id for each value, such as E7. Return JSON with keys
 Leave a field out only when no evidence supports it. Reply with the JSON only."""
 
 ENGINEER = """You run the simulations for a design with the tools.
-Take every tool input from the design or from an earlier tool result, as the tool descriptions say.
-Use no other numbers. If an input is available from neither, do not call that tool and say
-which input is missing. When every tool has run, reply in two sentences and call no tool."""
+Take every tool input from the design, the geometry or an earlier tool result, as the tool
+descriptions say. Use no other numbers. If an input is available from none of them, do not call
+that tool and say which input is missing. When every tool has run, reply in two sentences and call no tool."""
 
 CHECKER = """You check one value of a design against its source text. Answer from the source text only.
 Return JSON {"low": number or null, "high": number or null, "unit": str} with the smallest and the largest value
@@ -81,6 +84,7 @@ reason for each field that the source check rejected."""
 
 class State(TypedDict, total=False):
     question: str
+    folder: str
     queries: list
     entities: list
     round: int
@@ -91,8 +95,10 @@ class State(TypedDict, total=False):
     sources: dict
     missing: list
     rejected: dict
-    messages: Annotated[list, operator.add]
-    results: Annotated[list, operator.add]
+    candidate: str
+    geometry: dict
+    messages: list
+    results: list
     report: str
     trace: Annotated[list, operator.add]
 
@@ -311,40 +317,52 @@ def build(models, corpus):
                 "rejected": {k: v for k, v in rejected.items() if k not in design},
                 "queries": out.get("queries", []), "trace": trace}
 
+    def geometry(s):
+        """Start a candidate: its folder, the design with its sources, and the STL files of the part."""
+        folder = Path(s["folder"]) / "candidate_1"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "design.json").write_text(json.dumps({"design": s["design"], "sources": s["sources"]}, indent=1, ensure_ascii=False))
+        return {"candidate": str(folder), "geometry": make_geometry(s["design"], folder / "geometry"), "messages": [], "results": []}
+
     def engineer(s):
-        messages = [{"role": "system", "content": ENGINEER}, user(json.dumps(s["design"]))] + s["messages"]
-        reply, rec = call("engineer", messages, TOOLS)
-        return {"messages": [reply], "trace": [rec]}
+        given = user(json.dumps({"design": s["design"], "geometry": s["geometry"]}))
+        reply, rec = call("engineer", [{"role": "system", "content": ENGINEER}, given] + s["messages"], TOOLS)
+        return {"messages": s["messages"] + [reply], "trace": [rec]}
 
     def tools(s):
         messages, results = [], []
         for c in s["messages"][-1]["tool_calls"]:
-            name, args = c["function"]["name"], c["function"]["arguments"]
+            name, args, inputs = c["function"]["name"], c["function"]["arguments"], None
             try:
                 args = json.loads(args)
-                out = RUN[name](**args)
+                run = RUN[name]
+                inputs = handoff.record(s | {"results": s["results"] + results}, name, args)
+                out = run(**args)
             except Exception as e:  # a bad name or argument goes back to the model, which can retry
                 out = {"error": f"{type(e).__name__}: {e}"}
+            if inputs is not None:
+                handoff.finish(s, name, out)
             messages.append({"role": "tool", "tool_call_id": c["id"], "name": name, "content": json.dumps(out)})
-            results.append({"tool": name, "arguments": args, "output": out})
-        return {"messages": messages, "results": results}
+            results.append({"tool": name, "arguments": args, "inputs": inputs, "output": out})
+        return {"messages": s["messages"] + messages, "results": s["results"] + results}
 
     def reporter(s):
-        facts = {k: s[k] for k in ["question", "design", "sources", "missing", "rejected", "results"] if k in s}
+        facts = {k: s[k] for k in ["question", "design", "sources", "missing", "rejected", "geometry", "results"] if k in s}
         reply, rec = call("reporter", [{"role": "system", "content": REPORTER}, user(json.dumps(facts))])
         return {"report": reply["content"], "trace": [rec]}
 
     g = StateGraph(State)
-    for node in [planner, retriever, figure_reader, designer, engineer, tools, reporter]:
+    for node in [planner, retriever, figure_reader, designer, geometry, engineer, tools, reporter]:
         g.add_node(node.__name__, node)
     g.add_edge(START, "planner")
     g.add_edge("planner", "retriever")
     g.add_edge("retriever", "figure_reader")
     g.add_edge("figure_reader", "designer")
-    g.add_conditional_edges("designer", lambda s: "engineer" if not s["missing"]
+    g.add_conditional_edges("designer", lambda s: "geometry" if not s["missing"]
                             else "retriever" if s["round"] < 2 else "reporter")
     g.add_conditional_edges("engineer", lambda s: "tools" if s["messages"][-1].get("tool_calls")
                             and len(s["messages"]) < 12 else "reporter")
+    g.add_edge("geometry", "engineer")
     g.add_edge("tools", "engineer")
     g.add_edge("reporter", END)
     return g.compile()

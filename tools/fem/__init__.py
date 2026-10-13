@@ -43,4 +43,4 @@ SPEC = spec("fem_fracture",
              "layer_fracture_energy_J_m2": number("cleavage_energy_J_m2 of dft_cleavage"),
              "interface_fracture_energy_J_m2": number("separation_energy_J_m2 of md_interface"),
              "interface_strength_MPa": number("strength_MPa of md_interface"),
-             "geometry_json": {"type": "string", "description": "geometry_json of layered_geometry"}})
+             "geometry_json": {"type": "string", "description": "geometry_json of the geometry"}})

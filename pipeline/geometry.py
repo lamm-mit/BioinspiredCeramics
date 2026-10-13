@@ -5,7 +5,6 @@ test bar to print and for a small notched cell to simulate. Lengths in the files
 Layers stack along z, with a ceramic layer at the bottom and at the top.
 """
 
-import hashlib
 import json
 from pathlib import Path
 
@@ -52,18 +51,18 @@ def stack(length, width, layers, layer, gap):
     return ceramic, between, layers * layer + (layers - 1) * gap
 
 
-def layered_geometry(ceramic, interlayer, layer_thickness_um, interlayer_thickness_um,
-                     bar_mm=(25.0, 2.8, 2.8), cell_layers=5, folder="runs/geometry"):
-    """Write the print bar and the simulation cell of a layered design, and return their paths.
+def layered_geometry(ceramic, interlayer, layer_thickness_um, interlayer_thickness_um, folder,
+                     bar_mm=(45.0, 4.0, 3.0), cell_layers=5):
+    """Write the print bar and the simulation cell of a layered design into folder, and return their paths.
 
-    The bar is a test bar of about bar_mm, lowered to a whole number of layers. The cell holds
+    The bar is a bend bar of about bar_mm [ASTM C1161], lowered to a whole number of layers. The cell holds
     cell_layers ceramic layers around a notch that enters the bottom layer from below. The bar
-    size, the cell size and the notch are defaults of this tool. The design does not set them.
+    size, the cell size and the notch are defaults of this step. The design does not set them.
     """
     layer, gap = layer_thickness_um / 1000, interlayer_thickness_um / 1000
     design = {"ceramic": ceramic, "interlayer": interlayer, "layer_thickness_um": layer_thickness_um,
               "interlayer_thickness_um": interlayer_thickness_um, "bar_mm": list(bar_mm), "cell_layers": cell_layers}
-    out = Path(folder) / hashlib.sha256(json.dumps(design, sort_keys=True).encode()).hexdigest()[:12]
+    out = Path(folder)
     out.mkdir(parents=True, exist_ok=True)
 
     layers = max(1, int((bar_mm[2] + gap) // (layer + gap)))
@@ -88,4 +87,4 @@ def layered_geometry(ceramic, interlayer, layer_thickness_um, interlayer_thickne
             "bar_interlayer_stl": spec["bar"]["files"]["interlayer"], "cell_ceramic_stl": spec["cell"]["files"]["ceramic"],
             "cell_interlayer_stl": spec["cell"]["files"]["interlayer"], "bar_ceramic_layers": layers,
             "bar_height_mm": round(parts["bar"][2], 6), "smallest_feature_um": min(layer_thickness_um, interlayer_thickness_um),
-            "method": "generated from the design. Bar size, cell size and notch are defaults of the tool"}
+            "method": "generated from the design. Bar size, cell size and notch are defaults of the geometry step"}

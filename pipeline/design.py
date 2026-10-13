@@ -3,10 +3,13 @@
 DESIGN lists the fields the designer takes from the corpus, and UNIT says what a passage must
 contain to supply a numeric field. SCALE and RANGE tell the source check how to find a numeric
 value in its source, and ASK is the question for the second reading of that source.
+make_geometry builds the part of a complete design.
 Everything specific to one design problem lives in this file and in the tools package.
 """
 
 from tools.schema import MATERIAL, number
+
+from .geometry import layered_geometry
 
 DESIGN = {
     "ceramic": MATERIAL | {"description": "the layer material"},
@@ -45,3 +48,9 @@ def design_errors(design):
         return {"interlayer": "the interlayer is the same material as the ceramic. Choose a different, weaker material "
                               "that the evidence supports."}
     return {}
+
+
+def make_geometry(design, folder):
+    """The STL files and the JSON description of the part a complete design describes."""
+    return layered_geometry(design["ceramic"], design["interlayer"], design["layer_thickness_um"],
+                            design["interlayer_thickness_um"], folder)

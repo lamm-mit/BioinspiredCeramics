@@ -4,8 +4,8 @@ python -m pipeline.benchmark.e2e corpus_folder
 
 A run passes six checks. Every design field is filled. Every field cites a source.
 Every value passes the source check of the graph against the evidence it cites.
-layered_geometry wrote its STL files. fem_fracture returned a result. Its inputs equal the
-design values and the outputs of dft_cleavage, md_interface and layered_geometry for that
+The geometry step wrote its STL files. fem_fracture returned a result. Its inputs equal the
+design values, the geometry file and the outputs of dft_cleavage and md_interface for that
 design, so nothing entered the simulation from anywhere else.
 Rows go to benchmark/results/e2e.jsonl.
 """
@@ -20,7 +20,6 @@ from tools.md import md_interface
 
 from .. import corpus
 from ..design import DESIGN
-from ..geometry import layered_geometry
 from ..graph import EMBEDDING, MODELS, build, source_errors
 
 here = Path(__file__).parent
@@ -49,10 +48,9 @@ CONFIGS = {"qwen3.6:35b for every agent": team("qwen3.6:35b", "qwen3.6:35b"),
 
 
 def checks(s):
-    design = s["design"]
-    fea = [r for r in s["results"] if r["tool"] == "fem_fracture" and "error" not in r["output"]]
-    made = [r["output"] for r in s["results"] if r["tool"] == "layered_geometry" and "error" not in r["output"]]
-    geometry = bool(made) and all(Path(made[-1][k]).exists() for k in made[-1] if k.endswith(("_stl", "_json")))
+    design, results, made = s["design"], s.get("results", []), s.get("geometry", {})
+    fea = [r for r in results if r["tool"] == "fem_fracture" and "error" not in r["output"]]
+    geometry = bool(made) and all(Path(made[k]).exists() for k in made if k.endswith(("_stl", "_json")))
     faithful = False
     if fea and all(k in design for k in DESIGN):
         layer = dft_cleavage(design["ceramic"])
@@ -62,14 +60,13 @@ def checks(s):
                     "layer_fracture_energy_J_m2": layer["cleavage_energy_J_m2"],
                     "interface_fracture_energy_J_m2": interface["separation_energy_J_m2"],
                     "interface_strength_MPa": interface["strength_MPa"],
-                    "geometry_json": layered_geometry(design["ceramic"], design["interlayer"], design["layer_thickness_um"],
-                                                      design["interlayer_thickness_um"])["geometry_json"]}
+                    "geometry_json": made["geometry_json"]}
         faithful = all(fea[-1]["arguments"].get(k) == v for k, v in expected.items())
     return {"complete": all(k in design for k in DESIGN), "cited": all(s["sources"].get(k) for k in DESIGN),
             "grounded": not source_errors(design, s["sources"], s), "rejected": s.get("rejected", {}),
             "geometry": geometry, "simulated": bool(fea), "faithful": faithful, "design": design,
             "deflects": fea[-1]["output"]["crack_deflects"] if fea else None,
-            "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in s["results"]]}
+            "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in results]}
 
 
 c = corpus.load(sys.argv[1], EMBEDDING)
@@ -78,7 +75,8 @@ for name, models in CONFIGS.items():
     for q in QUESTIONS:
         start = time.perf_counter()
         try:
-            row = checks(app.invoke({"question": q}, {"recursion_limit": 40}))
+            folder = Path("runs") / "e2e" / time.strftime("%Y%m%d-%H%M%S")
+            row = checks(app.invoke({"question": q, "folder": str(folder)}, {"recursion_limit": 100}))
         except Exception as e:  # a failed run counts, with its error
             row = {"error": f"{type(e).__name__}: {str(e)[:300]}"}
         row |= {"config": name, "question": q, "seconds": round(time.perf_counter() - start)}

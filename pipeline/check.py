@@ -44,7 +44,8 @@ def tool_call():
     design = {"ceramic": "alumina", "interlayer": "PMMA", "layer_modulus_GPa": 380, "layer_thickness_um": 10,
               "interlayer_thickness_um": 2}
     model, effort = MODELS["engineer"]
-    reply, _ = chat(model, [{"role": "system", "content": ENGINEER}, user(json.dumps(design))], TOOLS, effort)
+    given = user(json.dumps({"design": design, "geometry": {"geometry_json": "geometry.json"}}))
+    reply, _ = chat(model, [{"role": "system", "content": ENGINEER}, given], TOOLS, effort)
     call = reply["tool_calls"][0]["function"]
     return call["name"], call["arguments"], RUN[call["name"]](**json.loads(call["arguments"]))
 

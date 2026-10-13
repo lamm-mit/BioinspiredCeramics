@@ -1,29 +1,39 @@
 # Tests for the agent graph, with the models and the search stubbed. python -m pipeline.tests.test_graph
+import itertools
 import json
+import shutil
+from pathlib import Path
+
 from pipeline import graph
+
+shutil.rmtree("runs_test/graph", ignore_errors=True)
+folders = (f"runs_test/graph/{n}" for n in itertools.count(1))  # a fresh run folder per case
 
 PASSAGES = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E_{\rm A} \sim 367$  GPa"},
             {"id": "p#9", "source": "p", "text": "graphite interlayers 20 µm thick deflect cracks in alumina"}]
 graph.cp.search = lambda corpus, q, k, figures=False, skip=(), pattern=None: [] if figures else [p for p in PASSAGES if p["id"] not in skip]
 graph.cp.neighbors = lambda corpus, entities, k=3: []
+TAMPER = {}  # tool inputs the scripted engineer changes on its own, which the handoff file must flag
+
+
 def fake_chat(model, messages, tools=None, effort=None):
-    """A scripted engineer. It calls dft_cleavage and md_interface, then layered_geometry, then fem_fracture, from the design and the results."""
+    """A scripted engineer. It calls dft_cleavage and md_interface, then fem_fracture, from the design, the geometry and the results."""
     rec = {"model": model, "seconds": 0, "reply": {}}
     if not tools:
         return {"content": "report"}, rec
-    design = json.loads(messages[1]["content"])
+    given = json.loads(messages[1]["content"])
+    design = given["design"]
     done = [json.loads(m["content"]) for m in messages if m.get("role") == "tool"]
-    call = lambda n, name, args: {"id": f"c{n}", "type": "function", "function": {"name": name, "arguments": json.dumps(args)}}
+    call = lambda n, name, args: {"id": f"c{n}", "type": "function", "function": {"name": name, "arguments": json.dumps(args | {k: v for k, v in TAMPER.items() if k in args})}}
     if len(done) == 0:
         calls = [call(0, "dft_cleavage", {"material": design["ceramic"]}),
                  call(1, "md_interface", {"material_a": design["ceramic"], "material_b": design["interlayer"]})]
     elif len(done) == 2:
-        calls = [call(2, "layered_geometry", {k: design[k] for k in ["ceramic", "interlayer", "layer_thickness_um", "interlayer_thickness_um"]})]
-    elif len(done) == 3:
-        calls = [call(3, "fem_fracture", {"layer_modulus_GPa": design["layer_modulus_GPa"], "layer_thickness_um": design["layer_thickness_um"],
+        calls = [call(2, "fem_fracture", {"layer_modulus_GPa": design["layer_modulus_GPa"], "layer_thickness_um": design["layer_thickness_um"],
                                           "layer_fracture_energy_J_m2": done[0]["cleavage_energy_J_m2"],
                                           "interface_fracture_energy_J_m2": done[1]["separation_energy_J_m2"],
-                                          "interface_strength_MPa": done[1]["strength_MPa"], "geometry_json": done[2]["geometry_json"]})]
+                                          "interface_strength_MPa": done[1]["strength_MPa"],
+                                          "geometry_json": given["geometry"]["geometry_json"]})]
     else:
         return {"content": "All tools ran."}, rec
     return {"role": "assistant", "content": "", "tool_calls": calls}, rec
@@ -56,7 +66,7 @@ def run(script, truncate_first=False, checker=accept_all):
             raise ValueError("m returned no answer (finish: length, 8192 tokens)")
         return next(answers), {"model": model, "seconds": 0, "reply": {}}
     graph.ask_json = fake
-    s = graph.build(MODELS, {}).invoke({"question": "Design a layered alumina."}, {"recursion_limit": 40})
+    s = graph.build(MODELS, {}).invoke({"question": "Design a layered alumina.", "folder": next(folders)}, {"recursion_limit": 100})
     return s, calls
 
 
@@ -100,13 +110,13 @@ def spy(script):
         prompts.append(text)
         return next(answers), {"model": model, "seconds": 0, "reply": {}}
     graph.ask_json = fake
-    return graph.build(MODELS, {}).invoke({"question": "Design a layered alumina."}, {"recursion_limit": 40})
+    return graph.build(MODELS, {}).invoke({"question": "Design a layered alumina.", "folder": next(folders)}, {"recursion_limit": 100})
 s = spy([{"design": GOOD | {"layer_modulus_GPa": 380}, "sources": LABELS}, {"design": {"layer_modulus_GPa": 367}, "sources": {"layer_modulus_GPa": "E1: E_A"}}])
 check("the designer reads labels, and the repair message names them", "[E1] alumina layers" in prompts[0] and "p#6" not in prompts[0] and "E1 gives 367 GPa, not 380" in prompts[1] and s["design"] == GOOD, prompts[1][-260:])
 
 s, calls = run([{"design": GOOD, "sources": LABELS | {"layer_modulus_GPa": "E99: none"}}, {"design": GOOD, "sources": LABELS}])
 check("a label out of range is rejected, then repaired", s["design"] == GOOD and len(calls) == 2, calls)
-# round 3, the second reading
+# the second reading of a cited source
 alumina_layers = lambda text: ({"low": 20, "high": 20} if "weak layer" in text else {"low": 210, "high": 220} if "thickness" in text
                                 else {"low": 367, "high": 367})
 s, calls = run([{"design": GOOD | {"layer_thickness_um": 140}, "sources": SRC}, {"design": {"layer_thickness_um": 210}, "sources": {"layer_thickness_um": "p#6: A layers"}}],
@@ -127,19 +137,31 @@ check("a field that fails the source check is not sent to the checker", sum("mod
 
 s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "ceramic"}, "sources": SRC}] * 4, checker=alumina_layers)
 check("no ceramic yet, so no question can be asked and nothing crashes", "ceramic" in s["missing"] and not asked, (s["missing"], asked))
-# the geometry step
-from pathlib import Path
+# the geometry step and the handoff files
 PASSAGES[:] = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E_{\rm A} \sim 367$  GPa"}, PASSAGES[1]]
 s, calls = run([{"design": GOOD, "sources": SRC}])
 tools_run = [r["tool"] for r in s["results"]]
-made = next(r["output"] for r in s["results"] if r["tool"] == "layered_geometry")
-fea = next(r for r in s["results"] if r["tool"] == "fem_fracture")
-check("the four tool calls run in order", tools_run == ["dft_cleavage", "md_interface", "layered_geometry", "fem_fracture"], tools_run)
+made = s["geometry"]
+fem = next(r for r in s["results"] if r["tool"] == "fem_fracture")
+check("the three tool calls run in order", tools_run == ["dft_cleavage", "md_interface", "fem_fracture"], tools_run)
 check("the geometry files exist", all(Path(made[k]).exists() for k in made if k.endswith(("_stl", "_json"))), made.get("geometry_json"))
-check("the crack tool received the geometry file", fea["arguments"]["geometry_json"] == made["geometry_json"] == fea["output"]["geometry_json"], fea["arguments"]["geometry_json"])
+check("the crack tool received the geometry file", fem["arguments"]["geometry_json"] == made["geometry_json"] == fem["output"]["geometry_json"], fem["arguments"]["geometry_json"])
 check("no error in any tool output", not any("error" in r["output"] for r in s["results"]), [r["output"].get("error") for r in s["results"]])
+files = {p.stem: json.load(open(p)) for p in Path(s["candidate"], "handoff").glob("*.json")}
+inputs = lambda tool: files[tool]["calls"][0]["inputs"]
+check("one handoff file per tool, in the candidate folder", sorted(files) == ["dft", "fem", "md"] and Path(s["candidate"]).name == "candidate_1", sorted(files))
+check("every call is done and holds its output", all(len(f["calls"]) == 1 and f["calls"][0]["status"] == "done" and f["calls"][0]["output"]["method"] for f in files.values()), [f["calls"][0]["status"] for f in files.values()])
+check("every input has an origin", not [k for f in files.values() for k, i in f["calls"][0]["inputs"].items() if i["from"] == "unmatched"], {k: i["from"] for k, i in inputs("fem").items()})
+check("a design input names its field and its source", inputs("md")["material_b"] == {"value": "graphite", "from": "design.interlayer", "source": "p#9: deflects"}, inputs("md")["material_b"])
+check("a tool output is named as the origin, with the unit", inputs("fem")["layer_fracture_energy_J_m2"] == {"value": 3.0, "unit": "J/m^2", "from": "dft_cleavage.cleavage_energy_J_m2"}, inputs("fem")["layer_fracture_energy_J_m2"])
+check("the geometry file is named as the origin", inputs("fem")["geometry_json"]["from"] == "geometry.geometry_json", inputs("fem")["geometry_json"])
+check("the design file holds the values and their sources", json.load(open(Path(s["candidate"]) / "design.json")) == {"design": GOOD, "sources": s["sources"]}, s["candidate"])
+TAMPER["layer_modulus_GPa"] = 999
+s, calls = run([{"design": GOOD, "sources": SRC}])
+TAMPER.clear()
+check("an input the engineer made up is marked unmatched", next(r for r in s["results"] if r["tool"] == "fem_fracture")["inputs"]["layer_modulus_GPa"]["from"] == "unmatched", s["results"][-1]["inputs"]["layer_modulus_GPa"])
 s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "interlayer_thickness_um"}, "sources": SRC}] * 4)
-check("no interlayer thickness, so no geometry and no simulation", "interlayer_thickness_um" in s["missing"] and not s.get("results"), s["missing"])
+check("no interlayer thickness, so no geometry and no simulation", "interlayer_thickness_um" in s["missing"] and not s.get("results") and "geometry" not in s, s["missing"])
 s, calls = run([{"design": GOOD | {"interlayer": "alumina"}, "sources": SRC}, {"design": {"interlayer": "graphite"}, "sources": {"interlayer": "p#9: deflects"}}])
 check("an interlayer of the ceramic's own material is rejected, then repaired", s["design"] == GOOD and len(calls) == 2 and calls[1][1], (s["design"].get("interlayer"), calls))
 print("FAILED" if bad else "ALL PASS", bad)
