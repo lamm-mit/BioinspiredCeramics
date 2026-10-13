@@ -3,7 +3,8 @@
 DESIGN lists the fields the designer takes from the corpus, and UNIT says what a passage must
 contain to supply a numeric field. SCALE and RANGE tell the source check how to find a numeric
 value in its source, and ASK is the question for the second reading of that source.
-make_geometry builds the part of a complete design.
+make_geometry builds the part of a complete design, and CRITERIA is what the judge checks a simulated
+design against.
 Everything specific to one design problem lives in this file and in the tools package.
 """
 
@@ -40,6 +41,9 @@ ASK = {"layer_modulus_GPa": "Young's modulus of {ceramic} itself. A composite or
                              "An interlayer, a pore, a grain, a coating or a layer of another material does not count.",
        "interlayer_thickness_um": "thickness of the {interlayer} interlayer or weak layer between two {ceramic} layers. "
                                   "A {ceramic} layer, a pore or a grain does not count."}
+# What the judge decides for each candidate, from its design values and the tool outputs.
+CRITERIA = ["A crack deflects along the interfaces.",
+            "The design meets every requirement that the question states."]
 
 
 def design_errors(design):

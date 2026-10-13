@@ -24,6 +24,8 @@ def fake_chat(model, messages, tools=None, effort=None):
     given = json.loads(messages[1]["content"])
     design = given["design"]
     done = [json.loads(m["content"]) for m in messages if m.get("role") == "tool"]
+    if any("error" in d for d in done):
+        return {"content": "A tool failed."}, rec
     call = lambda n, name, args: {"id": f"c{n}", "type": "function", "function": {"name": name, "arguments": json.dumps(args | {k: v for k, v in TAMPER.items() if k in args})}}
     if len(done) == 0:
         calls = [call(0, "dft_cleavage", {"material": design["ceramic"]}),
@@ -49,11 +51,18 @@ SRC = {"ceramic": "question: asked", "interlayer": "p#9: deflects", "layer_modul
 
 asked = []
 accept_all = lambda text: {"low": 0, "high": 1e9, "unit": ""}
+ACCEPT = {"criteria": [{"criterion": "A crack deflects along the interfaces.", "met": True, "evidence": "crack_deflects is true"}],
+          "change": {}, "summary": "The crack deflects."}
+REVISE = {"criteria": [{"criterion": "A crack deflects along the interfaces.", "met": False, "evidence": "energy_ratio is 1.0"}],
+          "change": {"interlayer": "choose a weaker interlayer", "not_a_field": "ignored"}, "summary": "The crack does not deflect."}
+VERDICTS = []  # what the scripted judge answers, one per candidate. It accepts when the list is empty.
+judged = []    # what the judge was shown
 
 
 def run(script, truncate_first=False, checker=accept_all):
     """Run the graph with the designer answering from the script, one answer per call."""
     asked.clear()
+    judged.clear()
     calls, answers = [], iter(script)
     def fake(model, system, text, images=(), effort=None):
         if system is graph.PLANNER:
@@ -61,6 +70,9 @@ def run(script, truncate_first=False, checker=accept_all):
         if system is graph.CHECKER:
             asked.append(text.split("\n")[0])
             return checker(text), {"model": model, "seconds": 0, "reply": {}}
+        if system is graph.JUDGE:
+            judged.append(text)
+            return (VERDICTS.pop(0) if VERDICTS else ACCEPT), {"model": model, "seconds": 0, "reply": {}}
         calls.append((effort, "rejected these fields" in text))
         if truncate_first and len(calls) == 1:
             raise ValueError("m returned no answer (finish: length, 8192 tokens)")
@@ -107,6 +119,8 @@ def spy(script):
             return {"queries": ["q"], "entities": []}, {"model": model, "seconds": 0, "reply": {}}
         if system is graph.CHECKER:
             return {"low": 0, "high": 1e9}, {"model": model, "seconds": 0, "reply": {}}
+        if system is graph.JUDGE:
+            return ACCEPT, {"model": model, "seconds": 0, "reply": {}}
         prompts.append(text)
         return next(answers), {"model": model, "seconds": 0, "reply": {}}
     graph.ask_json = fake
@@ -164,4 +178,75 @@ s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "interlayer_th
 check("no interlayer thickness, so no geometry and no simulation", "interlayer_thickness_um" in s["missing"] and not s.get("results") and "geometry" not in s, s["missing"])
 s, calls = run([{"design": GOOD | {"interlayer": "alumina"}, "sources": SRC}, {"design": {"interlayer": "graphite"}, "sources": {"interlayer": "p#9: deflects"}}])
 check("an interlayer of the ceramic's own material is rejected, then repaired", s["design"] == GOOD and len(calls) == 2 and calls[1][1], (s["design"].get("interlayer"), calls))
+# the judge and the loop back to the designer
+PASSAGES[:] = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E_{\rm A} \sim 367$  GPa"},
+               {"id": "p#9", "source": "p", "text": "graphite interlayers 20 µm thick deflect cracks in alumina"},
+               {"id": "p#11", "source": "p", "text": "epoxy interlayers 5 µm thick deflect cracks in alumina"},
+               {"id": "p#12", "source": "p", "text": "PMMA interlayers 8 µm thick deflect cracks in alumina"}]
+GOOD2, SRC2 = GOOD | {"interlayer": "epoxy", "interlayer_thickness_um": 5}, SRC | {"interlayer": "p#11: deflects", "interlayer_thickness_um": "p#11: 5 µm thick"}
+GOOD3, SRC3 = GOOD | {"interlayer": "PMMA", "interlayer_thickness_um": 8}, SRC | {"interlayer": "p#12: deflects", "interlayer_thickness_um": "p#12: 8 µm thick"}
+folder = lambda s, n: Path(s["folder"]) / f"candidate_{n}"
+whole = lambda s, n: all((folder(s, n) / f).exists() for f in ["design.json", "verdict.json", "geometry/geometry.json", "geometry/bar_ceramic.stl",
+                                                              "geometry/cell_interlayer.stl", "handoff/dft.json", "handoff/md.json", "handoff/fem.json"])
+verdicts = lambda s: [c["verdict"]["verdict"] for c in s["candidates"]]
+
+s, calls = run([{"design": GOOD, "sources": SRC}])
+check("accepted at the first candidate", verdicts(s) == ["accept"] and whole(s, 1) and not folder(s, 2).exists() and len(judged) == 1 and "candidate_1 was accepted" in s["outcome"], s["outcome"])
+check("a verdict on stand-in results is provisional", s["verdict"]["provisional"] and "provisionally" in s["outcome"] and json.load(open(folder(s, 1) / "verdict.json")) == s["verdict"], s["verdict"])
+check("the judge reads the criteria, the design and the tool outputs", "A crack deflects" in judged[0] and '"crack_deflects": true' in judged[0] and '"interlayer": "graphite"' in judged[0], judged[0][:120])
+
+VERDICTS[:] = [REVISE]
+s, calls = run([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}])
+check("sent back once, accepted at the second candidate", verdicts(s) == ["revise", "accept"] and s["design"] == GOOD2 and whole(s, 1) and whole(s, 2) and "candidate_2 was accepted" in s["outcome"], (verdicts(s), s["outcome"]))
+check("each candidate has its own handoff files", json.load(open(folder(s, 1) / "handoff/md.json"))["calls"][0]["inputs"]["material_b"]["value"] == "graphite"
+      and json.load(open(folder(s, 2) / "handoff/md.json"))["calls"][0]["inputs"]["material_b"]["value"] == "epoxy" and len(json.load(open(folder(s, 2) / "handoff/md.json"))["calls"]) == 1, "md.json")
+check("the verdict keeps only design fields to change", s["candidates"][0]["verdict"]["change"] == {"interlayer": "choose a weaker interlayer"}, s["candidates"][0]["verdict"]["change"])
+
+prompts.clear()
+VERDICTS[:] = []
+graph_ask = graph.ask_json
+def looped(script, verdicts):
+    answers, marks = iter(script), list(verdicts)
+    def fake(model, system, text, images=(), effort=None):
+        rec = {"model": model, "seconds": 0, "reply": {}}
+        if system is graph.PLANNER:
+            return {"queries": ["q"], "entities": []}, rec
+        if system is graph.CHECKER:
+            return {"low": 0, "high": 1e9}, rec
+        if system is graph.JUDGE:
+            return (marks.pop(0) if marks else ACCEPT), rec
+        prompts.append(text)
+        return next(answers), rec
+    graph.ask_json = fake
+    return graph.build(MODELS, {}).invoke({"question": "Design a layered alumina.", "folder": next(folders)}, {"recursion_limit": 100})
+
+s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}], [REVISE])
+check("the designer is shown the earlier candidate and the judge's finding", len(prompts) == 2 and "sent them back" not in prompts[0] and "sent them back" in prompts[1]
+      and "choose a weaker interlayer" in prompts[1] and '"interlayer": "graphite"' in prompts[1], prompts[1][-200:])
+
+s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}, {"design": GOOD3, "sources": SRC3}], [REVISE, REVISE, REVISE, REVISE])
+check("three candidates sent back, the run ends without a candidate", verdicts(s) == ["revise"] * 3 and whole(s, 3) and not folder(s, 4).exists()
+      and "no candidate was accepted after 3" in s["outcome"] and s["report"] == "report", (verdicts(s), s["outcome"]))
+
+prompts.clear()
+s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD, "sources": SRC}, {"design": {"interlayer": "epoxy", "interlayer_thickness_um": 5}, "sources": SRC2}], [REVISE])
+check("a repeat of a judged candidate is rejected, then repaired", verdicts(s) == ["revise", "accept"] and s["design"] == GOOD2 and len(prompts) == 3
+      and "repeats a candidate" in prompts[2] and "interlayer" in prompts[2].split("rejected these fields")[-1], (verdicts(s), s["design"].get("interlayer")))
+
+s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD, "sources": SRC}, {"design": GOOD, "sources": SRC}] + [{"design": GOOD, "sources": SRC}] * 4, [REVISE])
+check("a designer that only repeats ends with an incomplete design and no second simulation", verdicts(s) == ["revise"] and "interlayer" in s["missing"]
+      and not folder(s, 2).exists() and "no candidate was accepted after 1" in s["outcome"] and "incomplete" in s["outcome"], (s["missing"], s["outcome"]))
+
+graph.ask_json = graph_ask
+TAMPER["material"] = "unobtainium"
+s, calls = run([{"design": GOOD, "sources": SRC}])
+TAMPER.clear()
+check("a tool error blocks the verdict, and the model is not asked to judge", verdicts(s) == ["incomplete"] and not judged and "dft_cleavage" in s["verdict"]["summary"]
+      and "did not complete" in s["outcome"] and json.load(open(folder(s, 1) / "handoff/dft.json"))["calls"][0]["status"] == "error", s["verdict"])
+TAMPER["layer_modulus_GPa"] = 999
+s, calls = run([{"design": GOOD, "sources": SRC}])
+TAMPER.clear()
+check("an input from nowhere blocks the verdict", verdicts(s) == ["incomplete"] and not judged and "fem_fracture.layer_modulus_GPa" in s["verdict"]["summary"], s["verdict"])
+s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "ceramic"}, "sources": SRC}] * 4)
+check("an incomplete first design is reported as not simulated", s["outcome"] == "no design was simulated, and the last design is incomplete" and not s.get("candidates"), s["outcome"])
 print("FAILED" if bad else "ALL PASS", bad)

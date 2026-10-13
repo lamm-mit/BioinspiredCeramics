@@ -6,7 +6,8 @@ A run passes six checks. Every design field is filled. Every field cites a sourc
 Every value passes the source check of the graph against the evidence it cites.
 The geometry step wrote its STL files. fem_fracture returned a result. Its inputs equal the
 design values, the geometry file and the outputs of dft_cleavage and md_interface for that
-design, so nothing entered the simulation from anywhere else.
+design, so nothing entered the simulation from anywhere else. The checks apply to the last
+candidate of the run. Each row also holds the judge's verdict and the number of candidates.
 Rows go to benchmark/results/e2e.jsonl.
 """
 
@@ -37,9 +38,10 @@ QUESTIONS = [
 
 
 def team(text, reader, designer_effort="medium", effort="none"):
-    """One text model for the text agents, with its own effort for the designer and the checker, and one figure reader."""
+    """One text model for the text agents, with its own effort for the designer, the checker and the judge, and one figure reader."""
     return {"planner": (text, effort), "designer": (text, designer_effort), "checker": (text, designer_effort),
-            "engineer": (text, effort), "reporter": (text, effort), "figure_reader": (reader, "none")}
+            "engineer": (text, effort), "judge": (text, designer_effort), "reporter": (text, effort),
+            "figure_reader": (reader, "none")}
 
 
 CONFIGS = {"qwen3.6:35b for every agent": team("qwen3.6:35b", "qwen3.6:35b"),
@@ -65,6 +67,7 @@ def checks(s):
     return {"complete": all(k in design for k in DESIGN), "cited": all(s["sources"].get(k) for k in DESIGN),
             "grounded": not source_errors(design, s["sources"], s), "rejected": s.get("rejected", {}),
             "geometry": geometry, "simulated": bool(fea), "faithful": faithful, "design": design,
+            "verdicts": [c["verdict"]["verdict"] for c in s.get("candidates", [])], "outcome": s.get("outcome"),
             "deflects": fea[-1]["output"]["crack_deflects"] if fea else None,
             "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in results]}
 

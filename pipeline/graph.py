@@ -1,14 +1,16 @@
 """The agent graph. Each node is one agent with its own model and instructions.
 
-planner -> retriever -> figure_reader -> designer -> geometry -> engineer <-> tools -> reporter
+planner -> retriever -> figure_reader -> designer -> geometry -> engineer <-> tools -> judge -> reporter
 
 The designer can send the retriever back once, for design fields that lack evidence. A check
 compares each design value with the source the designer cites, and the designer gets one repair
 with its findings. A field that still fails is dropped. A design that is still incomplete goes
 straight to the reporter, so no simulation runs on it. A complete design gets its geometry as
 STL files. The engineer then calls tools until it has every result, and each call is recorded
-in one handoff file per tool. The prompts are generic, and the problem itself is defined by
-design.py and the tools package.
+in one handoff file per tool. The judge then weighs the candidate against the criteria. A
+candidate it sends back returns to the designer with its findings, for up to MAX_CANDIDATES
+candidates per run. The prompts are generic, and the problem itself is defined by design.py
+and the tools package.
 """
 
 import json
@@ -23,18 +25,20 @@ from tools import RUN, TOOLS
 
 from . import corpus as cp
 from . import handoff
-from .design import ASK, DESIGN, RANGE, SCALE, UNIT, design_errors, make_geometry
+from .design import ASK, CRITERIA, DESIGN, RANGE, SCALE, UNIT, design_errors, make_geometry
 from .llm import ask_json, chat, user
 
-# Model and reasoning effort per agent. A text model does the four text jobs and a vision model
+# Model and reasoning effort per agent. A text model does the text jobs and a vision model
 # reads the figures, with thinking off.
 MODELS = {"planner": ("gpt-oss:20b", "low"),
           "figure_reader": ("qwen3.6:35b", "none"),
           "designer": ("gpt-oss:20b", "medium"),
           "checker": ("gpt-oss:20b", "medium"),
           "engineer": ("gpt-oss:20b", "low"),
+          "judge": ("gpt-oss:20b", "medium"),
           "reporter": ("gpt-oss:20b", "low")}
 EMBEDDING = "embeddinggemma"
+MAX_CANDIDATES = 3  # designs simulated and judged in one run
 FIELDS = json.dumps(DESIGN)
 OPTIONS = sorted({option for field in DESIGN.values() for option in field.get("enum", ())})
 
@@ -74,12 +78,25 @@ Return JSON {"low": number or null, "high": number or null, "unit": str} with th
 the source gives for the quantity asked, in the unit asked. For a single value, low equals high. Use null for both
 when the source gives no value for that quantity. Reply with the JSON only."""
 
+JUDGE = """You judge one candidate design against the results of its simulations.
+Decide each criterion below from the design values and the tool outputs alone, and quote the value
+that decides it. When they do not bear on a criterion, count it as met and say that it was not tested.
+A result whose method says stand-in is a placeholder. Judge it as given.
+Return JSON with keys
+"criteria": [{"criterion": str, "met": true or false, "evidence": str}], one entry per criterion,
+"change": {field: what to change and why} for the design fields a new candidate should change, empty when
+every criterion is met,
+"summary": one sentence.
+Reply with the JSON only."""
+
 REPORTER = """Write a short report in plain markdown, without emoji, for a scientist.
-Give the question, a table of the design fields with value, unit and source, the simulation
-results, what they mean, and what remains unverified. Use only numbers and criteria that appear
-in the input. Results whose method says stand-in are placeholders, not predictions. Say so.
-If design fields are missing, no simulation ran. Say which fields are missing, and give the
-reason for each field that the source check rejected."""
+Start with the outcome as given. Then give the question, a table of the design fields of the last
+candidate with value, unit and source, the simulation results, the judge's finding on each criterion,
+what the results mean, and what remains unverified. If earlier candidates were sent back, list each
+with the judge's reason. Use only numbers and criteria that appear in the input. Results whose method
+says stand-in are placeholders, not predictions. Say so. If design fields are missing, no simulation
+ran on that design. Say which fields are missing, and give the reason for each field that the source
+check rejected."""
 
 
 class State(TypedDict, total=False):
@@ -99,6 +116,9 @@ class State(TypedDict, total=False):
     geometry: dict
     messages: list
     results: list
+    verdict: dict
+    candidates: Annotated[list, operator.add]
+    outcome: str
     report: str
     trace: Annotated[list, operator.add]
 
@@ -260,6 +280,11 @@ def build(models, corpus):
         rows = shown(s)
         prompt = (f"Question: {s['question']}\nDesign fields: {FIELDS}\nEvidence:\n"
                   + "\n".join(f"[E{n}] {text}" for n, (_, text) in enumerate(rows, 1)))
+        judged = s.get("candidates", [])
+        if judged:
+            prompt += ("\nEarlier candidates were simulated and a judge sent them back. Propose a different design "
+                       "that answers the judge, with evidence for every value as before.\n"
+                       + json.dumps([{"design": c["design"], "judge": c["verdict"]} for c in judged]))
 
         def real(text):  # E7 back to the id it stands for
             return re.sub(r"\bE(\d+)\b", lambda m: rows[int(m[1]) - 1][0] if 0 < int(m[1]) <= len(rows) else m[0], text)
@@ -297,6 +322,13 @@ def build(models, corpus):
                     errors[field] = f"a second reading of {' and '.join(ids)} finds {found} for the {quantity} Your value is {design[field]}."
             return errors
 
+        def repeats(design):
+            """The fields to change when a design repeats a judged candidate, as field -> reason."""
+            if not any(design == c["design"] for c in judged):
+                return {}
+            named = [k for k in judged[-1]["verdict"].get("change", {}) if k in design] or list(design)
+            return {k: "the design repeats a candidate that the judge sent back. Change this field." for k in named}
+
         design, sources, rejected, trace, read = {}, {}, {}, [], {}
         for attempt in range(2):  # the second attempt is the one repair, with the findings of the source check
             out, rec = ask("designer", DESIGNER, prompt)
@@ -304,7 +336,7 @@ def build(models, corpus):
             # A repair may answer only the rejected fields, so each answer adds to the fields that passed.
             design |= {k: v for k, v in (out.get("design") or {}).items() if k in DESIGN and v is not None}
             sources |= {k: real(str(v)) for k, v in (out.get("sources") or {}).items()}
-            failed = source_errors(design, sources, s) | design_errors(design)
+            failed = source_errors(design, sources, s) | design_errors(design) | repeats(design)
             failed |= second_reading({k: v for k, v in design.items() if k not in failed})
             design = {k: v for k, v in design.items() if k not in failed}
             rejected |= failed
@@ -319,7 +351,7 @@ def build(models, corpus):
 
     def geometry(s):
         """Start a candidate: its folder, the design with its sources, and the STL files of the part."""
-        folder = Path(s["folder"]) / "candidate_1"
+        folder = Path(s["folder"]) / f"candidate_{len(s.get('candidates', [])) + 1}"
         folder.mkdir(parents=True, exist_ok=True)
         (folder / "design.json").write_text(json.dumps({"design": s["design"], "sources": s["sources"]}, indent=1, ensure_ascii=False))
         return {"candidate": str(folder), "geometry": make_geometry(s["design"], folder / "geometry"), "messages": [], "results": []}
@@ -346,13 +378,54 @@ def build(models, corpus):
             results.append({"tool": name, "arguments": args, "inputs": inputs, "output": out})
         return {"messages": s["messages"] + messages, "results": s["results"] + results}
 
+    def judge(s):
+        """The verdict on the current candidate. The model decides each criterion, and the verdict follows from them here."""
+        last = {r["tool"]: r for r in s["results"] if "error" not in r["output"]}
+        absent = [t["function"]["name"] for t in TOOLS if t["function"]["name"] not in last]
+        unmatched = [f"{r['tool']}.{k}" for r in last.values() for k, i in r["inputs"].items() if i["from"] == "unmatched"]
+        trace = []
+        if absent or unmatched:
+            # Without every result, or with an input that came from nowhere, there is nothing sound to judge.
+            verdict = {"verdict": "incomplete", "summary": " ".join(
+                [f"No result from {', '.join(absent)}."] * bool(absent)
+                + [f"Inputs from neither the design, the geometry nor a tool: {', '.join(unmatched)}."] * bool(unmatched))}
+        else:
+            facts = {"question": s["question"], "design": s["design"], "sources": s["sources"], "geometry": s["geometry"],
+                     "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in last.values()]}
+            out, rec = ask("judge", JUDGE, f"Criteria: {json.dumps(CRITERIA)}\n{json.dumps(facts)}")
+            trace = [rec]
+            criteria = [c for c in out.get("criteria") or [] if isinstance(c, dict)]
+            accept = bool(criteria) and all(c.get("met") is True for c in criteria)
+            verdict = {"verdict": "accept" if accept else "revise", "criteria": criteria,
+                       "change": {} if accept else {k: v for k, v in (out.get("change") or {}).items() if k in DESIGN},
+                       "summary": out.get("summary", ""),
+                       # A verdict on stand-in results holds only until the solvers are attached.
+                       "provisional": any("stand-in" in str(r["output"].get("method")) for r in last.values())}
+        (Path(s["candidate"]) / "verdict.json").write_text(json.dumps(verdict, indent=1, ensure_ascii=False))
+        candidate = {"candidate": Path(s["candidate"]).name, "design": s["design"], "sources": s["sources"],
+                     "geometry": s["geometry"], "results": s["results"], "verdict": verdict}
+        # A candidate that is sent back may take one more search for its replacement.
+        return {"verdict": verdict, "candidates": [candidate], "round": 1, "trace": trace}
+
     def reporter(s):
-        facts = {k: s[k] for k in ["question", "design", "sources", "missing", "rejected", "geometry", "results"] if k in s}
+        judged = s.get("candidates", [])
+        last = judged[-1]["verdict"] if judged else {}
+        if last.get("verdict") == "accept":
+            outcome = f"{judged[-1]['candidate']} was accepted" + ", provisionally, since tool results are stand-ins" * last["provisional"]
+        elif last.get("verdict") == "incomplete":
+            outcome = f"the simulation of {judged[-1]['candidate']} did not complete. {last['summary']}"
+        else:
+            outcome = (f"no candidate was accepted after {len(judged)} of at most {MAX_CANDIDATES}" if judged else "no design was simulated")
+            outcome += ", and the last design is incomplete" * bool(s.get("missing"))
+        facts = {"outcome": outcome} | {k: s[k] for k in ["question", "design", "sources", "missing", "rejected"] if k in s}
+        if not s.get("missing"):
+            facts |= {"geometry": s["geometry"], "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in s["results"]]}
+        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "verdict"]} for c in judged]
         reply, rec = call("reporter", [{"role": "system", "content": REPORTER}, user(json.dumps(facts))])
-        return {"report": reply["content"], "trace": [rec]}
+        return {"report": reply["content"], "outcome": outcome, "trace": [rec]}
 
     g = StateGraph(State)
-    for node in [planner, retriever, figure_reader, designer, geometry, engineer, tools, reporter]:
+    for node in [planner, retriever, figure_reader, designer, geometry, engineer, tools, judge, reporter]:
         g.add_node(node.__name__, node)
     g.add_edge(START, "planner")
     g.add_edge("planner", "retriever")
@@ -361,7 +434,9 @@ def build(models, corpus):
     g.add_conditional_edges("designer", lambda s: "geometry" if not s["missing"]
                             else "retriever" if s["round"] < 2 else "reporter")
     g.add_conditional_edges("engineer", lambda s: "tools" if s["messages"][-1].get("tool_calls")
-                            and len(s["messages"]) < 12 else "reporter")
+                            and len(s["messages"]) < 12 else "judge")
+    g.add_conditional_edges("judge", lambda s: "designer" if s["verdict"]["verdict"] == "revise"
+                            and len(s["candidates"]) < MAX_CANDIDATES else "reporter")
     g.add_edge("geometry", "engineer")
     g.add_edge("tools", "engineer")
     g.add_edge("reporter", END)
