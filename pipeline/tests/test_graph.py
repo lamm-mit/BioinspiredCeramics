@@ -7,7 +7,7 @@ PASSAGES = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E
 graph.cp.search = lambda corpus, q, k, figures=False, skip=(), pattern=None: [] if figures else [p for p in PASSAGES if p["id"] not in skip]
 graph.cp.neighbors = lambda corpus, entities, k=3: []
 def fake_chat(model, messages, tools=None, effort=None):
-    """A scripted engineer. It calls md_interface twice, then layered_geometry, then crack_fea, from the design and the results."""
+    """A scripted engineer. It calls dft_cleavage and md_interface, then layered_geometry, then fem_fracture, from the design and the results."""
     rec = {"model": model, "seconds": 0, "reply": {}}
     if not tools:
         return {"content": "report"}, rec
@@ -15,15 +15,15 @@ def fake_chat(model, messages, tools=None, effort=None):
     done = [json.loads(m["content"]) for m in messages if m.get("role") == "tool"]
     call = lambda n, name, args: {"id": f"c{n}", "type": "function", "function": {"name": name, "arguments": json.dumps(args)}}
     if len(done) == 0:
-        calls = [call(0, "md_interface", {"material_a": design["ceramic"], "material_b": design["ceramic"]}),
+        calls = [call(0, "dft_cleavage", {"material": design["ceramic"]}),
                  call(1, "md_interface", {"material_a": design["ceramic"], "material_b": design["interlayer"]})]
     elif len(done) == 2:
         calls = [call(2, "layered_geometry", {k: design[k] for k in ["ceramic", "interlayer", "layer_thickness_um", "interlayer_thickness_um"]})]
     elif len(done) == 3:
-        calls = [call(3, "crack_fea", {"layer_modulus_GPa": design["layer_modulus_GPa"], "layer_thickness_um": design["layer_thickness_um"],
-                                       "layer_cleavage_energy_J_m2": done[0]["separation_energy_J_m2"],
-                                       "interface_energy_J_m2": done[1]["separation_energy_J_m2"],
-                                       "interface_strength_MPa": done[1]["strength_MPa"], "geometry_json": done[2]["geometry_json"]})]
+        calls = [call(3, "fem_fracture", {"layer_modulus_GPa": design["layer_modulus_GPa"], "layer_thickness_um": design["layer_thickness_um"],
+                                          "layer_fracture_energy_J_m2": done[0]["cleavage_energy_J_m2"],
+                                          "interface_fracture_energy_J_m2": done[1]["separation_energy_J_m2"],
+                                          "interface_strength_MPa": done[1]["strength_MPa"], "geometry_json": done[2]["geometry_json"]})]
     else:
         return {"content": "All tools ran."}, rec
     return {"role": "assistant", "content": "", "tool_calls": calls}, rec
@@ -133,8 +133,8 @@ PASSAGES[:] = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm,
 s, calls = run([{"design": GOOD, "sources": SRC}])
 tools_run = [r["tool"] for r in s["results"]]
 made = next(r["output"] for r in s["results"] if r["tool"] == "layered_geometry")
-fea = next(r for r in s["results"] if r["tool"] == "crack_fea")
-check("the four tool calls run in order", tools_run == ["md_interface", "md_interface", "layered_geometry", "crack_fea"], tools_run)
+fea = next(r for r in s["results"] if r["tool"] == "fem_fracture")
+check("the four tool calls run in order", tools_run == ["dft_cleavage", "md_interface", "layered_geometry", "fem_fracture"], tools_run)
 check("the geometry files exist", all(Path(made[k]).exists() for k in made if k.endswith(("_stl", "_json"))), made.get("geometry_json"))
 check("the crack tool received the geometry file", fea["arguments"]["geometry_json"] == made["geometry_json"] == fea["output"]["geometry_json"], fea["arguments"]["geometry_json"])
 check("no error in any tool output", not any("error" in r["output"] for r in s["results"]), [r["output"].get("error") for r in s["results"]])

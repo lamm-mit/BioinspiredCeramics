@@ -4,9 +4,9 @@ python -m pipeline.benchmark.e2e corpus_folder
 
 A run passes six checks. Every design field is filled. Every field cites a source.
 Every value passes the source check of the graph against the evidence it cites.
-layered_geometry wrote its STL files. crack_fea returned a result. Its inputs equal the
-design values and the outputs of md_interface and layered_geometry for that design, so
-nothing entered the simulation from anywhere else.
+layered_geometry wrote its STL files. fem_fracture returned a result. Its inputs equal the
+design values and the outputs of dft_cleavage, md_interface and layered_geometry for that
+design, so nothing entered the simulation from anywhere else.
 Rows go to benchmark/results/e2e.jsonl.
 """
 
@@ -15,6 +15,7 @@ import sys
 import time
 from pathlib import Path
 
+from tools.dft import dft_cleavage
 from tools.md import md_interface
 
 from .. import corpus
@@ -49,17 +50,17 @@ CONFIGS = {"qwen3.6:35b for every agent": team("qwen3.6:35b", "qwen3.6:35b"),
 
 def checks(s):
     design = s["design"]
-    fea = [r for r in s["results"] if r["tool"] == "crack_fea" and "error" not in r["output"]]
+    fea = [r for r in s["results"] if r["tool"] == "fem_fracture" and "error" not in r["output"]]
     made = [r["output"] for r in s["results"] if r["tool"] == "layered_geometry" and "error" not in r["output"]]
     geometry = bool(made) and all(Path(made[-1][k]).exists() for k in made[-1] if k.endswith(("_stl", "_json")))
     faithful = False
     if fea and all(k in design for k in DESIGN):
-        layer = md_interface(design["ceramic"], design["ceramic"])
+        layer = dft_cleavage(design["ceramic"])
         interface = md_interface(design["ceramic"], design["interlayer"])
         expected = {"layer_modulus_GPa": design.get("layer_modulus_GPa"),
                     "layer_thickness_um": design.get("layer_thickness_um"),
-                    "layer_cleavage_energy_J_m2": layer["separation_energy_J_m2"],
-                    "interface_energy_J_m2": interface["separation_energy_J_m2"],
+                    "layer_fracture_energy_J_m2": layer["cleavage_energy_J_m2"],
+                    "interface_fracture_energy_J_m2": interface["separation_energy_J_m2"],
                     "interface_strength_MPa": interface["strength_MPa"],
                     "geometry_json": layered_geometry(design["ceramic"], design["interlayer"], design["layer_thickness_um"],
                                                       design["interlayer_thickness_um"])["geometry_json"]}

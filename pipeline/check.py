@@ -13,7 +13,8 @@ import jax
 import jax.numpy as jnp
 
 from tools import RUN, TOOLS
-from tools.fem import crack_fea
+from tools.dft import dft_cleavage
+from tools.fem import fem_fracture
 from tools.md import md_interface
 
 from .graph import EMBEDDING, ENGINEER, MODELS
@@ -49,9 +50,9 @@ def tool_call():
 
 
 def simulate():
-    layer, interface = md_interface("alumina", "alumina"), md_interface("alumina", "PMMA")
-    return crack_fea(380, 10, layer["separation_energy_J_m2"], interface["separation_energy_J_m2"],
-                     interface["strength_MPa"], "none")
+    layer, interface = dft_cleavage("alumina"), md_interface("alumina", "PMMA")
+    return fem_fracture(380, 10, layer["cleavage_energy_J_m2"], interface["separation_energy_J_m2"],
+                        interface["strength_MPa"], "none")
 
 
 check("models", missing_models)

@@ -17,7 +17,7 @@ def md_interface(material_a, material_b):
 
 
 SPEC = spec("md_interface",
-            "Molecular dynamics separation of the interface between two materials at 300 K. The same "
-            "material twice gives the cleavage of that material. Returns the separation energy in J/m^2 "
-            "and the strength in MPa.",
-            {"material_a": MATERIAL, "material_b": MATERIAL})
+            "Molecular dynamics separation of the interface between the ceramic and the interlayer at 300 K. "
+            "Returns the separation energy in J/m^2 and the strength in MPa.",
+            {"material_a": MATERIAL | {"description": "the ceramic of the design"},
+             "material_b": MATERIAL | {"description": "the interlayer of the design"}})

@@ -5,6 +5,9 @@ figures    read a value or a label from a real paper figure (vision)
 passages   extract a value from a real passage, or null when it is absent
 tools      call md_interface, then crack_fea with the values it returned
 
+The tools suite keeps the two-tool chain and the instructions it was measured with, defined below,
+so its result files stay comparable. The pipeline itself now calls the three tools of the tools package.
+
 Each model answers each item once at temperature 0, four requests at a time, through the
 same client the agents use. A model name may carry a reasoning effort, as in qwen3.6:35b@none.
 Rows go to benchmark/results/<model>.jsonl. Each row carries its suite's wall time per item,
@@ -21,10 +24,8 @@ from pathlib import Path
 
 import httpx
 
-from tools import TOOLS
-from tools.md import md_interface
+from tools.schema import MATERIAL, SURFACE_ENERGY, number, spec
 
-from ..graph import ENGINEER
 from ..llm import ask_json, chat, client, user
 
 here = Path(__file__).parent
@@ -32,10 +33,38 @@ VISION = ("Answer the question from the image. Give a label exactly as it is wri
           'Return JSON {"answer": number or string, "unit": string}.')
 EXTRACT = ("Extract the quantity the question asks for from the passage, in the unit asked. "
            'Return JSON {"value": number or null, "unit": string}. Use null when the passage does not state it.')
+ENGINEER = """You run the simulations for a design with the tools.
+Take every tool input from the design or from an earlier tool result, as the tool descriptions say.
+Use no other numbers. If an input is available from neither, do not call that tool and say
+which input is missing. When every tool has run, reply in two sentences and call no tool."""
+TOOLS = [
+    spec("md_interface",
+         "Molecular dynamics separation of the interface between two materials at 300 K. The same "
+         "material twice gives the cleavage of that material. Returns the separation energy in J/m^2 "
+         "and the strength in MPa.",
+         {"material_a": MATERIAL, "material_b": MATERIAL}),
+    spec("crack_fea",
+         "Finite-element crack propagation through a layered ceramic with cohesive interfaces. "
+         "Reports whether a crack deflects along the interfaces.",
+         {"layer_modulus_GPa": number("from the design"),
+          "layer_thickness_um": number("from the design"),
+          "layer_cleavage_energy_J_m2": number("separation_energy_J_m2 of md_interface with the ceramic "
+                                               "as both materials"),
+          "interface_energy_J_m2": number("separation_energy_J_m2 of md_interface with the ceramic and "
+                                          "the interlayer"),
+          "interface_strength_MPa": number("strength_MPa of md_interface with the ceramic and the interlayer")}),
+]
 DESIGNS = [("alumina", "PMMA", 10, 380), ("alumina", "epoxy", 25, 390), ("alumina", "graphite", 50, 400),
            ("alumina", "silica glass", 5, 370), ("silicon carbide", "graphite", 100, 410),
            ("silicon carbide", "PMMA", 20, 420), ("silicon carbide", "epoxy", 40, 430),
            ("silicon carbide", "silica glass", 15, 450)]
+
+
+def md_interface(material_a, material_b):
+    """The tool output the suite feeds back to the model, from the same closed form as the stand-in."""
+    w = 2 * min(SURFACE_ENERGY[material_a], SURFACE_ENERGY[material_b])
+    return {"separation_energy_J_m2": w, "strength_MPa": round(w / (2.718281828 * 0.05e-9) / 1e6),
+            "method": "stand-in (weaker-material cleavage and binding-energy relation), not an MD result"}
 
 
 def matches(answer, truth, tolerance):
@@ -107,8 +136,9 @@ def score(name, suite, item):
     return row
 
 
+# The figure and passage items are kept outside the repository. A suite runs when its item file is present.
 items = {s: [json.loads(line) for line in open(here / "data" / f"{s}.jsonl")]
-         for s in ("charts", "figures", "passages")}
+         for s in ("charts", "figures", "passages") if (here / "data" / f"{s}.jsonl").exists()}
 items["tools"] = [{"id": f"tools-{d[0]}-{d[1]}-{stage}", "design": d, "stage": stage}
                   for d in DESIGNS for stage in (1, 2)]
 
