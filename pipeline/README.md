@@ -1,103 +1,114 @@
-# Corpus-to-Simulation Agents
+# Multi-agent pipeline
 
-A basic multi-agent harness that reads a corpus of papers and a knowledge graph, turns the evidence into design parameters, and calls simulation tools with them. Every model is open-weight and served locally from one NVIDIA DGX Spark. The harness is under 400 lines of Python on LangGraph.
-
-The bundled example designs a nacre-inspired layered alumina whose interfaces deflect cracks. The agents search eight open-access papers, read their figures, and choose an interlayer and a layer thickness with a cited source for every value. They then call a molecular-dynamics tool for the interface energies and a finite-element crack tool for the deflection check. Both tools are stand-ins with the interfaces of real solvers, so the pipeline runs end to end without the solvers. One run takes about 1.5 minutes on the Spark.
+The agents turn a design question into a judged candidate design. They search a corpus of papers and a knowledge graph, choose each design value with a cited source, write the part as STL files, and call DFT, MD and FEM tools with those values. A judge then decides whether the candidate meets the criteria, and a candidate it sends back returns to the designer with the judge's findings, for up to three candidates per run. Every model is open-weight and served locally. The three tools are stand-ins until the solvers are attached, as [../tools/README.md](../tools/README.md) describes.
 
 ## Agents
 
-![The agent graph](docs/architecture.svg)
+```text
+planner -> retriever -> figure_reader -> designer -> geometry -> engineer <-> tools -> judge -> reporter
+              ^---- a field lacks evidence, once ----'   ^                                     |
+                                                         '---- sent back, up to 3 candidates ---'
+```
 
-| Agent | Default model | Reasoning | Job |
+| Step | Default model | Reasoning | Job |
 |---|---|---|---|
 | planner | gpt-oss-20b | low | Writes search queries and knowledge-graph entities for the design fields |
 | retriever | EmbeddingGemma | | Finds passages and figures by cosine similarity, passages that hold a number with a field's unit or name one of its options, and knowledge-graph triples |
-| figure reader | Qwen3.6-35B-A3B | off | Reads values from each retrieved figure |
-| designer | gpt-oss-20b | medium | Fills the design fields and cites a source for each, or asks once for another search |
+| figure reader | Qwen3.6-35B-A3B | off | Reads values from each retrieved figure, with the place in the figure each was read |
+| designer | gpt-oss-20b | medium | Proposes a candidate with a cited source for every value, or asks once for another search |
+| checker | gpt-oss-20b | medium | Reads the cited source of each numeric value a second time and confirms that the value belongs to the field |
+| geometry | none | | Writes a bend bar and a notched simulation cell as STL files, one per material |
 | engineer | gpt-oss-20b | low | Calls the tools in order and passes each result to the next call |
-| reporter | gpt-oss-20b | low | Writes the report with the source of every value |
+| judge | gpt-oss-20b | medium | Decides each criterion from the design and the tool outputs, and names the fields to change |
+| reporter | gpt-oss-20b | low | Writes the report with the outcome, the source of every value and the judge's findings |
 
-A design that still lacks a field after the second search goes straight to the reporter, so no simulation runs on an incomplete design. Every agent reads and writes one state dictionary. A run saves that state, with every model call and its latency and token counts, to `runs/<time>/state.json`. [examples/report.md](examples/report.md) is the unedited report of one run.
+Code checks surround the models. A design value must appear in the evidence it cites, in the field's unit and within a range the source states, and the designer gets one repair with the findings. A material the tools do not accept, or a repeat of a candidate the judge sent back, is rejected the same way. A design that still lacks a field goes to the reporter, so no tool runs on it. The verdict follows from the judge's answer on each criterion. A tool that failed, or a tool input that matches no design value, geometry value or earlier tool output, leaves the candidate without a verdict. A verdict on stand-in results is marked provisional.
 
-## Quick start on a DGX Spark
+## Output of a run
 
-```bash
-git clone <this repository> harness && cd harness
-bash scripts/setup_spark.sh
-.venv/bin/python run.py "Design a nacre-inspired layered alumina whose interfaces deflect cracks. Choose an interlayer and a layer thickness, and check whether a crack deflects."
+```text
+runs/<time>/
+  report.md  state.json
+  candidate_1/
+    design.json      the design values and the source of each
+    geometry/        geometry.json, and bar and cell STL files for the ceramic and the interlayer
+    handoff/         dft.json md.json fem.json, the parameters passed to each tool with their origins, and the outputs
+    verdict.json     the judge's finding on each criterion
+  candidate_2/       written only when the judge sends candidate_1 back
 ```
 
-The setup script builds the Python environment with GPU JAX and installs Ollama in the home folder without root. It starts the server with a 32K context, pulls the three models (36 GB), and runs `check.py`. That check tests the server, each model, image input, tool calling, JAX on the GPU and both tools, and names anything that fails.
+`state.json` holds every agent's input and output, and every model call with its latency and token counts.
 
-## Running the agents on a laptop
+## Running
 
-The agents need only an OpenAI-compatible endpoint. Forward the Spark's model server over SSH and point the harness at it.
+Commands run from the repository root. On a DGX Spark the setup script builds the Python environment with GPU JAX, installs Ollama in the home folder without root, serves it with a 32K context, pulls the three default models (36 GB), generates the benchmark charts and runs the check.
+
+```bash
+bash pipeline/scripts/setup_spark.sh
+```
+
+```bash
+.venv/bin/python -m pipeline.run "Design a nacre-inspired layered alumina whose interfaces deflect cracks. Choose an interlayer, its thickness and a layer thickness, and check whether a crack deflects." <corpus>/
+```
+
+`python -m pipeline.check` tests the server, each model, image input, one tool call, JAX on the GPU and the tools. The agents need only an OpenAI-compatible endpoint, so a laptop can run them against the Spark's server through an SSH tunnel.
 
 ```bash
 ssh -N -L 11434:localhost:11434 <user>@<spark-host>
 ```
 
 ```bash
-LLM_BASE_URL=http://localhost:11434/v1 python run.py "<question>"
+LLM_BASE_URL=http://localhost:11434/v1 python -m pipeline.run "<question>" <corpus>/
 ```
 
-The simulation tools then run on the laptop, with JAX on its CPU. vLLM and SGLang serve the same API, so `LLM_BASE_URL` can point to them too.
+## Corpus
 
-## Using your own corpus
-
-`scripts/build_corpus.py` turns papers converted to markdown, for example by Marker, into `chunks.jsonl`. It writes one record per passage of up to about 2,000 characters and one per figure, with the caption as text. It also turns per-paper knowledge-graph triples into `kg.jsonl`. The first run embeds every record and caches the vectors next to the corpus.
+No corpus is part of this repository. `scripts/build_corpus.py` turns papers converted to markdown, for example by Marker, into `chunks.jsonl`, with one record per passage of up to about 2,000 characters and one per figure with its caption. It turns per-paper triple files, JSON lists of `node_1`, `node_2`, `edge` and `paper`, into `kg.jsonl`. The first load embeds every record and caches the vectors in the corpus folder.
 
 ```bash
-python scripts/build_corpus.py <markdown_papers>/ <corpus>/ <triples>/
-python run.py "<question>" <corpus>/
+python pipeline/scripts/build_corpus.py <markdown_papers>/ <corpus>/ <triples>/
 ```
-
-On a corpus of 2,880 papers the builder wrote 64,339 passages, 16,453 figures and 635,919 triples in 14 s, and the first load embedded all 80,792 records in about 30 minutes on the Spark.
 
 ## Changing the problem
 
-The problem lives in `harness/tools.py`. `DESIGN` lists the fields the designer fills from the corpus, each with a description of what it needs. `UNIT` gives the unit pattern of each numeric field. `TOOLS` lists the functions the engineer calls, each with a JSON schema. The prompts in `harness/graph.py` do not name the problem, so a new problem needs a new `DESIGN` and new tools and no prompt changes. [docs/tools.md](docs/tools.md) describes the two tool contracts and how to attach a real solver.
+`design.py` holds everything about the design problem. `DESIGN` lists the fields the designer fills, each with a description of the evidence it needs. `UNIT`, `SCALE` and `RANGE` tell the source check how to find a numeric value, and `ASK` is the checker's question for each numeric field. `make_geometry` builds the part, and `CRITERIA` lists what the judge decides. The tools live in [../tools/](../tools/). The prompts in `graph.py` do not name the problem, so a new problem needs new fields, criteria and tools, and no prompt changes.
 
-## Models and hardware
+| Field | What the designer supplies |
+|---|---|
+| `ceramic` | The layer material, one of the materials the tools accept |
+| `interlayer` | The material between layers, chosen so that cracks deflect along it |
+| `layer_modulus_GPa` | Young's modulus of the ceramic, as stated in the evidence |
+| `layer_thickness_um` | The thickness of one ceramic layer, within the range of layers the evidence reports as made or tested |
+| `interlayer_thickness_um` | The thickness of the interlayer, within the range the evidence reports |
 
-Twenty open-weight models were benchmarked in 26 configurations on the four jobs the agents do, and three model sets were run through the whole pipeline.
+## Tests
 
-![Benchmark scores per model and suite](benchmark/results/accuracy.png)
+The tests need no model server. `test_graph` stubs the models and the search, and covers the repair loop, the second reading, the geometry and handoff files, and the judge loop.
 
-Image reading separates the models, from 24 to 47 correct answers out of 50, and the top eight are tied within sampling error. Turning thinking off left image accuracy unchanged and cut the time per image by a factor of 1.9 to 7.5. Passage extraction and tool calling are solved by 20 of the 26 configurations, including the 13 GB gpt-oss-20b. In the end-to-end check the default set completed 4 of 4 designs in a median of 89 s with 67 GB of memory left free.
-
-[docs/models.md](docs/models.md) gives the model for each agent and the alternatives. [docs/hardware.md](docs/hardware.md) explains the choice of the DGX Spark with measured speeds. [docs/benchmark.md](docs/benchmark.md) describes the benchmark and gives every result.
-
-## Repository
-
-```text
-harness/llm.py       one OpenAI-compatible client for chat, images, tool calls and embeddings
-harness/corpus.py    passage and figure search, knowledge-graph lookup
-harness/tools.py     the design fields and the simulation tools
-harness/graph.py     the agents and their LangGraph wiring
-run.py               runs the agents on one question
-check.py             tests the server, the models, JAX and the tools
-scripts/             Spark setup and corpus builder
-benchmark/           items, runner, speed probe, end-to-end check, report and results
-examples/corpus/     eight CC BY papers as passages, figures and triples
-examples/report.md   the unedited report of one run
-docs/                hardware, models, benchmark and tools
+```bash
+python -m pipeline.tests.test_source_check
+python -m pipeline.tests.test_geometry
+python -m pipeline.tests.test_graph
 ```
+
+## Benchmark
+
+`benchmark/run.py` scores models on chart reading, figure reading, passage extraction and tool calling, `speed.py` measures load time, memory and decode speed, `e2e.py` runs the whole graph for three model sets, and `report.py` summarizes the result files. `make_charts.py` generates the 20 chart items. The figure and passage items are taken from published papers and are kept outside the repository, so those two suites run only when their item files are copied into `benchmark/data/`. The tool suite keeps the two-tool chain it was measured with, so its scores stay comparable.
+
+## Status
+
+On 2026-10-14 the default models ran four design questions three times each on an eight-paper corpus kept outside the repository. All 12 runs produced a complete design that passed the source check, with STL files and three handoff files, against 9 of 12 complete designs before the geometry step and the judge were added. The judge accepted 10 candidates at the first attempt. The other 2 runs chose an interlayer the tools do not accept, so the MD tool failed and no verdict was given. The design check now rejects such a choice before the tools run. The median run took 162 s, with a range of 120 to 430 s, on one DGX Spark whose GPU ran at a reduced clock of 507 MHz, so the times are upper bounds.
 
 ## Limitations
 
-The simulation tools are stand-ins. Their numbers show the data flow and are not predictions.
+The tools are stand-ins. Every verdict is provisional, and no tool output is a prediction.
 
-The designer can cite a passage that does not support its value. The report lists every source so a person can check each one.
+The judge is a 20-billion-parameter model reading two criteria. In one live run it misread a question that asked to replace a failed interlayer, before it was given the earlier candidates of the run.
 
-Retrieval is cosine similarity over passage embeddings, a unit filter for numeric fields, and a name match in the knowledge graph. It does not rerank passages or follow multi-hop paths.
+The checks confirm that a cited source states a value. A person should still check the source of each design value before a costly solver run.
 
-Each run makes one design. No loop revises the design from the simulation results.
+Retrieval is cosine similarity over passage embeddings, a unit filter for numeric fields and a name match in the knowledge graph. It does not rerank passages or follow multi-hop paths.
+
+The geometry is a flat laminate, so the loop changes materials and dimensions and never the architecture.
 
 Models run at temperature 0, and two runs can still differ, because inference on the server is not bit-for-bit deterministic.
-
-Every time in this repository was measured on a unit whose GPU clock was reduced, as [docs/hardware.md](docs/hardware.md) explains. The times are upper bounds.
-
-## Data
-
-`examples/corpus/` and `benchmark/data/` contain text and figures from open-access articles published under CC BY 4.0. Their `ATTRIBUTION.md` files credit every article. The knowledge-graph triples were generated by a language model from the article text.

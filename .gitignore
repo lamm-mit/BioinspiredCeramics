@@ -29,9 +29,8 @@ env/
 runs/
 *.npy
 
-# Paper text and figures are kept out of the repo. A local copy placed here for a run is not committed.
+# Corpora, benchmark items and results stay out of the repo. Copies placed here for a run are not committed.
+# make_charts.py regenerates the chart items.
 pipeline/examples/
-pipeline/benchmark/data/figures/
-pipeline/benchmark/data/figures.jsonl
-pipeline/benchmark/data/passages.jsonl
-pipeline/benchmark/data/ATTRIBUTION.md
+pipeline/benchmark/data/
+pipeline/benchmark/results/

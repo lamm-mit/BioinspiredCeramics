@@ -1,10 +1,27 @@
 # Multiagent Discovery for Bioinspired Ceramics
 
 > Ongoing research exploring multi-agent AI for materials discovery in
-> bioinspired ceramic composites. **This repository currently contains
-> the foundation:** an end-to-end pipeline that turns a Web of Science
-> search into a deduplicated, community-clustered knowledge graph of
-> scientific concepts. 
+> bioinspired ceramic composites. The repository has two parts.
+> `dataset_kg/` turns a Web of Science search into a deduplicated,
+> community-clustered knowledge graph of scientific concepts.
+> `pipeline/` is a multi-agent system that turns a design question into a
+> judged candidate design, with STL files and the inputs for the DFT, MD
+> and FEM tools in `tools/`.
+
+## Multi-agent pipeline
+
+Open-weight models, served locally, search a corpus of papers and its
+knowledge graph, choose design values with a cited source for each, write
+the part as STL files, and call DFT, MD and FEM tools. Each tool call is
+recorded in a handoff file with the origin of every input. A judge weighs
+the candidate against its simulation results and can send it back to the
+designer, for up to three candidates per run. The tools are stand-ins
+until the solvers are attached.
+[pipeline/README.md](pipeline/README.md) describes the agents, the run
+output and the commands, and [tools/README.md](tools/README.md) gives
+the contract a solver must meet.
+
+The rest of this README covers the knowledge-graph build in `dataset_kg/`.
 
 ![Knowledge graph — top concepts of a deduplicated example corpus, with each community placed in its own region of the canvas and theme labels on the highest-degree node per community](docs/kg_cover.png)
 
