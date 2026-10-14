@@ -1,6 +1,6 @@
 """Summarize the benchmark into results/summary.md, results/accuracy.png and results/speed_accuracy.png.
 
-python benchmark/report.py
+python -m pipeline.benchmark.report
 """
 
 import json
