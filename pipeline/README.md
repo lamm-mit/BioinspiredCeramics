@@ -97,15 +97,15 @@ python -m pipeline.tests.test_graph
 
 ## Status
 
-On 2026-10-14 the default models ran four design questions three times each on an eight-paper corpus kept outside the repository. All 12 runs produced a complete design that passed the source check, with STL files and three handoff files, against 9 of 12 complete designs before the geometry step and the judge were added. The judge accepted 10 candidates at the first attempt. The other 2 runs chose an interlayer the tools do not accept, so the MD tool failed and no verdict was given. The design check now rejects such a choice before the tools run. The median run took 162 s, with a range of 120 to 430 s, on one DGX Spark whose GPU ran at a reduced clock of 507 MHz, so the times are upper bounds.
+On 2026-10-14 the default models ran four design questions three times each on an eight-paper corpus kept outside the repository. All 12 runs produced a complete design that passed the source check, with STL files and three handoff files, against 9 of 12 complete designs before the geometry step and the judge were added. The judge accepted 10 candidates at the first attempt. The other 2 runs chose an interlayer the tools do not accept, so the MD tool failed and no verdict was given. The design check now rejects such a choice before the tools run. The median run took 162 s, with a range of 120 to 430 s, on one DGX Spark whose GPU ran at a reduced clock of 507 MHz, so the times are upper bounds. A question that starts from a silicon carbide interlayer and asks to change it if cracks do not deflect then ran with the current code. The stand-in gave an energy ratio of 1.0 for that pair, the judge sent the candidate back and proposed epoxy, and the second candidate was accepted in 293 s.
 
 ## Limitations
 
 The tools are stand-ins. Every verdict is provisional, and no tool output is a prediction.
 
-The judge is a 20-billion-parameter model reading two criteria. In one live run it misread a question that asked to replace a failed interlayer, before it was given the earlier candidates of the run.
+The judge is a 20-billion-parameter model reading two criteria. Before it was given the earlier candidates of the run, it misread a question that asked to replace a failed interlayer.
 
-The checks confirm that a cited source states a value. A person should still check the source of each design value before a costly solver run.
+The checks confirm that a cited source states a numeric value. For a material they confirm only that the cited evidence exists. In the run above, the passage cited for epoxy mentions epoxy only as an infiltrant. A person should check the source of each design value before a costly solver run.
 
 Retrieval is cosine similarity over passage embeddings, a unit filter for numeric fields and a name match in the knowledge graph. It does not rerank passages or follow multi-hop paths.
 
