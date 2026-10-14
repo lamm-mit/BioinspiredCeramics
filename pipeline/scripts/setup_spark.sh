@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Set up a DGX Spark for the agents. Run it on the Spark from the repository root.
 # Builds the Python environment with GPU JAX, installs Ollama in the home folder (no root
-# needed), serves it on localhost:11434, pulls the models in pipeline/graph.py and runs the check.
+# needed), serves it on localhost:11434, pulls the models in pipeline/graph.py, generates the
+# benchmark charts and runs the check, which reads one of the charts.
 # If an Ollama server already runs on port 11434, skip the lines that install and start it.
 set -e
 python3 -m venv .venv
@@ -17,4 +18,5 @@ sleep 5
 for model in $models; do
   ~/ollama/bin/ollama pull "$model"
 done
+.venv/bin/python -m pipeline.benchmark.make_charts
 .venv/bin/python -m pipeline.check

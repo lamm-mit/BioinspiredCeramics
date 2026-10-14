@@ -13,6 +13,7 @@ PASSAGES = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E
             {"id": "p#9", "source": "p", "text": "graphite interlayers 20 µm thick deflect cracks in alumina"}]
 graph.cp.search = lambda corpus, q, k, figures=False, skip=(), pattern=None: [] if figures else [p for p in PASSAGES if p["id"] not in skip]
 graph.cp.neighbors = lambda corpus, entities, k=3: []
+REPORTED = []  # what the reporter was given
 TAMPER = {}  # tool inputs the scripted engineer changes on its own, which the handoff file must flag
 
 
@@ -20,6 +21,7 @@ def fake_chat(model, messages, tools=None, effort=None):
     """A scripted engineer. It calls dft_cleavage and md_interface, then fem_fracture, from the design, the geometry and the results."""
     rec = {"model": model, "seconds": 0, "reply": {}}
     if not tools:
+        REPORTED.append(messages[1]["content"])
         return {"content": "report"}, rec
     given = json.loads(messages[1]["content"])
     design = given["design"]
@@ -178,6 +180,9 @@ s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "interlayer_th
 check("no interlayer thickness, so no geometry and no simulation", "interlayer_thickness_um" in s["missing"] and not s.get("results") and "geometry" not in s, s["missing"])
 s, calls = run([{"design": GOOD | {"interlayer": "alumina"}, "sources": SRC}, {"design": {"interlayer": "graphite"}, "sources": {"interlayer": "p#9: deflects"}}])
 check("an interlayer of the ceramic's own material is rejected, then repaired", s["design"] == GOOD and len(calls) == 2 and calls[1][1], (s["design"].get("interlayer"), calls))
+s, calls = run([{"design": GOOD | {"interlayer": "vitrimer"}, "sources": SRC}, {"design": {"interlayer": "graphite"}, "sources": {"interlayer": "p#9: deflects"}}])
+check("a material the tools do not accept is rejected, then repaired", s["design"] == GOOD and len(calls) == 2 and calls[1][1]
+      and not any("error" in r["output"] for r in s["results"]), (s["design"].get("interlayer"), calls))
 # the judge and the loop back to the designer
 PASSAGES[:] = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E_{\rm A} \sim 367$  GPa"},
                {"id": "p#9", "source": "p", "text": "graphite interlayers 20 µm thick deflect cracks in alumina"},
@@ -197,6 +202,8 @@ check("the judge reads the criteria, the design and the tool outputs", "A crack 
 
 VERDICTS[:] = [REVISE]
 s, calls = run([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}])
+check("the judge of a later candidate sees the earlier ones and their verdicts", len(judged) == 2 and '"candidate": "candidate_1"' in judged[1]
+      and "The crack does not deflect." in judged[1] and '"earlier_candidates": []' in judged[0], judged[1][-300:])
 check("sent back once, accepted at the second candidate", verdicts(s) == ["revise", "accept"] and s["design"] == GOOD2 and whole(s, 1) and whole(s, 2) and "candidate_2 was accepted" in s["outcome"], (verdicts(s), s["outcome"]))
 check("each candidate has its own handoff files", json.load(open(folder(s, 1) / "handoff/md.json"))["calls"][0]["inputs"]["material_b"]["value"] == "graphite"
       and json.load(open(folder(s, 2) / "handoff/md.json"))["calls"][0]["inputs"]["material_b"]["value"] == "epoxy" and len(json.load(open(folder(s, 2) / "handoff/md.json"))["calls"]) == 1, "md.json")
@@ -237,6 +244,8 @@ s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD, "sources": SRC}, 
 check("a designer that only repeats ends with an incomplete design and no second simulation", verdicts(s) == ["revise"] and "interlayer" in s["missing"]
       and not folder(s, 2).exists() and "no candidate was accepted after 1" in s["outcome"] and "incomplete" in s["outcome"], (s["missing"], s["outcome"]))
 
+check("a report on an incomplete last design still sees every method string", "stand-in" in REPORTED[-1] and '"crack_deflects": true' in REPORTED[-1]
+      and '"results"' not in REPORTED[-1].split('"candidates"')[0], REPORTED[-1][:200])
 graph.ask_json = graph_ask
 TAMPER["material"] = "unobtainium"
 s, calls = run([{"design": GOOD, "sources": SRC}])

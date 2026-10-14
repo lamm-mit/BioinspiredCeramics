@@ -82,6 +82,8 @@ JUDGE = """You judge one candidate design against the results of its simulations
 Decide each criterion below from the design values and the tool outputs alone, and quote the value
 that decides it. When they do not bear on a criterion, count it as met and say that it was not tested.
 A result whose method says stand-in is a placeholder. Judge it as given.
+Earlier candidates of the same run and their verdicts are given too. Judge a requirement that depends on
+them with them, such as a question that asks to change a choice once it fails.
 Return JSON with keys
 "criteria": [{"criterion": str, "met": true or false, "evidence": str}], one entry per criterion,
 "change": {field: what to change and why} for the design fields a new candidate should change, empty when
@@ -391,7 +393,9 @@ def build(models, corpus):
                 + [f"Inputs from neither the design, the geometry nor a tool: {', '.join(unmatched)}."] * bool(unmatched))}
         else:
             facts = {"question": s["question"], "design": s["design"], "sources": s["sources"], "geometry": s["geometry"],
-                     "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in last.values()]}
+                     "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in last.values()],
+                     "earlier_candidates": [{"candidate": c["candidate"], "design": c["design"], "verdict": c["verdict"]}
+                                            for c in s.get("candidates", [])]}
             out, rec = ask("judge", JUDGE, f"Criteria: {json.dumps(CRITERIA)}\n{json.dumps(facts)}")
             trace = [rec]
             criteria = [c for c in out.get("criteria") or [] if isinstance(c, dict)]
@@ -420,7 +424,9 @@ def build(models, corpus):
         facts = {"outcome": outcome} | {k: s[k] for k in ["question", "design", "sources", "missing", "rejected"] if k in s}
         if not s.get("missing"):
             facts |= {"geometry": s["geometry"], "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in s["results"]]}
-        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "verdict"]} for c in judged]
+        # Every judged candidate keeps its tool outputs, so the report sees each method string.
+        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "verdict"]}
+                               | {"results": [{"tool": r["tool"], "output": r["output"]} for r in c["results"]]} for c in judged]
         reply, rec = call("reporter", [{"role": "system", "content": REPORTER}, user(json.dumps(facts))])
         return {"report": reply["content"], "outcome": outcome, "trace": [rec]}
 

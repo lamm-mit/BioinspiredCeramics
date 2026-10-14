@@ -48,10 +48,13 @@ CRITERIA = ["A crack deflects along the interfaces.",
 
 def design_errors(design):
     """What is wrong with a design as a whole, as field -> reason. The source check looks at one field at a time."""
+    # A material the tools do not know would fail at the first tool call, so it is caught here, where the designer can repair it.
+    errors = {k: f"{v!r} is not one of the options the tools accept, which are {DESIGN[k]['enum']}."
+              for k, v in design.items() if v not in DESIGN.get(k, {}).get("enum", [v])}
     if design.get("interlayer") and design.get("interlayer") == design.get("ceramic"):
-        return {"interlayer": "the interlayer is the same material as the ceramic. Choose a different, weaker material "
-                              "that the evidence supports."}
-    return {}
+        errors["interlayer"] = ("the interlayer is the same material as the ceramic. Choose a different, weaker material "
+                                "that the evidence supports.")
+    return errors
 
 
 def make_geometry(design, folder):

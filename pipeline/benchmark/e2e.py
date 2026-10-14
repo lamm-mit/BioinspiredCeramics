@@ -72,17 +72,19 @@ def checks(s):
             "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in results]}
 
 
-c = corpus.load(sys.argv[1], EMBEDDING)
-for name, models in CONFIGS.items():
-    app = build(models, c)
-    for q in QUESTIONS:
-        start = time.perf_counter()
-        try:
-            folder = Path("runs") / "e2e" / time.strftime("%Y%m%d-%H%M%S")
-            row = checks(app.invoke({"question": q, "folder": str(folder)}, {"recursion_limit": 100}))
-        except Exception as e:  # a failed run counts, with its error
-            row = {"error": f"{type(e).__name__}: {str(e)[:300]}"}
-        row |= {"config": name, "question": q, "seconds": round(time.perf_counter() - start)}
-        with open(here / "results" / "e2e.jsonl", "a") as f:
-            f.write(json.dumps(row) + "\n")
-        print(row, flush=True)
+if __name__ == "__main__":
+    c = corpus.load(sys.argv[1], EMBEDDING)
+    (here / "results").mkdir(exist_ok=True)
+    for name, models in CONFIGS.items():
+        app = build(models, c)
+        for q in QUESTIONS:
+            start = time.perf_counter()
+            try:
+                folder = Path("runs") / "e2e" / time.strftime("%Y%m%d-%H%M%S")
+                row = checks(app.invoke({"question": q, "folder": str(folder)}, {"recursion_limit": 100}))
+            except Exception as e:  # a failed run counts, with its error
+                row = {"error": f"{type(e).__name__}: {str(e)[:300]}"}
+            row |= {"config": name, "question": q, "seconds": round(time.perf_counter() - start)}
+            with open(here / "results" / "e2e.jsonl", "a") as f:
+                f.write(json.dumps(row) + "\n")
+            print(row, flush=True)
