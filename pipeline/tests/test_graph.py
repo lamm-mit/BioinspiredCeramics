@@ -198,7 +198,8 @@ verdicts = lambda s: [c["verdict"]["verdict"] for c in s["candidates"]]
 s, calls = run([{"design": GOOD, "sources": SRC}])
 check("accepted at the first candidate", verdicts(s) == ["accept"] and whole(s, 1) and not folder(s, 2).exists() and len(judged) == 1 and "candidate_1 was accepted" in s["outcome"], s["outcome"])
 check("a verdict on stand-in results is provisional", s["verdict"]["provisional"] and "provisionally" in s["outcome"] and json.load(open(folder(s, 1) / "verdict.json")) == s["verdict"], s["verdict"])
-check("the judge reads the criteria, the design and the tool outputs", "A crack deflects" in judged[0] and '"crack_deflects": true' in judged[0] and '"interlayer": "graphite"' in judged[0], judged[0][:120])
+check("the judge reads the criteria, the design fields, the design and the tool outputs", "A crack deflects" in judged[0]
+      and "Design fields:" in judged[0] and '"enum"' in judged[0] and '"crack_deflects": true' in judged[0] and '"interlayer": "graphite"' in judged[0], judged[0][:120])
 
 VERDICTS[:] = [REVISE]
 s, calls = run([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}])
@@ -229,7 +230,8 @@ def looped(script, verdicts):
 
 s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}], [REVISE])
 check("the designer is shown the earlier candidate and the judge's finding", len(prompts) == 2 and "sent them back" not in prompts[0] and "sent them back" in prompts[1]
-      and "choose a weaker interlayer" in prompts[1] and '"interlayer": "graphite"' in prompts[1], prompts[1][-200:])
+      and "choose a weaker interlayer" in prompts[1] and '"interlayer": "graphite"' in prompts[1]
+      and "even when the question states its value" in prompts[1], prompts[1][-200:])
 
 s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}, {"design": GOOD3, "sources": SRC3}], [REVISE, REVISE, REVISE, REVISE])
 check("three candidates sent back, the run ends without a candidate", verdicts(s) == ["revise"] * 3 and whole(s, 3) and not folder(s, 4).exists()

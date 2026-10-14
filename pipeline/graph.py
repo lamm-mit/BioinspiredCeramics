@@ -87,7 +87,7 @@ them with them, such as a question that asks to change a choice once it fails.
 Return JSON with keys
 "criteria": [{"criterion": str, "met": true or false, "evidence": str}], one entry per criterion,
 "change": {field: what to change and why} for the design fields a new candidate should change, empty when
-every criterion is met,
+every criterion is met. A change must stay within the options and the description of the design field,
 "summary": one sentence.
 Reply with the JSON only."""
 
@@ -285,7 +285,8 @@ def build(models, corpus):
         judged = s.get("candidates", [])
         if judged:
             prompt += ("\nEarlier candidates were simulated and a judge sent them back. Propose a different design "
-                       "that answers the judge, with evidence for every value as before.\n"
+                       "that answers the judge, with evidence for every value as before. Where the judge asks to change "
+                       "a field, change it even when the question states its value.\n"
                        + json.dumps([{"design": c["design"], "judge": c["verdict"]} for c in judged]))
 
         def real(text):  # E7 back to the id it stands for
@@ -396,7 +397,7 @@ def build(models, corpus):
                      "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in last.values()],
                      "earlier_candidates": [{"candidate": c["candidate"], "design": c["design"], "verdict": c["verdict"]}
                                             for c in s.get("candidates", [])]}
-            out, rec = ask("judge", JUDGE, f"Criteria: {json.dumps(CRITERIA)}\n{json.dumps(facts)}")
+            out, rec = ask("judge", JUDGE, f"Criteria: {json.dumps(CRITERIA)}\nDesign fields: {FIELDS}\n{json.dumps(facts)}")
             trace = [rec]
             criteria = [c for c in out.get("criteria") or [] if isinstance(c, dict)]
             accept = bool(criteria) and all(c.get("met") is True for c in criteria)
