@@ -1,0 +1,10 @@
+numpy
+# Optional but recommended: much faster on larger systems; auto-detected.
+openmm
+# Ceramics (ceramics.py). ase pulls in scipy.
+ase
+# Optional: MACE-MP-0 universal ML potential for ceramics outside the classical
+# potential's Si/Al/Mg/Ca-oxide coverage. Pulls in torch (large download).
+mace-torch
+# Only needed for the real LLM policy (not for --use-mock).
+openai

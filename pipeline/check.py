@@ -6,6 +6,7 @@ Every check runs even when an earlier one fails, so one run lists everything to 
 """
 
 import json
+import tempfile
 import time
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from tools.dft import dft_cleavage
 from tools.fem import fem_fracture
 from tools.md import md_interface
 
+from .geometry import layered_geometry
 from .graph import EMBEDDING, ENGINEER, MODELS
 from .llm import ask_json, chat, client, embed, user
 
@@ -51,9 +53,11 @@ def tool_call():
 
 
 def simulate():
+    """The three tools on a small design, with its cell written to a temporary folder for the crack tool."""
+    geometry = layered_geometry("alumina", "PMMA", 10, 2, tempfile.mkdtemp())["geometry_json"]
     layer, interface = dft_cleavage("alumina"), md_interface("alumina", "PMMA")
     return fem_fracture(380, 10, layer["cleavage_energy_J_m2"], interface["separation_energy_J_m2"],
-                        interface["strength_MPa"], "none")
+                        interface["strength_MPa"], geometry)
 
 
 check("models", missing_models)

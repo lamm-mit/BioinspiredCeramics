@@ -1,6 +1,6 @@
 # Multi-agent pipeline
 
-The agents turn a design question into a judged candidate design. They search a corpus of papers and a knowledge graph, choose each design value with a cited source, write the part as STL files, and call DFT, MD and FEM tools with those values. A judge then decides whether the candidate meets the criteria, and a candidate it sends back returns to the designer with the judge's findings, for up to three candidates per run. Every model is open-weight and served locally. The three tools are stand-ins until the solvers are attached, as [../tools/README.md](../tools/README.md) describes.
+The agents turn a design question into a judged candidate design. They search a corpus of papers and a knowledge graph, choose each design value with a cited source, write the part as STL files, and call DFT, MD and FEM tools with those values. A judge then decides whether the candidate meets the criteria, and a candidate it sends back returns to the designer with the judge's findings, for up to three candidates per run. Every model is open-weight and served locally. The DFT and MD tools are stand-ins until their solvers are attached, and the FEM tool runs a phase-field simulation of the notched cell, as [../tools/README.md](../tools/README.md) describes.
 
 ## Agents
 
@@ -83,12 +83,13 @@ python pipeline/scripts/build_corpus.py <markdown_papers>/ <corpus>/ <triples>/
 
 ## Tests
 
-The tests need no model server. `test_graph` stubs the models and the search, and covers the repair loop, the second reading, the geometry and handoff files, and the judge loop.
+The tests need no model server. `test_graph` stubs the models and the search, and covers the repair loop, the second reading, the geometry and handoff files, and the judge loop. `test_graph` and `test_fem_tool` run the crack tool on a coarse grid of 30 pixel rows, set by `FEM_ROWS`, so that each call takes seconds. `test_graph` then takes about four minutes on six CPU cores.
 
 ```bash
 python -m pipeline.tests.test_source_check
 python -m pipeline.tests.test_geometry
 python -m pipeline.tests.test_graph
+python -m pipeline.tests.test_fem_tool
 ```
 
 ## Benchmark
@@ -101,7 +102,7 @@ On 2026-10-14 the default models ran four design questions three times each on a
 
 ## Limitations
 
-The tools are stand-ins. Every verdict is provisional, and no tool output is a prediction.
+The DFT and MD tools are stand-ins, so every verdict is provisional. The FEM tool simulates the crack, but from stand-in energies, so its result is not a prediction either.
 
 The judge is a 20-billion-parameter model reading two criteria. Before it was given the earlier candidates of the run, it misread a question that asked to replace a failed interlayer.
 

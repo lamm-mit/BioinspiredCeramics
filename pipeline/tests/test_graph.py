@@ -1,10 +1,13 @@
 # Tests for the agent graph, with the models and the search stubbed. python -m pipeline.tests.test_graph
 import itertools
 import json
+import os
 import shutil
 from pathlib import Path
 
 from pipeline import graph
+
+os.environ.setdefault("FEM_ROWS", "30")  # the crack tool runs on a coarse grid, a few seconds per call
 
 shutil.rmtree("runs_test/graph", ignore_errors=True)
 folders = (f"runs_test/graph/{n}" for n in itertools.count(1))  # a fresh run folder per case

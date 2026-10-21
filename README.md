@@ -15,8 +15,9 @@ knowledge graph, choose design values with a cited source for each, write
 the part as STL files, and call DFT, MD and FEM tools. Each tool call is
 recorded in a handoff file with the origin of every input. A judge weighs
 the candidate against its simulation results and can send it back to the
-designer, for up to three candidates per run. The tools are stand-ins
-until the solvers are attached.
+designer, for up to three candidates per run. The DFT and MD tools are
+stand-ins until their solvers are attached, and the FEM tool runs a
+phase-field simulation of the notched cell.
 [pipeline/README.md](pipeline/README.md) describes the agents, the run
 output and the commands, and [tools/README.md](tools/README.md) gives
 the contract a solver must meet.

@@ -3,5 +3,6 @@ openai==3.22.1
 numpy==2.5.3
 jax[cuda13]==0.11.2; sys_platform == "linux"
 jax==0.11.2; sys_platform != "linux"
-# Only for benchmark/make_charts.py and benchmark/report.py
+# The FEM tool measures the crack with scipy and draws it with matplotlib, which the benchmark charts also use
+scipy
 matplotlib

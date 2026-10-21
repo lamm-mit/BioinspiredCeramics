@@ -1,0 +1,4859 @@
+{
+ "schema": "fracture_md.dft_reference/1",
+ "quantity": "ideal shear strength of 3C-SiC on (111)",
+ "functional": "PBE",
+ "code": "Quantum ESPRESSO pw.x 7.5 (conda-forge qe-7.5-hc91ee90_1) through ASE",
+ "pseudopotentials": {
+  "family": "SSSP_1.3.0_PBE_efficiency",
+  "files": {
+   "C.pbe-n-kjpaw_psl.1.0.0.UPF": {
+    "element": "C",
+    "md5": "5d2aebdfa2cae82b50a7e79e9516da0f",
+    "sha256": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+    "type": "100PAW"
+   },
+   "Si.pbe-n-rrkjus_psl.1.0.0.UPF": {
+    "element": "Si",
+    "md5": "0b0bb1205258b0d07b9f9672cf965d36",
+    "sha256": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+    "type": "100US"
+   }
+  },
+  "doi": "10.24435/materialscloud:f3-ym"
+ },
+ "generated_by": "examples/15_dft_reference_sic.py report",
+ "generated_utc": "2026-10-05T10:06:39Z",
+ "labelling": "computed with DFT-PBE in this project: a model value (PBE), never a measurement",
+ "cases": {
+  "twin": {
+   "case": "twin",
+   "description": "(111)[11-2], twinning (easy) sense: upper block displaced along +[11-2]",
+   "status": "numerically_verified",
+   "ideal_shear_strength_GPa": 27.758653473716052,
+   "strain_at_peak": 0.4148018887292161,
+   "peak_bracketed": true,
+   "value_source": "maximum of the samples recomputed on the k-refined mesh [12, 12, 12]",
+   "production_mesh_peak": {
+    "stress_GPa": 27.743586229509987,
+    "strain": 0.4739993050729659,
+    "kmesh": [
+     8,
+     8,
+     8
+    ]
+   },
+   "k_refined": {
+    "kmesh": [
+     12,
+     12,
+     12
+    ],
+    "points": [
+     {
+      "strain": 0.28,
+      "stress_production_GPa": 24.848105412263486,
+      "stress_GPa": 24.481960898658198,
+      "lateral_GPa": 0.288325932770738,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.32,
+      "stress_production_GPa": 26.1561636746091,
+      "stress_GPa": 25.90976268614431,
+      "lateral_GPa": 0.08179041766353588,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.36,
+      "stress_production_GPa": 26.641757503219406,
+      "stress_GPa": 27.086161912862472,
+      "lateral_GPa": 0.2687609587612951,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.4,
+      "stress_production_GPa": 26.679122190425417,
+      "stress_GPa": 27.70959318994532,
+      "lateral_GPa": 0.43660784105283185,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.44,
+      "stress_production_GPa": 27.23061908938332,
+      "stress_GPa": 27.616475682065794,
+      "lateral_GPa": 0.34290191290234195,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.45999999999999996,
+      "stress_production_GPa": 27.53615631507966,
+      "stress_GPa": 27.27372087423119,
+      "lateral_GPa": 0.6071026145636916,
+      "converged": true,
+      "kind": "refine"
+     },
+     {
+      "strain": 0.48,
+      "stress_production_GPa": 27.705474248048596,
+      "stress_GPa": 27.133529744674806,
+      "lateral_GPa": 0.40762814270801784,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.5,
+      "stress_production_GPa": 27.028055411105107,
+      "stress_GPa": 26.56688102373966,
+      "lateral_GPa": 0.22845417020048778,
+      "converged": true,
+      "kind": "refine"
+     },
+     {
+      "strain": 0.52,
+      "stress_production_GPa": 25.34399659561561,
+      "stress_GPa": 25.26838459079716,
+      "lateral_GPa": 0.8891030294216022,
+      "converged": true,
+      "kind": "path"
+     }
+    ],
+    "peak_stress_GPa": 27.758653473716052,
+    "peak_strain": 0.4148018887292161,
+    "bracketed": true,
+    "check": {
+     "kmesh": [
+      16,
+      16,
+      16
+     ],
+     "strain": 0.4,
+     "stress_k1_GPa": 27.70959318994532,
+     "stress_k2_GPa": 27.649868532442813,
+     "delta_GPa": -0.05972465750250677
+    },
+    "note": "cells (T) and starting ions of the production path; ions re-relaxed on the denser mesh; the lateral stresses were not re-iterated (their change moves sigma_xz by ~0.05 GPa)"
+   },
+   "samples_excluded_from_peak": [],
+   "stop_reason": "stress fell below 0.80 x maximum",
+   "small_strain_modulus_GPa": 150.41493176432633,
+   "relaxed_111_modulus_from_Cij_GPa": 151.41769134756504,
+   "work_energy_mismatch_at_peak": 0.0027656445449423623,
+   "peak_settings_check": {
+    "strain": 0.48,
+    "stress_production_GPa": 27.705474248048596,
+    "stress_tight_GPa": 27.13382395481029,
+    "delta_GPa": -0.5716502932383065,
+    "lateral_tight_GPa": 0.35996610076020197,
+    "ecutwfc_ry": 90.0,
+    "kmesh": [
+     12,
+     12,
+     12
+    ],
+    "converged": true
+   },
+   "lateral_tolerance_GPa": 0.25,
+   "max_lateral_residual_GPa": 0.24993151009055298,
+   "max_lateral_residual_note": "production-mesh path only (the lateral stresses were iterated there; samples past an instability included)",
+   "max_lateral_residual_k_refined_GPa": 0.8891030294216022,
+   "max_lateral_residual_k_refined_near_peak_GPa": 0.43660784105283185,
+   "k_refined_lateral_note": "the k-refined samples reuse the production cells and were not re-relaxed laterally; with the stage-1 Cij the linear-elastic coupling of a lateral residual r to sigma_xz is at most 0.26 r, i.e. <= 0.2 GPa here (an estimate: tangent moduli at large strain differ)",
+   "curve": [
+    {
+     "strain": 0.01,
+     "stress_GPa": 1.5041,
+     "dE_eV_per_atom": 0.000489,
+     "lateral_residual_GPa": 0.0357
+    },
+    {
+     "strain": 0.04,
+     "stress_GPa": 5.6493,
+     "dE_eV_per_atom": 0.007627,
+     "lateral_residual_GPa": 0.024
+    },
+    {
+     "strain": 0.08,
+     "stress_GPa": 10.5067,
+     "dE_eV_per_atom": 0.029229,
+     "lateral_residual_GPa": 0.0132
+    },
+    {
+     "strain": 0.12,
+     "stress_GPa": 14.5432,
+     "dE_eV_per_atom": 0.062927,
+     "lateral_residual_GPa": 0.1308
+    },
+    {
+     "strain": 0.16,
+     "stress_GPa": 17.8808,
+     "dE_eV_per_atom": 0.10672,
+     "lateral_residual_GPa": 0.0259
+    },
+    {
+     "strain": 0.2,
+     "stress_GPa": 20.594,
+     "dE_eV_per_atom": 0.158878,
+     "lateral_residual_GPa": 0.0203
+    },
+    {
+     "strain": 0.24,
+     "stress_GPa": 22.9329,
+     "dE_eV_per_atom": 0.218392,
+     "lateral_residual_GPa": 0.2499
+    },
+    {
+     "strain": 0.28,
+     "stress_GPa": 24.8481,
+     "dE_eV_per_atom": 0.283448,
+     "lateral_residual_GPa": 0.1208
+    },
+    {
+     "strain": 0.32,
+     "stress_GPa": 26.1562,
+     "dE_eV_per_atom": 0.35256,
+     "lateral_residual_GPa": 0.0908
+    },
+    {
+     "strain": 0.36,
+     "stress_GPa": 26.6418,
+     "dE_eV_per_atom": 0.423757,
+     "lateral_residual_GPa": 0.1906
+    },
+    {
+     "strain": 0.4,
+     "stress_GPa": 26.6791,
+     "dE_eV_per_atom": 0.494698,
+     "lateral_residual_GPa": 0.0806
+    },
+    {
+     "strain": 0.44,
+     "stress_GPa": 27.2306,
+     "dE_eV_per_atom": 0.567036,
+     "lateral_residual_GPa": 0.0981
+    },
+    {
+     "strain": 0.45999999999999996,
+     "stress_GPa": 27.5362,
+     "dE_eV_per_atom": 0.603354,
+     "lateral_residual_GPa": 0.0568
+    },
+    {
+     "strain": 0.48,
+     "stress_GPa": 27.7055,
+     "dE_eV_per_atom": 0.639149,
+     "lateral_residual_GPa": 0.1106
+    },
+    {
+     "strain": 0.5,
+     "stress_GPa": 27.0281,
+     "dE_eV_per_atom": 0.673991,
+     "lateral_residual_GPa": 0.2137
+    },
+    {
+     "strain": 0.52,
+     "stress_GPa": 25.344,
+     "dE_eV_per_atom": 0.706962,
+     "lateral_residual_GPa": 0.2067
+    },
+    {
+     "strain": 0.56,
+     "stress_GPa": 14.756,
+     "dE_eV_per_atom": 0.758177,
+     "lateral_residual_GPa": 0.2257
+    }
+   ],
+   "settings": {
+    "ecutwfc_ry": 70.0,
+    "ecutrho_ry": 560.0,
+    "kmesh": [
+     8,
+     8,
+     8
+    ],
+    "smearing": "gaussian 0.01 Ry",
+    "cell": "2-atom primitive cell, x = [1, 1, -2], z = [111]",
+    "a0_A": 4.381163398
+   },
+   "n_pw_runs": 32,
+   "pw_wall_s": 1683.4473131485283,
+   "raw": "outputs/dft/stage2/SiC/shear_twin.json",
+   "literature": [
+    {
+     "value": 30.3,
+     "strain": 0.43,
+     "functional": "GGA (PW91, PAW, VASP)",
+     "evidence": false,
+     "confidence": "high",
+     "source": "Y. Umeno, Y. Kinoshita, T. Kitamura, Modelling Simul. Mater. Sci. Eng. 15, 27 (2007), p. 31 text and Fig. 5 (easy sense, normal stresses relaxed)"
+    },
+    {
+     "value": 29.7,
+     "strain": 0.22,
+     "functional": "PBE",
+     "evidence": false,
+     "confidence": "medium",
+     "source": "Z. Wang et al., arXiv:2309.01137 (2023), Sec. 3 and Fig. 6c (preprint; sense not stated)"
+    },
+    {
+     "value": 29.5,
+     "strain": null,
+     "functional": "LDA",
+     "evidence": false,
+     "confidence": "medium",
+     "source": "S. Ogata, private communication quoted in Umeno et al. 2007"
+    }
+   ],
+   "records": [
+    {
+     "id": "ref-3c-sic:ideal_shear_strength:7bc08e78daf0",
+     "name": "ideal_shear_strength",
+     "value": {
+      "value": 27.758653473716052,
+      "unit": "GPa"
+     },
+     "shape_description": "",
+     "frame": "not_applicable",
+     "composition": {
+      "formula": "SiC",
+      "elements": {
+       "Si": 1.0,
+       "C": 1.0
+      },
+      "is_fraction": false
+     },
+     "phase": "3C-SiC",
+     "orientation": {
+      "plane_miller": [
+       1,
+       1,
+       1
+      ],
+      "plane_miller_bravais": null,
+      "direction": null,
+      "x_direction": [
+       1,
+       1,
+       -2
+      ],
+      "y_direction": [
+       -3,
+       3,
+       0
+      ],
+      "rotation_crystal_to_lab": [
+       [
+        0.4082482904638631,
+        0.4082482904638631,
+        -0.8164965809277261
+       ],
+       [
+        -0.7071067811865476,
+        0.7071067811865476,
+        0.0
+       ],
+       [
+        0.5773502691896258,
+        0.5773502691896258,
+        0.5773502691896258
+       ]
+      ],
+      "description": "(111)[11-2], twinning (easy) sense: upper block displaced along +[11-2]"
+     },
+     "interface": null,
+     "conditions": {
+      "temperature": {
+       "value": 0.0,
+       "unit": "K"
+      },
+      "loading": "static",
+      "strain_rate": null,
+      "stress_state": "simple shear on (111) with the other five Cauchy stress components relaxed to zero, 0 K",
+      "defect_state": {
+       "kind": "pristine",
+       "parameters": {},
+       "description": ""
+      },
+      "environment": "vacuum"
+     },
+     "origin": "atomistic_computed",
+     "scale": "atomistic_ideal",
+     "method": {
+      "name": "DFT ideal shear strength: affine simple shear, ions and lateral stresses relaxed",
+      "protocol_id": "dft_ideal_shear_SiC_twin",
+      "engine": "quantum_espresso",
+      "description": "pw.x, PBE, SSSP_1.3.0_PBE_efficiency, ecutwfc 70 Ry / ecutrho 560 Ry, k-mesh (8, 8, 8) offset (0, 0, 0), gaussian smearing 0.01 Ry, conv_thr 1e-11 Ry/atom; 2-atom primitive cell in the lab frame (x = shear direction, z = [111]); T_xz controlled, the other five T components iterated to |sigma| <= 0.25 GPa; strength = maximum of sigma_xz (parabolic refinement) at engineering strain 0.415",
+      "assumptions": [
+       "0 K static lattice (no zero-point or thermal effects)",
+       "spin-unpolarised",
+       "defect-free periodic crystal",
+       "homogeneous deformation of the 2-atom cell: phonon (non-affine) instabilities are not tested, so the value is an upper bound of the ideal strength",
+       "lattice parameter and Cij from stage 1 with the same settings"
+      ]
+     },
+     "potential_id": "dft-qe7.5-pbe-SSSP_1.3.0_PBE_efficiency@e31a8619",
+     "derivation": null,
+     "uncertainty": [
+      {
+       "kind": "numerical_convergence",
+       "value": 0.05972465750250677,
+       "unit": "GPa",
+       "relative": null,
+       "interval": "max_abs_diff",
+       "samples": null,
+       "description": "k+8 vs k+4 at the refined peak"
+      }
+     ],
+     "validation": {
+      "status": "numerically_verified",
+      "evidence": [],
+      "checks": [
+       {
+        "name": "pw_runs_converged",
+        "passed": true,
+        "metric": 0.0,
+        "tolerance": 0.0,
+        "unit": null,
+        "details": "43 pw.x runs: JOB DONE, SCF converged, BFGS converged for relaxations; max SCF iterations 12"
+       },
+       {
+        "name": "lateral_stresses_relaxed",
+        "passed": true,
+        "metric": 0.24993151009055298,
+        "tolerance": 0.25,
+        "unit": "GPa",
+        "details": "max |sigma_free| (the five components other than the controlled one) over the path up to the right neighbour of the maximum"
+       },
+       {
+        "name": "peak_bracketed",
+        "passed": true,
+        "metric": null,
+        "tolerance": null,
+        "unit": null,
+        "details": "stop: stress fell below 0.80 x maximum"
+       },
+       {
+        "name": "work_energy_consistency",
+        "passed": true,
+        "metric": 0.0027656445449423623,
+        "tolerance": 0.02,
+        "unit": null,
+        "details": "|integral V sigma:dF F^-1 - dE| / dE from 0 to the peak strain"
+       },
+       {
+        "name": "small_strain_modulus_vs_Cij",
+        "passed": true,
+        "metric": 0.006622473069787951,
+        "tolerance": 0.03,
+        "unit": null,
+        "details": "stress/strain at strain 0.01 vs the relaxed (111) shear modulus 151.4 GPa from the stage-1 Cij"
+       },
+       {
+        "name": "peak_settings_convergence",
+        "passed": true,
+        "metric": 0.05972465750250677,
+        "tolerance": 0.5,
+        "unit": "GPa",
+        "details": "k+8 vs k+4 at the refined peak"
+       },
+       {
+        "name": "production_peak_check_superseded",
+        "passed": true,
+        "metric": 0.5716502932383065,
+        "tolerance": null,
+        "unit": "GPa",
+        "details": "production-mesh peak 27.71 GPa; its ecutwfc + 20 Ry / k + 4 check moved the peak sample by -0.57 GPa, so the value is the peak on the k-refined mesh [12, 12, 12]"
+       }
+      ],
+      "notes": "Comparison, not evidence (different functional or protocol, docs/DFT.md section 2): Y. Umeno, Y. Kinoshita, T. Kitamura, Modelling Simul. Mater. Sci. Eng. 15, 27 (2007), p. 31 text and Fig. 5 (easy sense, normal stresses relaxed), -8.4 %."
+     },
+     "provenance": {
+      "created_utc": "2026-10-05T07:00:27.228979Z",
+      "schema_version": "0.1.0",
+      "code_version": "1187bd8710d2-dirty",
+      "code_dirty": true,
+      "implementation_ids": {
+       "fracture_md_source_tree": "528a38233ead850313c831fc030807a1ef8f272f7d51867bcc66d9a85127f591",
+       "fracture_md.engines.dft_qe": "92d1c717610534813fc35cb42f344bc90e4d58ed58d904aaca2ea6387764de93"
+      },
+      "engine": "quantum_espresso",
+      "engine_version": "Quantum ESPRESSO pw.x v.7.5 (qe-7.5-hc91ee90_1); ASE 3.29.0",
+      "package_versions": {
+       "fracture-md": "0.1.0",
+       "jax": "0.11.2",
+       "jaxlib": "0.11.2",
+       "jax-md": "0.2.29",
+       "numpy": "2.5.3",
+       "scipy": "1.18.1",
+       "ase": "3.29.0",
+       "pymatgen": "2026.9.24",
+       "spglib": "2.7.0",
+       "pydantic": "2.13.5",
+       "matscipy": "1.3.0"
+      },
+      "platform": "Linux-aarch64-py3.12.3",
+      "device": "cpu: 2 MPI rank(s) pinned to cores [10, 11]",
+      "float_precision": "float64",
+      "potential_id": "dft-qe7.5-pbe-SSSP_1.3.0_PBE_efficiency@e31a8619",
+      "protocol_id": "dft_ideal_shear_SiC_twin",
+      "input_hashes": {
+       "pseudo:C.pbe-n-kjpaw_psl.1.0.0.UPF": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+       "pseudo:Si.pbe-n-rrkjus_psl.1.0.0.UPF": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+       "pw_input:twin/ref": "b10cdb64f5ca23fbebb43abbf2b5c355d7ed7c8fa81a04c60d3cb439224445f0",
+       "pw_input:twin/s0.0100_it0": "8d8de8f1140d796171dc7816605def933fb40e14b5e42cab90aa0f6bb9dcc587",
+       "pw_input:twin/s0.0400_it0": "97d4fa288dc68ca8cb859e2801eca64f31c9600a02e7de931f88ffd6424f9770",
+       "pw_input:twin/s0.0400_it1": "80b8619fc23e14f297a7756099f3e8df1e0ff9a1805fa872f9ed4d1d95271d4f",
+       "pw_input:twin/s0.0800_it0": "4c94aca826faabe163be08e733e1742819d6aab25d915d0cfada82d2a42a7967",
+       "pw_input:twin/s0.0800_it1": "e8974aea02486c5e4285818c9a222bd529341b4b3880b8e8dba99f1f567f2fde",
+       "pw_input:twin/s0.1200_it0": "ae236474a7e097787bbffed5431cc73f43a586f1a9130603ead044651e7bafef",
+       "pw_input:twin/s0.1600_it0": "d6cf00b4089db3c913bc51baae81c79a7a5aaba4b384881eb1cdf12344faecf3",
+       "pw_input:twin/s0.1600_it1": "cdb26a4e0c969883be33c65a9f0ad96542ac359ffaa5022bbf4c4852f9da925b",
+       "pw_input:twin/s0.2000_it0": "4872f9c922f030dbd928aa2fbf2a6ca3908f679b8b71b5786d0cf62f98dde0ac",
+       "pw_input:twin/s0.2000_it1": "6c7459f0b9e2cf9aee524db21be91ce9e4bb9061f9adeffae5ced4a8535a6b25",
+       "pw_input:twin/s0.2400_it0": "beaa2f0087175f0d2f30af98f921bf4c896202112c46f6150087b0fcabc0e1d9",
+       "pw_input:twin/s0.2800_it0": "cb3e779dae76528c88ee8af55e3d8d631394d9edc706388100bf1a663cd2df51",
+       "pw_input:twin/s0.2800_it1": "3c0adc0541a7e644fbd989735d0b1429302883422c995093d4156ffb59937436",
+       "pw_input:twin/s0.3200_it0": "17edba2ff7e89a3a45ce373dc34b69dac096d5ee03139aba2aaff095ac204e39",
+       "pw_input:twin/s0.3200_it1": "dd3cc0df38081bb44d28c0df356e620705501886bf52d6e3c10f61341735cd5e",
+       "pw_input:twin/s0.3600_it0": "a6e1dd522fd957250e43a3a20f7fcef46967cff95adf928f2105562414e04953",
+       "pw_input:twin/s0.4000_it0": "8fb33c1fddfa93c797fbfe97102047312530affd62d516883d507a3631e5e334",
+       "pw_input:twin/s0.4000_it1": "d112d5cf18c2cf73605766dfd2c1e2cf38bbfec25fc0fe9114b0f7e06298c87e",
+       "pw_input:twin/s0.4400_it0": "6856c6de0e46c21e0059acf1b5907ef614e96de0db5c95d6c27716c1c649db22",
+       "pw_input:twin/s0.4400_it1": "c9b5a5d7564e549bdf9cbc8fad6bdd347898836835ebfb03e91741a27252208b",
+       "pw_input:twin/s0.4800_it0": "640cc401f44b72431827edafdd7323174964131369482cb19c5c74e6d5fc59ca",
+       "pw_input:twin/s0.4800_it1": "1d9526f6aed766752bee3ce76533b8ee1196d57093e9faf31617bf027b19fcbd",
+       "pw_input:twin/s0.5200_it0": "0098dfd92a178c90be4a574821c8819d39022caa6bf78662cbf9d59cec9c7fdf",
+       "pw_input:twin/s0.5200_it1": "e67bd2f5727604c9edb82c49fd7919451e955204d42481236b0e5c15d0310b4f",
+       "pw_input:twin/s0.5600_it0": "2cbf22b4ea266692e27c7a44bd4431b08a5129701eb83a74ad44733700a4aaa2",
+       "pw_input:twin/s0.5600_it1": "344dce1e86b9776cc78f9c3119d85398596823280c967f7969ae99f1ecfe7fbd",
+       "pw_input:twin/s0.5600_it2": "537e486ea2aa939690dd2ccf7fa3153c6bf64e7b78309851db1d7575c4c8e749",
+       "pw_input:twin/s0.5600_it3": "f31663ffb94661363aa8659927053fa37c677af7cf60c2f7a957671c073263be",
+       "pw_input:twin/s0.4600_it0": "beccf6249abf72c61898885d9da4045b8e0ba6f9547caf06bb10a7950c78aa77",
+       "pw_input:twin/s0.4600_it1": "3c1c272c92cbac29377c31612d43b527b3a1802c3f99e3e0bbdf1fefa09c86ee",
+       "pw_input:twin/s0.5000_it0": "428a6ed5612c5ce414638713ded7ee87a90660c9f5ca48467cb6ad1beb6ebabd",
+       "pw_input:tight": "b4346d3e41505c9bf980a19f68c390fa59c9ade6e1d2a0cacbe88c0959cb83a3",
+       "pw_input:s0.2800": "5e9970b8ecfb52d52d87143ff258a62c7e5c003b526c8ef281940a8685b1bb55",
+       "pw_input:s0.3200": "88070868ed5a0a751ebfc28c5292ae7238a3f3a3acd77c399480f17db889023b",
+       "pw_input:s0.3600": "c53e5926004d994a92006dc4ec20a361f317c5f2a17cb5b34c9c0bc4c75d7e46",
+       "pw_input:s0.4000": "56356252876356e7d4dbaf33d182769c17f275bd012aa35de5cf60beb9bfa494",
+       "pw_input:s0.4400": "750b36c1018f28c6a09e73835fec5a9877f05f20fb9822be5fb3ee627dc88652",
+       "pw_input:s0.4600": "fdcf2f4d5dc06e5e5ff8c24e05932d42e2d3089a7d9483a93cfafcf5504e1adf",
+       "pw_input:s0.4800": "fe8060fefc39d933fb14d2b81248fc611ef8284204e8a402e9db31d6be66d8b0",
+       "pw_input:s0.5000": "edd675a6098bbabfa3989a49cbb1f8af08f86e0b3d89be6a3ba631bbdf4dd1ab",
+       "pw_input:s0.5200": "68dc495f757ed061b5a014d293d6c767b2197cfd7cc3e7e20cf09c94406d49b0"
+      },
+      "random_seeds": {},
+      "requested_by": "human",
+      "parent_ids": [],
+      "extra": {
+       "dft": {
+        "code": "Quantum ESPRESSO pw.x",
+        "qe_version": "7.5",
+        "conda_build": "qe-7.5-hc91ee90_1",
+        "functional": "PBE",
+        "pseudo_family": "SSSP_1.3.0_PBE_efficiency",
+        "pseudopotentials": {
+         "C.pbe-n-kjpaw_psl.1.0.0.UPF": {
+          "element": "C",
+          "md5": "5d2aebdfa2cae82b50a7e79e9516da0f",
+          "sha256": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+          "type": "100PAW"
+         },
+         "Si.pbe-n-rrkjus_psl.1.0.0.UPF": {
+          "element": "Si",
+          "md5": "0b0bb1205258b0d07b9f9672cf965d36",
+          "sha256": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+          "type": "100US"
+         }
+        },
+        "settings": {
+         "ecutwfc_ry": 70.0,
+         "dual": 8.0,
+         "ecutrho_ry": 560.0,
+         "kpts": [
+          8,
+          8,
+          8
+         ],
+         "kspacing_per_A": 0.15,
+         "koffset": [
+          0,
+          0,
+          0
+         ],
+         "occupations": "smearing",
+         "smearing": "gaussian",
+         "degauss_ry": 0.01,
+         "conv_thr_ry_per_atom": 1e-11,
+         "mixing_beta": 0.4,
+         "pseudo_family": "SSSP_1.3.0_PBE_efficiency",
+         "input_dft": null,
+         "extra_input": [],
+         "ecutwfc_eV": 952.3985186095799,
+         "ecutrho_eV": 7619.188148876639
+        },
+        "kmeshes": [
+         [
+          8,
+          8,
+          8
+         ],
+         [
+          12,
+          12,
+          12
+         ],
+         [
+          16,
+          16,
+          16
+         ]
+        ],
+        "runner": {
+         "command": "/home/lammspark01/miniconda3/envs/fmd-dft/bin/mpirun -np 2 --map-by pe-list=10,11:ordered --bind-to core --mca pml ob1 --mca btl self,sm -x OMP_NUM_THREADS=1 /home/lammspark01/miniconda3/envs/fmd-dft/bin/pw.x -nk 2",
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "omp_threads": 1,
+         "pw_x": "/home/lammspark01/miniconda3/envs/fmd-dft/bin/pw.x",
+         "conda_build": "qe-7.5-hc91ee90_1"
+        },
+        "spin": "unpolarised",
+        "n_pw_runs": 43,
+        "wall_s_total": 3015.621
+       },
+       "qe_runs": [
+        {
+         "label": "twin/ref",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 65,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 12.198,
+         "qe_wall_s": 11.69,
+         "qe_cpu_s": 11.14,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/ref"
+        },
+        {
+         "label": "twin/s0.0100_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 32.459,
+         "qe_wall_s": 31.96,
+         "qe_cpu_s": 31.1,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.0100_it0"
+        },
+        {
+         "label": "twin/s0.0400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 46.121,
+         "qe_wall_s": 45.61,
+         "qe_cpu_s": 44.23,
+         "scf_cycles": 3,
+         "scf_iterations_total": 24,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.0400_it0"
+        },
+        {
+         "label": "twin/s0.0400_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 22.145,
+         "qe_wall_s": 21.63,
+         "qe_cpu_s": 21.02,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.0400_it1"
+        },
+        {
+         "label": "twin/s0.0800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 52.49,
+         "qe_wall_s": 51.98,
+         "qe_cpu_s": 50.61,
+         "scf_cycles": 3,
+         "scf_iterations_total": 24,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.0800_it0"
+        },
+        {
+         "label": "twin/s0.0800_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 25.358,
+         "qe_wall_s": 24.86,
+         "qe_cpu_s": 24.19,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.0800_it1"
+        },
+        {
+         "label": "twin/s0.1200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 54.308,
+         "qe_wall_s": 53.81,
+         "qe_cpu_s": 52.34,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.1200_it0"
+        },
+        {
+         "label": "twin/s0.1600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 54.274,
+         "qe_wall_s": 53.77,
+         "qe_cpu_s": 52.37,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.1600_it0"
+        },
+        {
+         "label": "twin/s0.1600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 25.578,
+         "qe_wall_s": 25.07,
+         "qe_cpu_s": 24.43,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.1600_it1"
+        },
+        {
+         "label": "twin/s0.2000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 54.174,
+         "qe_wall_s": 53.67,
+         "qe_cpu_s": 52.28,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.2000_it0"
+        },
+        {
+         "label": "twin/s0.2000_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 25.578,
+         "qe_wall_s": 25.07,
+         "qe_cpu_s": 24.43,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.2000_it1"
+        },
+        {
+         "label": "twin/s0.2400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 54.458,
+         "qe_wall_s": 53.95,
+         "qe_cpu_s": 52.66,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.2400_it0"
+        },
+        {
+         "label": "twin/s0.2800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 56.217,
+         "qe_wall_s": 55.71,
+         "qe_cpu_s": 54.33,
+         "scf_cycles": 3,
+         "scf_iterations_total": 26,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.2800_it0"
+        },
+        {
+         "label": "twin/s0.2800_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 35.341,
+         "qe_wall_s": 34.83,
+         "qe_cpu_s": 33.95,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.2800_it1"
+        },
+        {
+         "label": "twin/s0.3200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 64.571,
+         "qe_wall_s": 64.06,
+         "qe_cpu_s": 62.26,
+         "scf_cycles": 4,
+         "scf_iterations_total": 31,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.3200_it0"
+        },
+        {
+         "label": "twin/s0.3200_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 23.687,
+         "qe_wall_s": 23.18,
+         "qe_cpu_s": 22.6,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.3200_it1"
+        },
+        {
+         "label": "twin/s0.3600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 73.749,
+         "qe_wall_s": 73.24,
+         "qe_cpu_s": 71.52,
+         "scf_cycles": 4,
+         "scf_iterations_total": 31,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.3600_it0"
+        },
+        {
+         "label": "twin/s0.4000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 75.668,
+         "qe_wall_s": 75.16,
+         "qe_cpu_s": 73.4,
+         "scf_cycles": 4,
+         "scf_iterations_total": 32,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4000_it0"
+        },
+        {
+         "label": "twin/s0.4000_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 22.725,
+         "qe_wall_s": 22.19,
+         "qe_cpu_s": 21.63,
+         "scf_cycles": 1,
+         "scf_iterations_total": 10,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4000_it1"
+        },
+        {
+         "label": "twin/s0.4400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 72.725,
+         "qe_wall_s": 72.19,
+         "qe_cpu_s": 70.4,
+         "scf_cycles": 4,
+         "scf_iterations_total": 34,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4400_it0"
+        },
+        {
+         "label": "twin/s0.4400_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 36.389,
+         "qe_wall_s": 35.88,
+         "qe_cpu_s": 35.0,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4400_it1"
+        },
+        {
+         "label": "twin/s0.4800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 84.18,
+         "qe_wall_s": 83.67,
+         "qe_cpu_s": 81.58,
+         "scf_cycles": 5,
+         "scf_iterations_total": 39,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4800_it0"
+        },
+        {
+         "label": "twin/s0.4800_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 53.416,
+         "qe_wall_s": 52.91,
+         "qe_cpu_s": 51.58,
+         "scf_cycles": 3,
+         "scf_iterations_total": 24,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4800_it1"
+        },
+        {
+         "label": "twin/s0.5200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 92.097,
+         "qe_wall_s": 91.59,
+         "qe_cpu_s": 89.31,
+         "scf_cycles": 5,
+         "scf_iterations_total": 44,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5200_it0"
+        },
+        {
+         "label": "twin/s0.5200_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 52.874,
+         "qe_wall_s": 52.36,
+         "qe_cpu_s": 51.03,
+         "scf_cycles": 3,
+         "scf_iterations_total": 24,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5200_it1"
+        },
+        {
+         "label": "twin/s0.5600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 94.689,
+         "qe_wall_s": 94.19,
+         "qe_cpu_s": 91.84,
+         "scf_cycles": 5,
+         "scf_iterations_total": 45,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5600_it0"
+        },
+        {
+         "label": "twin/s0.5600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 86.879,
+         "qe_wall_s": 86.37,
+         "qe_cpu_s": 84.24,
+         "scf_cycles": 5,
+         "scf_iterations_total": 41,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5600_it1"
+        },
+        {
+         "label": "twin/s0.5600_it2",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 91.98,
+         "qe_wall_s": 91.48,
+         "qe_cpu_s": 89.31,
+         "scf_cycles": 5,
+         "scf_iterations_total": 44,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5600_it2"
+        },
+        {
+         "label": "twin/s0.5600_it3",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 24.229,
+         "qe_wall_s": 23.72,
+         "qe_cpu_s": 23.14,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5600_it3"
+        },
+        {
+         "label": "twin/s0.4600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 73.795,
+         "qe_wall_s": 73.28999999999999,
+         "qe_cpu_s": 71.4,
+         "scf_cycles": 4,
+         "scf_iterations_total": 35,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4600_it0"
+        },
+        {
+         "label": "twin/s0.4600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 24.757,
+         "qe_wall_s": 24.25,
+         "qe_cpu_s": 23.68,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.4600_it1"
+        },
+        {
+         "label": "twin/s0.5000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 84.337,
+         "qe_wall_s": 83.82,
+         "qe_cpu_s": 81.73,
+         "scf_cycles": 5,
+         "scf_iterations_total": 39,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/twin/s0.5000_it0"
+        },
+        {
+         "label": "tight",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 90.0,
+         "ecutrho_ry": 720.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 153.15,
+         "qe_wall_s": 152.63,
+         "qe_cpu_s": 150.94,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/peak_check/tight"
+        },
+        {
+         "label": "s0.2800",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 86.556,
+         "qe_wall_s": 86.05,
+         "qe_cpu_s": 83.8,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.2800"
+        },
+        {
+         "label": "s0.3200",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 54.331,
+         "qe_wall_s": 53.83,
+         "qe_cpu_s": 52.42,
+         "scf_cycles": 1,
+         "scf_iterations_total": 10,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.3200"
+        },
+        {
+         "label": "s0.3600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 144.709,
+         "qe_wall_s": 144.2,
+         "qe_cpu_s": 141.09,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.3600"
+        },
+        {
+         "label": "s0.4000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 117.623,
+         "qe_wall_s": 117.11,
+         "qe_cpu_s": 114.00999999999999,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.4000"
+        },
+        {
+         "label": "s0.4400",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 117.117,
+         "qe_wall_s": 116.61,
+         "qe_cpu_s": 113.57,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.4400"
+        },
+        {
+         "label": "s0.4600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 76.912,
+         "qe_wall_s": 76.4,
+         "qe_cpu_s": 74.3,
+         "scf_cycles": 2,
+         "scf_iterations_total": 15,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.4600"
+        },
+        {
+         "label": "s0.4800",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 82.516,
+         "qe_wall_s": 82.0,
+         "qe_cpu_s": 79.89,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.4800"
+        },
+        {
+         "label": "s0.5000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 83.222,
+         "qe_wall_s": 82.7,
+         "qe_cpu_s": 80.58,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.5000"
+        },
+        {
+         "label": "s0.5200",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 151.168,
+         "qe_wall_s": 150.66,
+         "qe_cpu_s": 147.04,
+         "scf_cycles": 4,
+         "scf_iterations_total": 29,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k12/s0.5200"
+        },
+        {
+         "label": "s0.4000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          16,
+          16,
+          16
+         ],
+         "n_kpoints_irreducible": 1098,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          10,
+          11
+         ],
+         "npool": 2,
+         "wall_s": 264.871,
+         "qe_wall_s": 264.36,
+         "qe_cpu_s": 259.88,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_twin/kref_k16/s0.4000"
+        }
+       ]
+      }
+     },
+     "citations": [
+      {
+       "key": "Giannozzi2009",
+       "text": "P. Giannozzi et al., QUANTUM ESPRESSO: a modular and open-source software project for quantum simulations of materials, J. Phys.: Condens. Matter 21, 395502 (2009)",
+       "doi": "10.1088/0953-8984/21/39/395502",
+       "url": null
+      },
+      {
+       "key": "Perdew1996",
+       "text": "J. P. Perdew, K. Burke, M. Ernzerhof, Generalized gradient approximation made simple, Phys. Rev. Lett. 77, 3865 (1996)",
+       "doi": "10.1103/PhysRevLett.77.3865",
+       "url": null
+      },
+      {
+       "key": "Prandini2018",
+       "text": "G. Prandini, A. Marrazzo, I. E. Castelli, N. Mounet, N. Marzari, Precision and efficiency in solid-state pseudopotential calculations, npj Comput. Mater. 4, 72 (2018)",
+       "doi": "10.1038/s41524-018-0127-2",
+       "url": null
+      }
+     ],
+     "notes": "(111)[11-2], twinning (easy) sense: upper block displaced along +[11-2].  Small-strain modulus 150.4 GPa (Cij: 151.4 GPa).  Comparisons with other functionals and with interatomic potentials: data/dft_reference/."
+    }
+   ]
+  },
+  "antitwin": {
+   "case": "antitwin",
+   "description": "(111)[-1-12], anti-twinning (hard) sense: upper block along -[11-2]",
+   "status": "numerically_verified",
+   "ideal_shear_strength_GPa": 47.56530023125333,
+   "strain_at_peak": 0.29665566391598003,
+   "peak_bracketed": true,
+   "value_source": "maximum of the samples recomputed on the k-refined mesh [12, 12, 12]",
+   "production_mesh_peak": {
+    "stress_GPa": 47.571255226457765,
+    "strain": 0.29920963567589165,
+    "kmesh": [
+     8,
+     8,
+     8
+    ]
+   },
+   "k_refined": {
+    "kmesh": [
+     12,
+     12,
+     12
+    ],
+    "points": [
+     {
+      "strain": 0.12,
+      "stress_production_GPa": 21.13311403155317,
+      "stress_GPa": 21.138262708924078,
+      "lateral_GPa": 0.05119256357358001,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.16,
+      "stress_production_GPa": 28.906292916011626,
+      "stress_GPa": 28.92924130657909,
+      "lateral_GPa": 0.04310178484787053,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.2,
+      "stress_production_GPa": 36.10752729709628,
+      "stress_GPa": 36.38938060688646,
+      "lateral_GPa": 0.1719658241882616,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.24,
+      "stress_production_GPa": 42.739170855891004,
+      "stress_GPa": 42.670325684188604,
+      "lateral_GPa": 0.008826304064410345,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.26,
+      "stress_production_GPa": 45.13610082964937,
+      "stress_GPa": 45.13727767019129,
+      "lateral_GPa": 0.11621300351473624,
+      "converged": true,
+      "kind": "refine"
+     },
+     {
+      "strain": 0.28,
+      "stress_production_GPa": 46.88959323711222,
+      "stress_GPa": 46.885327190147756,
+      "lateral_GPa": 0.11444774270185416,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.30000000000000004,
+      "stress_production_GPa": 47.57010128047827,
+      "stress_GPa": 47.537885270643166,
+      "lateral_GPa": 0.33378139870245127,
+      "converged": true,
+      "kind": "refine"
+     },
+     {
+      "strain": 0.32,
+      "stress_production_GPa": 46.77279181332653,
+      "stress_GPa": 46.229532798162076,
+      "lateral_GPa": 0.1891771171138618,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.36,
+      "stress_production_GPa": 36.364225640302884,
+      "stress_GPa": 36.475878386717675,
+      "lateral_GPa": 0.5709147678996093,
+      "converged": true,
+      "kind": "path"
+     }
+    ],
+    "peak_stress_GPa": 47.56530023125333,
+    "peak_strain": 0.29665566391598003,
+    "bracketed": true,
+    "check": {
+     "kmesh": [
+      16,
+      16,
+      16
+     ],
+     "strain": 0.30000000000000004,
+     "stress_k1_GPa": 47.537885270643166,
+     "stress_k2_GPa": 47.828564884497744,
+     "delta_GPa": 0.29067961385457863
+    },
+    "note": "cells (T) and starting ions of the production path; ions re-relaxed on the denser mesh; the lateral stresses were not re-iterated (their change moves sigma_xz by ~0.05 GPa)"
+   },
+   "samples_excluded_from_peak": [],
+   "stop_reason": "stress fell below 0.80 x maximum",
+   "small_strain_modulus_GPa": 154.6809787287913,
+   "relaxed_111_modulus_from_Cij_GPa": 151.41769134756504,
+   "work_energy_mismatch_at_peak": 0.0011773073319863148,
+   "peak_settings_check": {
+    "strain": 0.30000000000000004,
+    "stress_production_GPa": 47.57010128047827,
+    "stress_tight_GPa": 47.540680266930224,
+    "delta_GPa": -0.029421013548045494,
+    "lateral_tight_GPa": 0.29038540371910043,
+    "ecutwfc_ry": 90.0,
+    "kmesh": [
+     12,
+     12,
+     12
+    ],
+    "converged": true
+   },
+   "lateral_tolerance_GPa": 0.25,
+   "max_lateral_residual_GPa": 0.22124602188121933,
+   "max_lateral_residual_note": "production-mesh path only (the lateral stresses were iterated there; samples past an instability included)",
+   "max_lateral_residual_k_refined_GPa": 0.5709147678996093,
+   "max_lateral_residual_k_refined_near_peak_GPa": 0.33378139870245127,
+   "k_refined_lateral_note": "the k-refined samples reuse the production cells and were not re-relaxed laterally; with the stage-1 Cij the linear-elastic coupling of a lateral residual r to sigma_xz is at most 0.26 r, i.e. <= 0.2 GPa here (an estimate: tangent moduli at large strain differ)",
+   "curve": [
+    {
+     "strain": 0.01,
+     "stress_GPa": 1.5468,
+     "dE_eV_per_atom": 0.0005,
+     "lateral_residual_GPa": 0.0107
+    },
+    {
+     "strain": 0.04,
+     "stress_GPa": 6.4538,
+     "dE_eV_per_atom": 0.00826,
+     "lateral_residual_GPa": 0.034
+    },
+    {
+     "strain": 0.08,
+     "stress_GPa": 13.5856,
+     "dE_eV_per_atom": 0.03426,
+     "lateral_residual_GPa": 0.2185
+    },
+    {
+     "strain": 0.12,
+     "stress_GPa": 21.1331,
+     "dE_eV_per_atom": 0.079442,
+     "lateral_residual_GPa": 0.0549
+    },
+    {
+     "strain": 0.16,
+     "stress_GPa": 28.9063,
+     "dE_eV_per_atom": 0.144978,
+     "lateral_residual_GPa": 0.0387
+    },
+    {
+     "strain": 0.2,
+     "stress_GPa": 36.1075,
+     "dE_eV_per_atom": 0.230844,
+     "lateral_residual_GPa": 0.0328
+    },
+    {
+     "strain": 0.24,
+     "stress_GPa": 42.7392,
+     "dE_eV_per_atom": 0.335717,
+     "lateral_residual_GPa": 0.0335
+    },
+    {
+     "strain": 0.26,
+     "stress_GPa": 45.1361,
+     "dE_eV_per_atom": 0.394599,
+     "lateral_residual_GPa": 0.0683
+    },
+    {
+     "strain": 0.28,
+     "stress_GPa": 46.8896,
+     "dE_eV_per_atom": 0.456179,
+     "lateral_residual_GPa": 0.0884
+    },
+    {
+     "strain": 0.30000000000000004,
+     "stress_GPa": 47.5701,
+     "dE_eV_per_atom": 0.518985,
+     "lateral_residual_GPa": 0.2212
+    },
+    {
+     "strain": 0.32,
+     "stress_GPa": 46.7728,
+     "dE_eV_per_atom": 0.582225,
+     "lateral_residual_GPa": 0.178
+    },
+    {
+     "strain": 0.36,
+     "stress_GPa": 36.3642,
+     "dE_eV_per_atom": 0.684645,
+     "lateral_residual_GPa": 0.1224
+    }
+   ],
+   "settings": {
+    "ecutwfc_ry": 70.0,
+    "ecutrho_ry": 560.0,
+    "kmesh": [
+     8,
+     8,
+     8
+    ],
+    "smearing": "gaussian 0.01 Ry",
+    "cell": "2-atom primitive cell, x = [1, 1, -2], z = [111]",
+    "a0_A": 4.381163398
+   },
+   "n_pw_runs": 23,
+   "pw_wall_s": 1204.9631334603764,
+   "raw": "outputs/dft/stage2/SiC/shear_antitwin.json",
+   "literature": [
+    {
+     "value": 51.0,
+     "strain": 0.3,
+     "functional": "GGA (PW91, PAW, VASP)",
+     "evidence": false,
+     "confidence": "medium",
+     "source": "Umeno et al. 2007, Fig. 5 ('3C-reversed'), read from the figure"
+    }
+   ],
+   "records": [
+    {
+     "id": "ref-3c-sic:ideal_shear_strength:c48687dbc2c2",
+     "name": "ideal_shear_strength",
+     "value": {
+      "value": 47.56530023125333,
+      "unit": "GPa"
+     },
+     "shape_description": "",
+     "frame": "not_applicable",
+     "composition": {
+      "formula": "SiC",
+      "elements": {
+       "Si": 1.0,
+       "C": 1.0
+      },
+      "is_fraction": false
+     },
+     "phase": "3C-SiC",
+     "orientation": {
+      "plane_miller": [
+       1,
+       1,
+       1
+      ],
+      "plane_miller_bravais": null,
+      "direction": null,
+      "x_direction": [
+       1,
+       1,
+       -2
+      ],
+      "y_direction": [
+       -3,
+       3,
+       0
+      ],
+      "rotation_crystal_to_lab": [
+       [
+        0.4082482904638631,
+        0.4082482904638631,
+        -0.8164965809277261
+       ],
+       [
+        -0.7071067811865476,
+        0.7071067811865476,
+        0.0
+       ],
+       [
+        0.5773502691896258,
+        0.5773502691896258,
+        0.5773502691896258
+       ]
+      ],
+      "description": "(111)[-1-12], anti-twinning (hard) sense: upper block along -[11-2]"
+     },
+     "interface": null,
+     "conditions": {
+      "temperature": {
+       "value": 0.0,
+       "unit": "K"
+      },
+      "loading": "static",
+      "strain_rate": null,
+      "stress_state": "simple shear on (111) with the other five Cauchy stress components relaxed to zero, 0 K",
+      "defect_state": {
+       "kind": "pristine",
+       "parameters": {},
+       "description": ""
+      },
+      "environment": "vacuum"
+     },
+     "origin": "atomistic_computed",
+     "scale": "atomistic_ideal",
+     "method": {
+      "name": "DFT ideal shear strength: affine simple shear, ions and lateral stresses relaxed",
+      "protocol_id": "dft_ideal_shear_SiC_antitwin",
+      "engine": "quantum_espresso",
+      "description": "pw.x, PBE, SSSP_1.3.0_PBE_efficiency, ecutwfc 70 Ry / ecutrho 560 Ry, k-mesh (8, 8, 8) offset (0, 0, 0), gaussian smearing 0.01 Ry, conv_thr 1e-11 Ry/atom; 2-atom primitive cell in the lab frame (x = shear direction, z = [111]); T_xz controlled, the other five T components iterated to |sigma| <= 0.25 GPa; strength = maximum of sigma_xz (parabolic refinement) at engineering strain 0.297",
+      "assumptions": [
+       "0 K static lattice (no zero-point or thermal effects)",
+       "spin-unpolarised",
+       "defect-free periodic crystal",
+       "homogeneous deformation of the 2-atom cell: phonon (non-affine) instabilities are not tested, so the value is an upper bound of the ideal strength",
+       "lattice parameter and Cij from stage 1 with the same settings"
+      ]
+     },
+     "potential_id": "dft-qe7.5-pbe-SSSP_1.3.0_PBE_efficiency@e31a8619",
+     "derivation": null,
+     "uncertainty": [
+      {
+       "kind": "numerical_convergence",
+       "value": 0.29067961385457863,
+       "unit": "GPa",
+       "relative": null,
+       "interval": "max_abs_diff",
+       "samples": null,
+       "description": "k+8 vs k+4 at the refined peak"
+      }
+     ],
+     "validation": {
+      "status": "numerically_verified",
+      "evidence": [],
+      "checks": [
+       {
+        "name": "pw_runs_converged",
+        "passed": true,
+        "metric": 0.0,
+        "tolerance": 0.0,
+        "unit": null,
+        "details": "34 pw.x runs: JOB DONE, SCF converged, BFGS converged for relaxations; max SCF iterations 12"
+       },
+       {
+        "name": "lateral_stresses_relaxed",
+        "passed": true,
+        "metric": 0.22124602188121933,
+        "tolerance": 0.25,
+        "unit": "GPa",
+        "details": "max |sigma_free| (the five components other than the controlled one) over the path up to the right neighbour of the maximum"
+       },
+       {
+        "name": "peak_bracketed",
+        "passed": true,
+        "metric": null,
+        "tolerance": null,
+        "unit": null,
+        "details": "stop: stress fell below 0.80 x maximum"
+       },
+       {
+        "name": "work_energy_consistency",
+        "passed": true,
+        "metric": 0.0011773073319863148,
+        "tolerance": 0.02,
+        "unit": null,
+        "details": "|integral V sigma:dF F^-1 - dE| / dE from 0 to the peak strain"
+       },
+       {
+        "name": "small_strain_modulus_vs_Cij",
+        "passed": true,
+        "metric": 0.02155155947884382,
+        "tolerance": 0.03,
+        "unit": null,
+        "details": "stress/strain at strain 0.01 vs the relaxed (111) shear modulus 151.4 GPa from the stage-1 Cij"
+       },
+       {
+        "name": "peak_settings_convergence",
+        "passed": true,
+        "metric": 0.29067961385457863,
+        "tolerance": 0.5,
+        "unit": "GPa",
+        "details": "k+8 vs k+4 at the refined peak"
+       },
+       {
+        "name": "production_peak_check_superseded",
+        "passed": true,
+        "metric": 0.029421013548045494,
+        "tolerance": null,
+        "unit": "GPa",
+        "details": "production-mesh peak 47.57 GPa; its ecutwfc + 20 Ry / k + 4 check moved the peak sample by -0.03 GPa, so the value is the peak on the k-refined mesh [12, 12, 12]"
+       }
+      ],
+      "notes": ""
+     },
+     "provenance": {
+      "created_utc": "2026-10-05T07:00:29.154905Z",
+      "schema_version": "0.1.0",
+      "code_version": "1187bd8710d2-dirty",
+      "code_dirty": true,
+      "implementation_ids": {
+       "fracture_md_source_tree": "528a38233ead850313c831fc030807a1ef8f272f7d51867bcc66d9a85127f591",
+       "fracture_md.engines.dft_qe": "92d1c717610534813fc35cb42f344bc90e4d58ed58d904aaca2ea6387764de93"
+      },
+      "engine": "quantum_espresso",
+      "engine_version": "Quantum ESPRESSO pw.x v.7.5 (qe-7.5-hc91ee90_1); ASE 3.29.0",
+      "package_versions": {
+       "fracture-md": "0.1.0",
+       "jax": "0.11.2",
+       "jaxlib": "0.11.2",
+       "jax-md": "0.2.29",
+       "numpy": "2.5.3",
+       "scipy": "1.18.1",
+       "ase": "3.29.0",
+       "pymatgen": "2026.9.24",
+       "spglib": "2.7.0",
+       "pydantic": "2.13.5",
+       "matscipy": "1.3.0"
+      },
+      "platform": "Linux-aarch64-py3.12.3",
+      "device": "cpu: 2 MPI rank(s) pinned to cores [12, 13]",
+      "float_precision": "float64",
+      "potential_id": "dft-qe7.5-pbe-SSSP_1.3.0_PBE_efficiency@e31a8619",
+      "protocol_id": "dft_ideal_shear_SiC_antitwin",
+      "input_hashes": {
+       "pseudo:C.pbe-n-kjpaw_psl.1.0.0.UPF": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+       "pseudo:Si.pbe-n-rrkjus_psl.1.0.0.UPF": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+       "pw_input:antitwin/ref": "b10cdb64f5ca23fbebb43abbf2b5c355d7ed7c8fa81a04c60d3cb439224445f0",
+       "pw_input:antitwin/s0.0100_it0": "9ee710d8574281e35e1ce00b983e3eb9d90c1583040dc5c21a2a40d300237536",
+       "pw_input:antitwin/s0.0400_it0": "0b1d93912bdb97804287c9c1c0c3c021c658f41afc21eed88e375118b429ca7a",
+       "pw_input:antitwin/s0.0400_it1": "032818b1aed2ee4185ce958c7bc5676086653aef6912eb68afcab3576351004e",
+       "pw_input:antitwin/s0.0800_it0": "9657262d05f19590af5e58727cbd23fe1289b220dab446dab6618f9e17f048d2",
+       "pw_input:antitwin/s0.1200_it0": "bd1e386e2bc62e042a95001f100b3c77283b533ad861dae1640a531842c8a691",
+       "pw_input:antitwin/s0.1200_it1": "2052b24492b93a37217b0931ca38b54a1ec8585c66c52ba73bb54fb2492afef8",
+       "pw_input:antitwin/s0.1600_it0": "d80439b1b2da604bcebc40183d21ca86fb15b3754bd1b9a49b22eea34b7b6f91",
+       "pw_input:antitwin/s0.1600_it1": "9428d14021b9902c5c3a67cf4025ce5531f95dc95aa3a0e4115ec8858ba8c29c",
+       "pw_input:antitwin/s0.2000_it0": "0637296952aba3f645827c1f07b4ace4a8ed0003467360de70e80167201fc88c",
+       "pw_input:antitwin/s0.2000_it1": "6f2cb65b05297fc8af06b165c9cec7a307ab543b1bf62a4759a7ae344e7c0710",
+       "pw_input:antitwin/s0.2400_it0": "7e6a36fd6d9afa694e57fa021ca23871bdee0f0249698ec8f4ec1141093adbc8",
+       "pw_input:antitwin/s0.2400_it1": "b5286f969c77ffb0bc16817e15120243c1bc698703c934306f7985cd739120b6",
+       "pw_input:antitwin/s0.2800_it0": "bac5d971bd497d58cf0f4735af1e40d12b761effb15a14f00b7746c097e31605",
+       "pw_input:antitwin/s0.2800_it1": "dd6fa73af1c50499a250714457c5595f3d72e06cdf71eb79b852a3be03645e9a",
+       "pw_input:antitwin/s0.3200_it0": "e6462662ac2b6de317963de85429cc900eeeb058c6b16dfc8af5e3cba1cc5a52",
+       "pw_input:antitwin/s0.3200_it1": "6798dd59c5b11acb2147ceb55b6fbc22b683d3805c1b112b7dd01436ab0f7894",
+       "pw_input:antitwin/s0.3600_it0": "4b05f8b736e33a76665f5d69aad3af64e20cdab51cbf6af9ef41f13d86019c72",
+       "pw_input:antitwin/s0.3600_it1": "797fa1e3a506f23eba4259788b975cfbebb3fe728cd397ffdac8dcf2a7f172ef",
+       "pw_input:antitwin/s0.3600_it2": "b4af9b69b6178295e1b6938c5d29681e5bfbd9c0106a60395b012ef6ff4412c9",
+       "pw_input:antitwin/s0.3600_it3": "5fbd5d55e4cf227d1c8dda6ad4915f9e5bcc430b4904141e6b2995d2316715fb",
+       "pw_input:antitwin/s0.2600_it0": "9d399d35ffe3f953204da25ccd5cdbc5ddb5cffcba5b2a1c789ee60e0db7f2f9",
+       "pw_input:antitwin/s0.3000_it0": "6f225001ef68ecd66f4c1b77ed9fdd9b1070df30943d76ab5b9262605e0bcac1",
+       "pw_input:tight": "5a032245622499508691b01be01c4c11571101da626b0dbe0f8bc7363a388592",
+       "pw_input:s0.1200": "71b12badc808a86894d6d929adc7064b29b9558dbd8acd4f6356a56ba097fe5b",
+       "pw_input:s0.1600": "31abcba8c0774bc38332f22e1fb759c9bb9ab72904756134adf80b67f70a6a7e",
+       "pw_input:s0.2000": "e3e223d420baf19bdbf71f5af7fdaa7f955ceb1208811b90cc37923f259fa35c",
+       "pw_input:s0.2400": "4265200aea75975e4f44d8d019516481120475b9bf926d48fec6ab0dbb02c2a5",
+       "pw_input:s0.2600": "02865397e41e50b95db5f2730c060be001529ad57de5e1d0302c1d3324fdbe35",
+       "pw_input:s0.2800": "db76d43fbece1ba16ce8729e06c9691167a7fe9ba88b1573b7bb1f4b70d7d067",
+       "pw_input:s0.3000": "f8cdd133469687ef5561656d88f37d714c94a10b17bf31b67314236108f52f4b",
+       "pw_input:s0.3200": "78bee5b4e96e8a128272d2759aba88db94fbb2fe0781b493530f56e4f556be94",
+       "pw_input:s0.3600": "99e7a16a44904c7025df1328f2b1fbe44c94ea5d36c7e62c7a2cd7968343884e"
+      },
+      "random_seeds": {},
+      "requested_by": "human",
+      "parent_ids": [],
+      "extra": {
+       "dft": {
+        "code": "Quantum ESPRESSO pw.x",
+        "qe_version": "7.5",
+        "conda_build": "qe-7.5-hc91ee90_1",
+        "functional": "PBE",
+        "pseudo_family": "SSSP_1.3.0_PBE_efficiency",
+        "pseudopotentials": {
+         "C.pbe-n-kjpaw_psl.1.0.0.UPF": {
+          "element": "C",
+          "md5": "5d2aebdfa2cae82b50a7e79e9516da0f",
+          "sha256": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+          "type": "100PAW"
+         },
+         "Si.pbe-n-rrkjus_psl.1.0.0.UPF": {
+          "element": "Si",
+          "md5": "0b0bb1205258b0d07b9f9672cf965d36",
+          "sha256": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+          "type": "100US"
+         }
+        },
+        "settings": {
+         "ecutwfc_ry": 70.0,
+         "dual": 8.0,
+         "ecutrho_ry": 560.0,
+         "kpts": [
+          8,
+          8,
+          8
+         ],
+         "kspacing_per_A": 0.15,
+         "koffset": [
+          0,
+          0,
+          0
+         ],
+         "occupations": "smearing",
+         "smearing": "gaussian",
+         "degauss_ry": 0.01,
+         "conv_thr_ry_per_atom": 1e-11,
+         "mixing_beta": 0.4,
+         "pseudo_family": "SSSP_1.3.0_PBE_efficiency",
+         "input_dft": null,
+         "extra_input": [],
+         "ecutwfc_eV": 952.3985186095799,
+         "ecutrho_eV": 7619.188148876639
+        },
+        "kmeshes": [
+         [
+          8,
+          8,
+          8
+         ],
+         [
+          12,
+          12,
+          12
+         ],
+         [
+          16,
+          16,
+          16
+         ]
+        ],
+        "runner": {
+         "command": "/home/lammspark01/miniconda3/envs/fmd-dft/bin/mpirun -np 2 --map-by pe-list=12,13:ordered --bind-to core --mca pml ob1 --mca btl self,sm -x OMP_NUM_THREADS=1 /home/lammspark01/miniconda3/envs/fmd-dft/bin/pw.x -nk 2",
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "omp_threads": 1,
+         "pw_x": "/home/lammspark01/miniconda3/envs/fmd-dft/bin/pw.x",
+         "conda_build": "qe-7.5-hc91ee90_1"
+        },
+        "spin": "unpolarised",
+        "n_pw_runs": 34,
+        "wall_s_total": 2111.367
+       },
+       "qe_runs": [
+        {
+         "label": "antitwin/ref",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 65,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 12.197,
+         "qe_wall_s": 11.69,
+         "qe_cpu_s": 11.19,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/ref"
+        },
+        {
+         "label": "antitwin/s0.0100_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 32.43,
+         "qe_wall_s": 31.93,
+         "qe_cpu_s": 30.99,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.0100_it0"
+        },
+        {
+         "label": "antitwin/s0.0400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 47.284,
+         "qe_wall_s": 46.77,
+         "qe_cpu_s": 45.39,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.0400_it0"
+        },
+        {
+         "label": "antitwin/s0.0400_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 22.236,
+         "qe_wall_s": 21.72,
+         "qe_cpu_s": 21.16,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.0400_it1"
+        },
+        {
+         "label": "antitwin/s0.0800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 49.295,
+         "qe_wall_s": 48.79,
+         "qe_cpu_s": 47.4,
+         "scf_cycles": 3,
+         "scf_iterations_total": 26,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.0800_it0"
+        },
+        {
+         "label": "antitwin/s0.1200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 56.844,
+         "qe_wall_s": 56.33,
+         "qe_cpu_s": 54.98,
+         "scf_cycles": 3,
+         "scf_iterations_total": 26,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.1200_it0"
+        },
+        {
+         "label": "antitwin/s0.1200_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 38.534,
+         "qe_wall_s": 38.03,
+         "qe_cpu_s": 37.05,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.1200_it1"
+        },
+        {
+         "label": "antitwin/s0.1600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 58.816,
+         "qe_wall_s": 58.31,
+         "qe_cpu_s": 56.92,
+         "scf_cycles": 3,
+         "scf_iterations_total": 27,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.1600_it0"
+        },
+        {
+         "label": "antitwin/s0.1600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 38.36,
+         "qe_wall_s": 37.86,
+         "qe_cpu_s": 36.86,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.1600_it1"
+        },
+        {
+         "label": "antitwin/s0.2000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 55.193,
+         "qe_wall_s": 54.68,
+         "qe_cpu_s": 53.29,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2000_it0"
+        },
+        {
+         "label": "antitwin/s0.2000_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 22.875,
+         "qe_wall_s": 22.36,
+         "qe_cpu_s": 21.81,
+         "scf_cycles": 1,
+         "scf_iterations_total": 10,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2000_it1"
+        },
+        {
+         "label": "antitwin/s0.2400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 57.729,
+         "qe_wall_s": 57.22,
+         "qe_cpu_s": 55.85,
+         "scf_cycles": 3,
+         "scf_iterations_total": 26,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2400_it0"
+        },
+        {
+         "label": "antitwin/s0.2400_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 24.961,
+         "qe_wall_s": 24.46,
+         "qe_cpu_s": 23.85,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2400_it1"
+        },
+        {
+         "label": "antitwin/s0.2800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 77.024,
+         "qe_wall_s": 76.52,
+         "qe_cpu_s": 74.55,
+         "scf_cycles": 4,
+         "scf_iterations_total": 35,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2800_it0"
+        },
+        {
+         "label": "antitwin/s0.2800_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 26.376,
+         "qe_wall_s": 25.86,
+         "qe_cpu_s": 25.22,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2800_it1"
+        },
+        {
+         "label": "antitwin/s0.3200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 105.566,
+         "qe_wall_s": 105.06,
+         "qe_cpu_s": 102.47999999999999,
+         "scf_cycles": 6,
+         "scf_iterations_total": 49,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3200_it0"
+        },
+        {
+         "label": "antitwin/s0.3200_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 38.636,
+         "qe_wall_s": 38.12,
+         "qe_cpu_s": 37.19,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3200_it1"
+        },
+        {
+         "label": "antitwin/s0.3600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 112.844,
+         "qe_wall_s": 112.34,
+         "qe_cpu_s": 109.45,
+         "scf_cycles": 6,
+         "scf_iterations_total": 51,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3600_it0"
+        },
+        {
+         "label": "antitwin/s0.3600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 89.814,
+         "qe_wall_s": 89.31,
+         "qe_cpu_s": 87.01,
+         "scf_cycles": 5,
+         "scf_iterations_total": 40,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3600_it1"
+        },
+        {
+         "label": "antitwin/s0.3600_it2",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 54.074,
+         "qe_wall_s": 53.57,
+         "qe_cpu_s": 52.13,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3600_it2"
+        },
+        {
+         "label": "antitwin/s0.3600_it3",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 54.178,
+         "qe_wall_s": 53.67,
+         "qe_cpu_s": 52.29,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3600_it3"
+        },
+        {
+         "label": "antitwin/s0.2600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 57.189,
+         "qe_wall_s": 56.69,
+         "qe_cpu_s": 55.26,
+         "scf_cycles": 3,
+         "scf_iterations_total": 26,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.2600_it0"
+        },
+        {
+         "label": "antitwin/s0.3000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 150,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 72.509,
+         "qe_wall_s": 72.0,
+         "qe_cpu_s": 70.14,
+         "scf_cycles": 4,
+         "scf_iterations_total": 33,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/antitwin/s0.3000_it0"
+        },
+        {
+         "label": "tight",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 90.0,
+         "ecutrho_ry": 720.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 100.65,
+         "qe_wall_s": 100.14,
+         "qe_cpu_s": 98.94,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/peak_check/tight"
+        },
+        {
+         "label": "s0.1200",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 58.347,
+         "qe_wall_s": 57.84,
+         "qe_cpu_s": 56.3,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.1200"
+        },
+        {
+         "label": "s0.1600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 58.99,
+         "qe_wall_s": 58.48,
+         "qe_cpu_s": 56.97,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.1600"
+        },
+        {
+         "label": "s0.2000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 82.796,
+         "qe_wall_s": 82.28999999999999,
+         "qe_cpu_s": 80.06,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.2000"
+        },
+        {
+         "label": "s0.2400",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 54.894,
+         "qe_wall_s": 54.38,
+         "qe_cpu_s": 52.9,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.2400"
+        },
+        {
+         "label": "s0.2600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 54.923,
+         "qe_wall_s": 54.41,
+         "qe_cpu_s": 52.84,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.2600"
+        },
+        {
+         "label": "s0.2800",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 58.883,
+         "qe_wall_s": 58.38,
+         "qe_cpu_s": 56.84,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.2800"
+        },
+        {
+         "label": "s0.3000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 54.058,
+         "qe_wall_s": 53.55,
+         "qe_cpu_s": 52.12,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.3000"
+        },
+        {
+         "label": "s0.3200",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 83.409,
+         "qe_wall_s": 82.9,
+         "qe_cpu_s": 80.66,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.3200"
+        },
+        {
+         "label": "s0.3600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 476,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 119.668,
+         "qe_wall_s": 119.16,
+         "qe_cpu_s": 116.02000000000001,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k12/s0.3600"
+        },
+        {
+         "label": "s0.3000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          16,
+          16,
+          16
+         ],
+         "n_kpoints_irreducible": 1098,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 2,
+         "cores": [
+          12,
+          13
+         ],
+         "npool": 2,
+         "wall_s": 179.785,
+         "qe_wall_s": 179.26,
+         "qe_cpu_s": 176.17000000000002,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_antitwin/kref_k16/s0.3000"
+        }
+       ]
+      }
+     },
+     "citations": [
+      {
+       "key": "Giannozzi2009",
+       "text": "P. Giannozzi et al., QUANTUM ESPRESSO: a modular and open-source software project for quantum simulations of materials, J. Phys.: Condens. Matter 21, 395502 (2009)",
+       "doi": "10.1088/0953-8984/21/39/395502",
+       "url": null
+      },
+      {
+       "key": "Perdew1996",
+       "text": "J. P. Perdew, K. Burke, M. Ernzerhof, Generalized gradient approximation made simple, Phys. Rev. Lett. 77, 3865 (1996)",
+       "doi": "10.1103/PhysRevLett.77.3865",
+       "url": null
+      },
+      {
+       "key": "Prandini2018",
+       "text": "G. Prandini, A. Marrazzo, I. E. Castelli, N. Mounet, N. Marzari, Precision and efficiency in solid-state pseudopotential calculations, npj Comput. Mater. 4, 72 (2018)",
+       "doi": "10.1038/s41524-018-0127-2",
+       "url": null
+      }
+     ],
+     "notes": "(111)[-1-12], anti-twinning (hard) sense: upper block along -[11-2].  Small-strain modulus 154.7 GPa (Cij: 151.4 GPa).  Comparisons with other functionals and with interatomic potentials: data/dft_reference/."
+    }
+   ]
+  },
+  "s110": {
+   "case": "s110",
+   "description": "(111)[1-10] (both senses equivalent by the (1-10) mirror)",
+   "status": "numerically_verified",
+   "ideal_shear_strength_GPa": 30.587797046263017,
+   "strain_at_peak": 0.3434673815907052,
+   "peak_bracketed": true,
+   "value_source": "maximum of the samples recomputed on the k-refined mesh [12, 12, 12]",
+   "production_mesh_peak": {
+    "stress_GPa": 30.114819982924274,
+    "strain": 0.3182984126984126,
+    "kmesh": [
+     8,
+     8,
+     8
+    ]
+   },
+   "k_refined": {
+    "kmesh": [
+     12,
+     12,
+     12
+    ],
+    "points": [
+     {
+      "strain": 0.12,
+      "stress_production_GPa": 16.783364283544014,
+      "stress_GPa": 16.79954584099543,
+      "lateral_GPa": 0.19020685258804296,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.16,
+      "stress_production_GPa": 21.120462995727518,
+      "stress_GPa": 21.207402090761963,
+      "lateral_GPa": 0.11989063020824053,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.2,
+      "stress_production_GPa": 24.67819905902359,
+      "stress_GPa": 24.749103701674354,
+      "lateral_GPa": 0.08046647205387433,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.24,
+      "stress_production_GPa": 27.557045234698762,
+      "stress_GPa": 27.356835237504388,
+      "lateral_GPa": 0.13901428901446294,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.28,
+      "stress_production_GPa": 29.430575377437602,
+      "stress_GPa": 29.241545365391477,
+      "lateral_GPa": 0.17917397250753003,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.30000000000000004,
+      "stress_production_GPa": 29.920876568215593,
+      "stress_GPa": 29.95220994764425,
+      "lateral_GPa": 0.28862014290621835,
+      "converged": true,
+      "kind": "refine"
+     },
+     {
+      "strain": 0.32,
+      "stress_production_GPa": 30.113142891752,
+      "stress_GPa": 30.36116203596193,
+      "lateral_GPa": 0.25096124556473415,
+      "converged": true,
+      "kind": "path"
+     },
+     {
+      "strain": 0.33999999999999997,
+      "stress_production_GPa": 29.84202825190686,
+      "stress_GPa": 30.58284937304637,
+      "lateral_GPa": 0.5428176999612363,
+      "converged": true,
+      "kind": "refine"
+     },
+     {
+      "strain": 0.36,
+      "stress_production_GPa": 29.546199960681374,
+      "stress_GPa": 30.475315568528302,
+      "lateral_GPa": 0.6009242017186044,
+      "converged": true,
+      "kind": "path"
+     }
+    ],
+    "peak_stress_GPa": 30.587797046263017,
+    "peak_strain": 0.3434673815907052,
+    "bracketed": true,
+    "check": {
+     "kmesh": [
+      16,
+      16,
+      16
+     ],
+     "strain": 0.33999999999999997,
+     "stress_k1_GPa": 30.58284937304637,
+     "stress_k2_GPa": 30.49017318037006,
+     "delta_GPa": -0.09267619267630778
+    },
+    "note": "cells (T) and starting ions of the production path; ions re-relaxed on the denser mesh; the lateral stresses were not re-iterated (their change moves sigma_xz by ~0.05 GPa)"
+   },
+   "samples_excluded_from_peak": [],
+   "stop_reason": "2 consecutive decreases after the maximum",
+   "small_strain_modulus_GPa": 152.54795524655881,
+   "relaxed_111_modulus_from_Cij_GPa": 151.41769134756504,
+   "work_energy_mismatch_at_peak": 0.003118390678488392,
+   "peak_settings_check": {
+    "strain": 0.32,
+    "stress_production_GPa": 30.113142891752,
+    "stress_tight_GPa": 30.362191771436112,
+    "delta_GPa": 0.24904887968411415,
+    "lateral_tight_GPa": 0.2967109216319278,
+    "ecutwfc_ry": 90.0,
+    "kmesh": [
+     12,
+     12,
+     12
+    ],
+    "converged": true
+   },
+   "lateral_tolerance_GPa": 0.25,
+   "max_lateral_residual_GPa": 0.18991264245256262,
+   "max_lateral_residual_note": "production-mesh path only (the lateral stresses were iterated there; samples past an instability included)",
+   "max_lateral_residual_k_refined_GPa": 0.6009242017186044,
+   "max_lateral_residual_k_refined_near_peak_GPa": 0.6009242017186044,
+   "k_refined_lateral_note": "the k-refined samples reuse the production cells and were not re-relaxed laterally; with the stage-1 Cij the linear-elastic coupling of a lateral residual r to sigma_xz is at most 0.26 r, i.e. <= 0.2 GPa here (an estimate: tangent moduli at large strain differ)",
+   "curve": [
+    {
+     "strain": 0.01,
+     "stress_GPa": 1.5255,
+     "dE_eV_per_atom": 0.000494,
+     "lateral_residual_GPa": 0.0218
+    },
+    {
+     "strain": 0.04,
+     "stress_GPa": 6.0116,
+     "dE_eV_per_atom": 0.00792,
+     "lateral_residual_GPa": 0.0309
+    },
+    {
+     "strain": 0.08,
+     "stress_GPa": 11.6776,
+     "dE_eV_per_atom": 0.031364,
+     "lateral_residual_GPa": 0.0335
+    },
+    {
+     "strain": 0.12,
+     "stress_GPa": 16.7834,
+     "dE_eV_per_atom": 0.069432,
+     "lateral_residual_GPa": 0.1899
+    },
+    {
+     "strain": 0.16,
+     "stress_GPa": 21.1205,
+     "dE_eV_per_atom": 0.120557,
+     "lateral_residual_GPa": 0.0939
+    },
+    {
+     "strain": 0.2,
+     "stress_GPa": 24.6782,
+     "dE_eV_per_atom": 0.182833,
+     "lateral_residual_GPa": 0.0743
+    },
+    {
+     "strain": 0.24,
+     "stress_GPa": 27.557,
+     "dE_eV_per_atom": 0.254674,
+     "lateral_residual_GPa": 0.0472
+    },
+    {
+     "strain": 0.28,
+     "stress_GPa": 29.4306,
+     "dE_eV_per_atom": 0.332813,
+     "lateral_residual_GPa": 0.104
+    },
+    {
+     "strain": 0.30000000000000004,
+     "stress_GPa": 29.9209,
+     "dE_eV_per_atom": 0.373175,
+     "lateral_residual_GPa": 0.1181
+    },
+    {
+     "strain": 0.32,
+     "stress_GPa": 30.1131,
+     "dE_eV_per_atom": 0.414086,
+     "lateral_residual_GPa": 0.1022
+    },
+    {
+     "strain": 0.33999999999999997,
+     "stress_GPa": 29.842,
+     "dE_eV_per_atom": 0.454403,
+     "lateral_residual_GPa": 0.1044
+    },
+    {
+     "strain": 0.36,
+     "stress_GPa": 29.5462,
+     "dE_eV_per_atom": 0.494304,
+     "lateral_residual_GPa": 0.0375
+    },
+    {
+     "strain": 0.4,
+     "stress_GPa": 28.6203,
+     "dE_eV_per_atom": 0.573069,
+     "lateral_residual_GPa": 0.1014
+    }
+   ],
+   "settings": {
+    "ecutwfc_ry": 70.0,
+    "ecutrho_ry": 560.0,
+    "kmesh": [
+     8,
+     8,
+     8
+    ],
+    "smearing": "gaussian 0.01 Ry",
+    "cell": "2-atom primitive cell, x = [1, -1, 0], z = [111]",
+    "a0_A": 4.381163398
+   },
+   "n_pw_runs": 23,
+   "pw_wall_s": 1323.0239628907293,
+   "raw": "outputs/dft/stage2/SiC/shear_s110.json",
+   "literature": [
+    {
+     "value": 31.74,
+     "strain": 0.35,
+     "functional": "LDA (ultrasoft PP)",
+     "evidence": false,
+     "confidence": "high",
+     "source": "S. Ogata, J. Li, N. Hirosaki, Y. Shibutani, S. Yip, Phys. Rev. B 70, 104104 (2004), Table II, relaxed (unrelaxed 43.12 GPa)",
+     "doi": "10.1103/PhysRevB.70.104104"
+    }
+   ],
+   "records": [
+    {
+     "id": "ref-3c-sic:ideal_shear_strength:44578bcbfd8a",
+     "name": "ideal_shear_strength",
+     "value": {
+      "value": 30.587797046263017,
+      "unit": "GPa"
+     },
+     "shape_description": "",
+     "frame": "not_applicable",
+     "composition": {
+      "formula": "SiC",
+      "elements": {
+       "Si": 1.0,
+       "C": 1.0
+      },
+      "is_fraction": false
+     },
+     "phase": "3C-SiC",
+     "orientation": {
+      "plane_miller": [
+       1,
+       1,
+       1
+      ],
+      "plane_miller_bravais": null,
+      "direction": null,
+      "x_direction": [
+       1,
+       -1,
+       0
+      ],
+      "y_direction": [
+       1,
+       1,
+       -2
+      ],
+      "rotation_crystal_to_lab": [
+       [
+        0.7071067811865475,
+        -0.7071067811865475,
+        0.0
+       ],
+       [
+        0.4082482904638631,
+        0.4082482904638631,
+        -0.8164965809277261
+       ],
+       [
+        0.5773502691896258,
+        0.5773502691896258,
+        0.5773502691896258
+       ]
+      ],
+      "description": "(111)[1-10] (both senses equivalent by the (1-10) mirror)"
+     },
+     "interface": null,
+     "conditions": {
+      "temperature": {
+       "value": 0.0,
+       "unit": "K"
+      },
+      "loading": "static",
+      "strain_rate": null,
+      "stress_state": "simple shear on (111) with the other five Cauchy stress components relaxed to zero, 0 K",
+      "defect_state": {
+       "kind": "pristine",
+       "parameters": {},
+       "description": ""
+      },
+      "environment": "vacuum"
+     },
+     "origin": "atomistic_computed",
+     "scale": "atomistic_ideal",
+     "method": {
+      "name": "DFT ideal shear strength: affine simple shear, ions and lateral stresses relaxed",
+      "protocol_id": "dft_ideal_shear_SiC_s110",
+      "engine": "quantum_espresso",
+      "description": "pw.x, PBE, SSSP_1.3.0_PBE_efficiency, ecutwfc 70 Ry / ecutrho 560 Ry, k-mesh (8, 8, 8) offset (0, 0, 0), gaussian smearing 0.01 Ry, conv_thr 1e-11 Ry/atom; 2-atom primitive cell in the lab frame (x = shear direction, z = [111]); T_xz controlled, the other five T components iterated to |sigma| <= 0.25 GPa; strength = maximum of sigma_xz (parabolic refinement) at engineering strain 0.343",
+      "assumptions": [
+       "0 K static lattice (no zero-point or thermal effects)",
+       "spin-unpolarised",
+       "defect-free periodic crystal",
+       "homogeneous deformation of the 2-atom cell: phonon (non-affine) instabilities are not tested, so the value is an upper bound of the ideal strength",
+       "lattice parameter and Cij from stage 1 with the same settings"
+      ]
+     },
+     "potential_id": "dft-qe7.5-pbe-SSSP_1.3.0_PBE_efficiency@e31a8619",
+     "derivation": null,
+     "uncertainty": [
+      {
+       "kind": "numerical_convergence",
+       "value": 0.09267619267630778,
+       "unit": "GPa",
+       "relative": null,
+       "interval": "max_abs_diff",
+       "samples": null,
+       "description": "k+8 vs k+4 at the refined peak"
+      }
+     ],
+     "validation": {
+      "status": "numerically_verified",
+      "evidence": [],
+      "checks": [
+       {
+        "name": "pw_runs_converged",
+        "passed": true,
+        "metric": 0.0,
+        "tolerance": 0.0,
+        "unit": null,
+        "details": "34 pw.x runs: JOB DONE, SCF converged, BFGS converged for relaxations; max SCF iterations 12"
+       },
+       {
+        "name": "lateral_stresses_relaxed",
+        "passed": true,
+        "metric": 0.18991264245256262,
+        "tolerance": 0.25,
+        "unit": "GPa",
+        "details": "max |sigma_free| (the five components other than the controlled one) over the path up to the right neighbour of the maximum"
+       },
+       {
+        "name": "peak_bracketed",
+        "passed": true,
+        "metric": null,
+        "tolerance": null,
+        "unit": null,
+        "details": "stop: 2 consecutive decreases after the maximum"
+       },
+       {
+        "name": "work_energy_consistency",
+        "passed": true,
+        "metric": 0.003118390678488392,
+        "tolerance": 0.02,
+        "unit": null,
+        "details": "|integral V sigma:dF F^-1 - dE| / dE from 0 to the peak strain"
+       },
+       {
+        "name": "small_strain_modulus_vs_Cij",
+        "passed": true,
+        "metric": 0.007464543204527934,
+        "tolerance": 0.03,
+        "unit": null,
+        "details": "stress/strain at strain 0.01 vs the relaxed (111) shear modulus 151.4 GPa from the stage-1 Cij"
+       },
+       {
+        "name": "peak_settings_convergence",
+        "passed": true,
+        "metric": 0.09267619267630778,
+        "tolerance": 0.5,
+        "unit": "GPa",
+        "details": "k+8 vs k+4 at the refined peak"
+       },
+       {
+        "name": "production_peak_check_superseded",
+        "passed": true,
+        "metric": 0.24904887968411415,
+        "tolerance": null,
+        "unit": "GPa",
+        "details": "production-mesh peak 30.11 GPa; its ecutwfc + 20 Ry / k + 4 check moved the peak sample by +0.25 GPa, so the value is the peak on the k-refined mesh [12, 12, 12]"
+       }
+      ],
+      "notes": ""
+     },
+     "provenance": {
+      "created_utc": "2026-10-05T07:00:31.024466Z",
+      "schema_version": "0.1.0",
+      "code_version": "1187bd8710d2-dirty",
+      "code_dirty": true,
+      "implementation_ids": {
+       "fracture_md_source_tree": "528a38233ead850313c831fc030807a1ef8f272f7d51867bcc66d9a85127f591",
+       "fracture_md.engines.dft_qe": "92d1c717610534813fc35cb42f344bc90e4d58ed58d904aaca2ea6387764de93"
+      },
+      "engine": "quantum_espresso",
+      "engine_version": "Quantum ESPRESSO pw.x v.7.5 (qe-7.5-hc91ee90_1); ASE 3.29.0",
+      "package_versions": {
+       "fracture-md": "0.1.0",
+       "jax": "0.11.2",
+       "jaxlib": "0.11.2",
+       "jax-md": "0.2.29",
+       "numpy": "2.5.3",
+       "scipy": "1.18.1",
+       "ase": "3.29.0",
+       "pymatgen": "2026.9.24",
+       "spglib": "2.7.0",
+       "pydantic": "2.13.5",
+       "matscipy": "1.3.0"
+      },
+      "platform": "Linux-aarch64-py3.12.3",
+      "device": "cpu: 1 MPI rank(s) pinned to cores [19]",
+      "float_precision": "float64",
+      "potential_id": "dft-qe7.5-pbe-SSSP_1.3.0_PBE_efficiency@e31a8619",
+      "protocol_id": "dft_ideal_shear_SiC_s110",
+      "input_hashes": {
+       "pseudo:C.pbe-n-kjpaw_psl.1.0.0.UPF": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+       "pseudo:Si.pbe-n-rrkjus_psl.1.0.0.UPF": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+       "pw_input:s110/ref": "689d9018c82dea28ad08d9ec1896cd6385ddc4a1de30e641e357d78638a4532c",
+       "pw_input:s110/s0.0100_it0": "c6cf90abaf218c219243015189f28126e4052c303a87c14c785eb73b4fa671e5",
+       "pw_input:s110/s0.0400_it0": "ebcecc4853e56d84fe101e71d22a1d837a9acd10c7991f8c3e1ad4c5bc631d31",
+       "pw_input:s110/s0.0400_it1": "4483d732758e7c1280af91b3ac91b876070d8979a1faf0ea53bfb30a1f401c8e",
+       "pw_input:s110/s0.0800_it0": "c58feee738f4fb48fda36716ce3a50d84aae9435c61d1b55de2b439482d1b6f4",
+       "pw_input:s110/s0.0800_it1": "d23843fde8e1128a801833f0df9bec6018cf391056080595112a03e4fcf8c49e",
+       "pw_input:s110/s0.1200_it0": "f37e33da9f12c1d8e7c423bfa56670714e294de89bbb4e3151002de58ec82e11",
+       "pw_input:s110/s0.1600_it0": "7951b368c19871f1210067a048dfec10b1d03bf4ce144feaf8e0592987c50c28",
+       "pw_input:s110/s0.1600_it1": "fbede55c177583cc0fd4b71137ad8f42331360b7339837c1b7c8f079e030a014",
+       "pw_input:s110/s0.2000_it0": "e40aadddc8bcd2ad06c594e040742621ac83d1dfa9d1ccef9b9eb49036d367a3",
+       "pw_input:s110/s0.2000_it1": "d05e5d13bbe4f67e4378ce94fd43cbab6c8c5c0a1d50a43c0078176142f96829",
+       "pw_input:s110/s0.2400_it0": "4187921540a1533dad831c2a861255e0b851096cb217e9401d1076c01a4ed999",
+       "pw_input:s110/s0.2400_it1": "4765881b3f13877083550d2a2e1c1739dc37b1c13735f473478868f375e11abf",
+       "pw_input:s110/s0.2800_it0": "f2c0ae8df15de8a55af3079679a53be686de5a803db733e621f25b9a45775f81",
+       "pw_input:s110/s0.2800_it1": "7eecaf3e37955d879fea4c8de6eb673158a034bb80cf7d2a931213052fb35dce",
+       "pw_input:s110/s0.3200_it0": "dcbdc5485131cb44e4cc360b8a30893d769353d79804cb505dc2a7110e826e4d",
+       "pw_input:s110/s0.3200_it1": "aa3366ebf0f0ef054405a3530e4f43b1fc2d0e6332e61eaef73715f78a84591e",
+       "pw_input:s110/s0.3600_it0": "aaccba1edad49feb629ada7c4286a9cf711bb2e2dd9d35c2d5be1383e22def18",
+       "pw_input:s110/s0.3600_it1": "9757607b8a40518221460627b97ce54ef3d653a3ca8f43b42fea387f6fb422f0",
+       "pw_input:s110/s0.4000_it0": "5d1c5ad761fa4c2bf054c52843b540c8024fb57377df449edf410a25f5b45e64",
+       "pw_input:s110/s0.4000_it1": "e09090ff30efc106d66f3e0eccce6528b9df57e496c116cead014130050a05a2",
+       "pw_input:s110/s0.3000_it0": "c3e3e3df2ed0165fed63bdaf664ca35f611b82949d8f59ef6c5aad3cbecadf61",
+       "pw_input:s110/s0.3400_it0": "0cfe5041093b2b16b5f9b25adf8350fc3314cc4dab87054db7ee79346894b32c",
+       "pw_input:tight": "a6814ead99360334a7358112ba358a89292156c0b0d79c63f3a03f289082cffa",
+       "pw_input:s0.1200": "8ee01c2ec9146c4c6e4ac6bb4304b151dde1174d06d766669dea34516d1b5e87",
+       "pw_input:s0.1600": "89870aef58856080249b057c94b9d85ef0847074f049a219e3d13ce272ccaea5",
+       "pw_input:s0.2000": "ebc2fc97d84807f037e3974920e498012cc9b3788edcfb92bc9067242763dcbe",
+       "pw_input:s0.2400": "02f13665da60375af37baa5dd1d1027df33142d54618899a5c32f8f038d7d2ca",
+       "pw_input:s0.2800": "f82c6d4bb9c0af69122add6cf2f8a28d58f7f7d1077d06119fb12876e1e334cf",
+       "pw_input:s0.3000": "84b5c1aeaa91ab81bd0d6d76d67a1d4ddc19211d1eb7aab20a8ab4533902477d",
+       "pw_input:s0.3200": "cdd2a35587aa2610739ac318793521e6dbf948f2a3f41b6299f53fde238ed107",
+       "pw_input:s0.3400": "e225d53f21c745055d5a20f75180b9b7493c80a5b611cfd5cc8f2964c2ce9808",
+       "pw_input:s0.3600": "85697d602ed947dd7db428a8f971e0bcffaf489232ab6a7d6bcf139067ae84d6"
+      },
+      "random_seeds": {},
+      "requested_by": "human",
+      "parent_ids": [],
+      "extra": {
+       "dft": {
+        "code": "Quantum ESPRESSO pw.x",
+        "qe_version": "7.5",
+        "conda_build": "qe-7.5-hc91ee90_1",
+        "functional": "PBE",
+        "pseudo_family": "SSSP_1.3.0_PBE_efficiency",
+        "pseudopotentials": {
+         "C.pbe-n-kjpaw_psl.1.0.0.UPF": {
+          "element": "C",
+          "md5": "5d2aebdfa2cae82b50a7e79e9516da0f",
+          "sha256": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+          "type": "100PAW"
+         },
+         "Si.pbe-n-rrkjus_psl.1.0.0.UPF": {
+          "element": "Si",
+          "md5": "0b0bb1205258b0d07b9f9672cf965d36",
+          "sha256": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+          "type": "100US"
+         }
+        },
+        "settings": {
+         "ecutwfc_ry": 70.0,
+         "dual": 8.0,
+         "ecutrho_ry": 560.0,
+         "kpts": [
+          8,
+          8,
+          8
+         ],
+         "kspacing_per_A": 0.15,
+         "koffset": [
+          0,
+          0,
+          0
+         ],
+         "occupations": "smearing",
+         "smearing": "gaussian",
+         "degauss_ry": 0.01,
+         "conv_thr_ry_per_atom": 1e-11,
+         "mixing_beta": 0.4,
+         "pseudo_family": "SSSP_1.3.0_PBE_efficiency",
+         "input_dft": null,
+         "extra_input": [],
+         "ecutwfc_eV": 952.3985186095799,
+         "ecutrho_eV": 7619.188148876639
+        },
+        "kmeshes": [
+         [
+          8,
+          8,
+          8
+         ],
+         [
+          12,
+          12,
+          12
+         ],
+         [
+          16,
+          16,
+          16
+         ]
+        ],
+        "runner": {
+         "command": "/home/lammspark01/miniconda3/envs/fmd-dft/bin/mpirun -np 1 --map-by pe-list=19:ordered --bind-to core --mca pml ob1 --mca btl self,sm -x OMP_NUM_THREADS=1 /home/lammspark01/miniconda3/envs/fmd-dft/bin/pw.x",
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "omp_threads": 1,
+         "pw_x": "/home/lammspark01/miniconda3/envs/fmd-dft/bin/pw.x",
+         "conda_build": "qe-7.5-hc91ee90_1"
+        },
+        "spin": "unpolarised",
+        "n_pw_runs": 34,
+        "wall_s_total": 3304.279
+       },
+       "qe_runs": [
+        {
+         "label": "s110/ref",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 65,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 9.87,
+         "qe_wall_s": 9.32,
+         "qe_cpu_s": 8.39,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/ref"
+        },
+        {
+         "label": "s110/s0.0100_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 45.661,
+         "qe_wall_s": 45.13,
+         "qe_cpu_s": 43.21,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.0100_it0"
+        },
+        {
+         "label": "s110/s0.0400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 65.238,
+         "qe_wall_s": 64.74,
+         "qe_cpu_s": 62.01,
+         "scf_cycles": 3,
+         "scf_iterations_total": 24,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.0400_it0"
+        },
+        {
+         "label": "s110/s0.0400_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 31.189,
+         "qe_wall_s": 30.68,
+         "qe_cpu_s": 29.38,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.0400_it1"
+        },
+        {
+         "label": "s110/s0.0800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 68.214,
+         "qe_wall_s": 67.72,
+         "qe_cpu_s": 65.01,
+         "scf_cycles": 3,
+         "scf_iterations_total": 24,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.0800_it0"
+        },
+        {
+         "label": "s110/s0.0800_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 32.616,
+         "qe_wall_s": 32.12,
+         "qe_cpu_s": 30.82,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.0800_it1"
+        },
+        {
+         "label": "s110/s0.1200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 69.438,
+         "qe_wall_s": 68.94,
+         "qe_cpu_s": 66.02,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.1200_it0"
+        },
+        {
+         "label": "s110/s0.1600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 70.036,
+         "qe_wall_s": 69.53,
+         "qe_cpu_s": 66.67,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.1600_it0"
+        },
+        {
+         "label": "s110/s0.1600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 32.517,
+         "qe_wall_s": 32.01,
+         "qe_cpu_s": 30.75,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.1600_it1"
+        },
+        {
+         "label": "s110/s0.2000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 73.276,
+         "qe_wall_s": 72.77,
+         "qe_cpu_s": 69.84,
+         "scf_cycles": 3,
+         "scf_iterations_total": 27,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.2000_it0"
+        },
+        {
+         "label": "s110/s0.2000_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 32.528,
+         "qe_wall_s": 32.03,
+         "qe_cpu_s": 30.78,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.2000_it1"
+        },
+        {
+         "label": "s110/s0.2400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 71.123,
+         "qe_wall_s": 70.61,
+         "qe_cpu_s": 67.57,
+         "scf_cycles": 3,
+         "scf_iterations_total": 26,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.2400_it0"
+        },
+        {
+         "label": "s110/s0.2400_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 30.556,
+         "qe_wall_s": 30.05,
+         "qe_cpu_s": 28.87,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.2400_it1"
+        },
+        {
+         "label": "s110/s0.2800_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 86.389,
+         "qe_wall_s": 85.88,
+         "qe_cpu_s": 82.34,
+         "scf_cycles": 4,
+         "scf_iterations_total": 32,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.2800_it0"
+        },
+        {
+         "label": "s110/s0.2800_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 45.371,
+         "qe_wall_s": 44.86,
+         "qe_cpu_s": 43.04,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.2800_it1"
+        },
+        {
+         "label": "s110/s0.3200_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 88.662,
+         "qe_wall_s": 88.16,
+         "qe_cpu_s": 84.59,
+         "scf_cycles": 4,
+         "scf_iterations_total": 33,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.3200_it0"
+        },
+        {
+         "label": "s110/s0.3200_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 29.619,
+         "qe_wall_s": 29.11,
+         "qe_cpu_s": 27.9,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.3200_it1"
+        },
+        {
+         "label": "s110/s0.3600_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 92.976,
+         "qe_wall_s": 92.46000000000001,
+         "qe_cpu_s": 88.84,
+         "scf_cycles": 4,
+         "scf_iterations_total": 34,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.3600_it0"
+        },
+        {
+         "label": "s110/s0.3600_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 31.23,
+         "qe_wall_s": 30.72,
+         "qe_cpu_s": 29.42,
+         "scf_cycles": 1,
+         "scf_iterations_total": 11,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.3600_it1"
+        },
+        {
+         "label": "s110/s0.4000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 97.541,
+         "qe_wall_s": 97.05,
+         "qe_cpu_s": 93.42,
+         "scf_cycles": 4,
+         "scf_iterations_total": 36,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.4000_it0"
+        },
+        {
+         "label": "s110/s0.4000_it1",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 46.717,
+         "qe_wall_s": 46.21,
+         "qe_cpu_s": 44.45,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.4000_it1"
+        },
+        {
+         "label": "s110/s0.3000_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 86.226,
+         "qe_wall_s": 85.73,
+         "qe_cpu_s": 82.33,
+         "scf_cycles": 4,
+         "scf_iterations_total": 32,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.3000_it0"
+        },
+        {
+         "label": "s110/s0.3400_it0",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          8,
+          8,
+          8
+         ],
+         "n_kpoints_irreducible": 260,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 86.033,
+         "qe_wall_s": 85.52,
+         "qe_cpu_s": 82.22,
+         "scf_cycles": 4,
+         "scf_iterations_total": 31,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/s110/s0.3400_it0"
+        },
+        {
+         "label": "tight",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 90.0,
+         "ecutrho_ry": 720.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 199.95,
+         "qe_wall_s": 199.44,
+         "qe_cpu_s": 196.12,
+         "scf_cycles": 2,
+         "scf_iterations_total": 15,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/peak_check/tight"
+        },
+        {
+         "label": "s0.1200",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 107.327,
+         "qe_wall_s": 106.81,
+         "qe_cpu_s": 99.0,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.1200"
+        },
+        {
+         "label": "s0.1600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 101.652,
+         "qe_wall_s": 101.13,
+         "qe_cpu_s": 99.17,
+         "scf_cycles": 1,
+         "scf_iterations_total": 12,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.1600"
+        },
+        {
+         "label": "s0.2000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 148.246,
+         "qe_wall_s": 147.74,
+         "qe_cpu_s": 144.77,
+         "scf_cycles": 2,
+         "scf_iterations_total": 17,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.2000"
+        },
+        {
+         "label": "s0.2400",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 141.224,
+         "qe_wall_s": 140.7,
+         "qe_cpu_s": 137.69,
+         "scf_cycles": 2,
+         "scf_iterations_total": 16,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.2400"
+        },
+        {
+         "label": "s0.2800",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 86.738,
+         "qe_wall_s": 86.22,
+         "qe_cpu_s": 84.38,
+         "scf_cycles": 1,
+         "scf_iterations_total": 10,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.2800"
+        },
+        {
+         "label": "s0.3000",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 132.395,
+         "qe_wall_s": 131.88,
+         "qe_cpu_s": 129.31,
+         "scf_cycles": 2,
+         "scf_iterations_total": 15,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.3000"
+        },
+        {
+         "label": "s0.3200",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 130.985,
+         "qe_wall_s": 130.47,
+         "qe_cpu_s": 127.81,
+         "scf_cycles": 2,
+         "scf_iterations_total": 15,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.3200"
+        },
+        {
+         "label": "s0.3400",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 210.397,
+         "qe_wall_s": 209.88,
+         "qe_cpu_s": 205.89,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.3400"
+        },
+        {
+         "label": "s0.3600",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          12,
+          12,
+          12
+         ],
+         "n_kpoints_irreducible": 868,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 228.538,
+         "qe_wall_s": 228.02,
+         "qe_cpu_s": 223.74,
+         "scf_cycles": 3,
+         "scf_iterations_total": 25,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k12/s0.3600"
+        },
+        {
+         "label": "s0.3400",
+         "calculation": "relax",
+         "n_atoms": 2,
+         "formula": "CSi",
+         "kmesh": [
+          16,
+          16,
+          16
+         ],
+         "n_kpoints_irreducible": 2052,
+         "ecutwfc_ry": 70.0,
+         "ecutrho_ry": 560.0,
+         "ranks": 1,
+         "cores": [
+          19
+         ],
+         "npool": 1,
+         "wall_s": 493.805,
+         "qe_wall_s": 493.27,
+         "qe_cpu_s": 486.78,
+         "scf_cycles": 3,
+         "scf_iterations_total": 23,
+         "converged": true,
+         "directory": "/home/lammspark01/Documents/fracture-md/.claude/worktrees/continuation-previous-session-1058b3/outputs/dft/stage2/SiC/shear_s110/kref_k16/s0.3400"
+        }
+       ]
+      }
+     },
+     "citations": [
+      {
+       "key": "Giannozzi2009",
+       "text": "P. Giannozzi et al., QUANTUM ESPRESSO: a modular and open-source software project for quantum simulations of materials, J. Phys.: Condens. Matter 21, 395502 (2009)",
+       "doi": "10.1088/0953-8984/21/39/395502",
+       "url": null
+      },
+      {
+       "key": "Perdew1996",
+       "text": "J. P. Perdew, K. Burke, M. Ernzerhof, Generalized gradient approximation made simple, Phys. Rev. Lett. 77, 3865 (1996)",
+       "doi": "10.1103/PhysRevLett.77.3865",
+       "url": null
+      },
+      {
+       "key": "Prandini2018",
+       "text": "G. Prandini, A. Marrazzo, I. E. Castelli, N. Mounet, N. Marzari, Precision and efficiency in solid-state pseudopotential calculations, npj Comput. Mater. 4, 72 (2018)",
+       "doi": "10.1038/s41524-018-0127-2",
+       "url": null
+      }
+     ],
+     "notes": "(111)[1-10] (both senses equivalent by the (1-10) mirror).  Small-strain modulus 152.5 GPa (Cij: 151.4 GPa).  Comparisons with other functionals and with interatomic potentials: data/dft_reference/."
+    }
+   ]
+  }
+ },
+ "missing": [],
+ "method": "affine simple shear of the 2-atom cell, ions relaxed (pw.x BFGS), the five other Cauchy stress components relaxed by quasi-Newton iteration on the deformation gradient; strength = maximum of sigma_xz vs engineering strain T_xz (parabolic refinement); upper bound (no phonon instability test)",
+ "potentials_same_protocol": {
+  "T89": {
+   "label": "Tersoff 1989",
+   "twin": [
+    35.31,
+    0.394
+   ],
+   "antitwin": [
+    74.42,
+    0.49
+   ],
+   "s110": [
+    41.8,
+    0.368
+   ],
+   "G111": 182.3
+  },
+  "EA": {
+   "label": "Erhart-Albe 2005 (ij)",
+   "twin": [
+    32.9,
+    0.482
+   ],
+   "antitwin": [
+    81.21,
+    0.545
+   ],
+   "s110": [
+    40.29,
+    0.445
+   ],
+   "G111": 143.5
+  },
+  "Vashishta": {
+   "label": "Vashishta 2007",
+   "twin": [
+    14.13,
+    0.177
+   ],
+   "antitwin": [
+    21.63,
+    0.246
+   ],
+   "s110": [
+    16.11,
+    0.187
+   ],
+   "G111": 128.1
+  },
+  "MACE": {
+   "label": "MACE-MP-0 small",
+   "twin": [
+    37.03,
+    0.552
+   ],
+   "antitwin": [
+    39.17,
+    0.442
+   ],
+   "s110": [
+    28.0,
+    0.378
+   ],
+   "G111": 86.1
+  }
+ },
+ "potential_sources": {
+  "elastic": "outputs/indent_derisk/potential-diagnostics/elastic_table_tersof_erhart_erhart_vashis.json, outputs/indent_derisk/potential-diagnostics/elastic_table_mace_m.json",
+  "ideal_shear": "outputs/indent_derisk/potential-diagnostics/ideal_summary.json (ideal_<potential>_<case>_relaxed.json)",
+  "gsfe": "outputs/indent_derisk/potential-diagnostics/gsfe_<potential>.json, gsfe_mace_*.json",
+  "b3_b1": "outputs/indent_derisk/potential-diagnostics/eos_summary.json",
+  "notes": "outputs/indent_derisk/potential-diagnostics/notes.md"
+ }
+}
