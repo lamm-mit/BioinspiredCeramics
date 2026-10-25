@@ -16,6 +16,7 @@ PASSAGES = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm, $E
             {"id": "p#9", "source": "p", "text": "graphite interlayers 20 µm thick deflect cracks in alumina"}]
 graph.cp.search = lambda corpus, q, k, figures=False, skip=(), pattern=None: [] if figures else [p for p in PASSAGES if p["id"] not in skip]
 graph.cp.neighbors = lambda corpus, entities, k=3: []
+graph.cross_checks = lambda design: {"md_bulk": {"youngs_modulus_GPa": 347.8, "method": "stub"}}
 NOVELTY = {}  # interlayer -> the novelty score the stub returns, 0.9 when absent
 graph.nv.novelty = lambda design, corpus, embed: {"statement": f"A {design['biological_model']}-inspired laminate.",
     "score": NOVELTY.get(design["interlayer"], 0.9), "combination": 1.0, "semantic": 0.8, "terms": [], "max_terms_together": 1,
@@ -213,7 +214,7 @@ GOOD3, SRC3 = GOOD | {"interlayer": "PMMA", "interlayer_thickness_um": 8}, SRC |
 folder = lambda s, n: Path(s["folder"]) / f"candidate_{n}"
 whole = lambda s, n: all((folder(s, n) / f).exists() for f in ["design.json", "verdict.json", "geometry/geometry.json", "geometry/bar_ceramic.stl",
                                                               "geometry/cell_interlayer.stl", "handoff/dft.json", "handoff/md.json", "handoff/fem.json",
-                                                              "novelty.json"])
+                                                              "novelty.json", "cross_checks.json"])
 verdicts = lambda s: [c["verdict"]["verdict"] for c in s["candidates"]]
 
 s, calls = run([{"design": GOOD, "sources": SRC}])
@@ -302,7 +303,8 @@ links = [l.split("](")[1].rstrip(")") for l in report.splitlines() if l.startswi
 check("the report appends candidates, figures, novelty, tool outputs, recipe and print files", all(h in report for h in [
       "## Candidates", "## Figures", "## Novelty of the best candidate", "## Simulation outputs of candidate_1", "## Recipe", "## Print files"])
       and len(links) == 3 and all((Path(s["folder"]) / l).exists() for l in links), links)
-check("the reporter is told the recipe and the novelty", '"recipe"' in REPORTED[-1] and '"novelty"' in REPORTED[-1] and "with a novelty of 0.90" in s["outcome"], s["outcome"])
+check("the reporter is told the recipe, the novelty and the cross-checks", '"recipe"' in REPORTED[-1] and '"novelty"' in REPORTED[-1]
+      and '"md_bulk"' in REPORTED[-1] and "| md_bulk | alumina | youngs_modulus_GPa = 347.8 |" in report and "with a novelty of 0.90" in s["outcome"], s["outcome"])
 
 NOVELTY.update({"graphite": 0.2, "epoxy": 0.8})
 prompts.clear()

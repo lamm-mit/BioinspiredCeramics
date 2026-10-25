@@ -6,3 +6,5 @@ jax==0.11.2; sys_platform != "linux"
 # The FEM tool measures the crack with scipy and draws it with matplotlib, which the benchmark charts also use
 scipy
 matplotlib
+# md_agent's bulk moduli, tools/md/bulk.py
+ase

@@ -5,10 +5,11 @@ hypothesis, and the rest make it a printable laminate. UNIT says what a passage 
 contain to supply a numeric field. SCALE and RANGE tell the source check how to find a numeric
 value in its source, and ASK is the question for the second reading of that source.
 make_geometry builds the part of a complete design, and CRITERIA is what the judge checks a simulated
-design against.
+design against. cross_checks runs tools that test a design value without entering the simulation.
 Everything specific to one design problem lives in this file and in the tools package.
 """
 
+from tools.md.bulk import md_bulk
 from tools.schema import MATERIAL, number
 
 from .fabrication import PROCESSES
@@ -73,3 +74,11 @@ def make_geometry(design, folder):
     """The STL files and the JSON description of the part a complete design describes."""
     return layered_geometry(design["ceramic"], design["interlayer"], design["layer_thickness_um"],
                             design["interlayer_thickness_um"], folder)
+
+
+def cross_checks(design):
+    """The MD moduli of the bulk ceramic beside the layer modulus the design took from the literature."""
+    try:
+        return {"md_bulk": md_bulk(design["ceramic"]) | {"design_layer_modulus_GPa": design["layer_modulus_GPa"]}}
+    except ValueError as e:  # md_bulk covers alumina only
+        return {"md_bulk": {"error": str(e)}}

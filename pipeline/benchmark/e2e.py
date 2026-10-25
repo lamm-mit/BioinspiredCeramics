@@ -1,4 +1,4 @@
-"""Run the whole agent graph on four questions per model set and check each run.
+"""Run the whole agent graph REPEATS times on four questions per model set and check each run.
 
 python -m pipeline.benchmark.e2e corpus_folder
 
@@ -9,7 +9,11 @@ design values, the geometry file and the outputs of dft_cleavage and md_interfac
 design, so nothing entered the simulation from anywhere else. The checks apply to the last
 candidate of the run. Each row also holds the judge's verdicts, the novelty of each candidate,
 the best candidate, the size of its recipe and whether its print files exist.
-Rows go to benchmark/results/e2e.jsonl.
+Rows go to benchmark/results/e2e_pipeline.jsonl, and each run keeps its report and state in its
+folder under runs/e2e/. CONFIGS holds the default models. The comparison of three model sets in
+benchmark/results/e2e.jsonl ran in early October 2026 on the earlier graph, with these sets
+"qwen3.6:35b for every agent" = team("qwen3.6:35b", "qwen3.6:35b") and
+"gpt-oss:120b + qwen3.6:35b reader" = team("gpt-oss:120b", "qwen3.6:35b", effort="low").
 """
 
 import json
@@ -47,9 +51,8 @@ def team(text, reader, designer_effort="medium", effort="none"):
             "figure_reader": (reader, "none")}
 
 
-CONFIGS = {"qwen3.6:35b for every agent": team("qwen3.6:35b", "qwen3.6:35b"),
-           "gpt-oss:20b + qwen3.6:35b reader": MODELS,
-           "gpt-oss:120b + qwen3.6:35b reader": team("gpt-oss:120b", "qwen3.6:35b", effort="low")}
+CONFIGS = {"gpt-oss:20b + qwen3.6:35b reader": MODELS}
+REPEATS = 2
 
 
 def checks(s):
@@ -85,14 +88,20 @@ if __name__ == "__main__":
     (here / "results").mkdir(exist_ok=True)
     for name, models in CONFIGS.items():
         app = build(models, c)
-        for q in QUESTIONS:
-            start = time.perf_counter()
-            try:
+        for repeat in range(REPEATS):
+            for q in QUESTIONS:
+                start = time.perf_counter()
                 folder = Path("runs") / "e2e" / time.strftime("%Y%m%d-%H%M%S")
-                row = checks(app.invoke({"question": q, "folder": str(folder)}, {"recursion_limit": 100}))
-            except Exception as e:  # a failed run counts, with its error
-                row = {"error": f"{type(e).__name__}: {str(e)[:300]}"}
-            row |= {"config": name, "question": q, "seconds": round(time.perf_counter() - start)}
-            with open(here / "results" / "e2e.jsonl", "a") as f:
-                f.write(json.dumps(row) + "\n")
-            print(row, flush=True)
+                try:
+                    s = app.invoke({"question": q, "folder": str(folder)}, {"recursion_limit": 100})
+                    folder.mkdir(parents=True, exist_ok=True)
+                    (folder / "state.json").write_text(json.dumps(s, indent=1, default=str))
+                    (folder / "report.md").write_text(s["report"])
+                    row = checks(s)
+                except Exception as e:  # a failed run counts, with its error
+                    row = {"error": f"{type(e).__name__}: {str(e)[:300]}"}
+                row |= {"config": name, "repeat": repeat, "question": q, "folder": str(folder),
+                        "seconds": round(time.perf_counter() - start)}
+                with open(here / "results" / "e2e_pipeline.jsonl", "a") as f:
+                    f.write(json.dumps(row) + "\n")
+                print(row, flush=True)

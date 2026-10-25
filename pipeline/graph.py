@@ -29,7 +29,7 @@ from tools import RUN, TOOLS
 from . import corpus as cp
 from . import handoff
 from . import novelty as nv
-from .design import ASK, CRITERIA, DESIGN, RANGE, SCALE, UNIT, design_errors, make_geometry
+from .design import ASK, CRITERIA, DESIGN, RANGE, SCALE, UNIT, cross_checks, design_errors, make_geometry
 from .fabrication import DEFAULTS, write_fabrication
 from .llm import ask_json, chat, embed, user
 from .render import render_part
@@ -304,7 +304,9 @@ def appendix(s):
         out += [f"## Simulation outputs of {c['candidate']}", "", table(["Tool", "Inputs", "Outputs", "Method"], [
             [r["tool"], ", ".join(f"{k} = {v}" for k, v in r["arguments"].items() if not str(v).endswith(".json")),
              ", ".join(f"{k} = {v}" for k, v in r["output"].items() if k != "method" and not str(v).endswith((".png", ".csv", ".json"))),
-             r["output"].get("method", "")] for r in c["results"]]), ""]
+             r["output"].get("method", "")] for r in c["results"]]
+            + [[name, c["design"].get("ceramic", ""), ", ".join(f"{k} = {v}" for k, v in out_.items() if k != "method"),
+                out_.get("method", "cross-check")] for name, out_ in c["cross_checks"].items()]), ""]
     if s.get("recipe"):
         out += ["## Recipe", "", recipe_markdown(s["recipe"]).split("\n", 2)[2], "## Print files", "",
                 table(["File", "Path"], [[k, rel(v)] for k, v in s["fabrication"]["files"].items()]), ""]
@@ -504,8 +506,10 @@ def build(models, corpus):
         folder = Path(s["candidate"])
         (folder / "verdict.json").write_text(json.dumps(verdict | {"reward": reward}, indent=1, ensure_ascii=False))
         (folder / "novelty.json").write_text(json.dumps(novelty, indent=1, ensure_ascii=False))
+        checks = cross_checks(s["design"])
+        (folder / "cross_checks.json").write_text(json.dumps(checks, indent=1, ensure_ascii=False))
         candidate = {"candidate": folder.name, "design": s["design"], "sources": s["sources"], "geometry": s["geometry"],
-                     "results": s["results"], "verdict": verdict, "novelty": novelty, "reward": reward}
+                     "results": s["results"], "verdict": verdict, "novelty": novelty, "reward": reward, "cross_checks": checks}
         # A candidate that is sent back may take one more search for its replacement.
         return {"verdict": verdict, "candidates": [candidate], "round": 1, "trace": trace}
 
@@ -559,7 +563,7 @@ def build(models, corpus):
             outcome += ", and the last design is incomplete" * bool(s.get("missing"))
         facts = {"outcome": outcome} | {k: s[k] for k in ["question", "design", "sources", "missing", "rejected"] if k in s}
         # Every judged candidate keeps its tool outputs and novelty, so the report sees each method string.
-        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "sources", "verdict", "reward"]}
+        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "sources", "verdict", "reward", "cross_checks"]}
                                | {"novelty": {k: c["novelty"][k] for k in ["score", "statement", "closest_records", "nearest_passage"]},
                                   "results": [{"tool": r["tool"], "arguments": r["arguments"], "output": r["output"]} for r in c["results"]]}
                                for c in judged]
