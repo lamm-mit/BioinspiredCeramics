@@ -319,11 +319,10 @@ def build(models, corpus):
         try:
             out, rec = ask_json(model, system, text, images, effort)
         except ValueError:
-            # A thinking model can spend its whole token budget on reasoning and return no answer.
-            # It gets one more try at low effort.
-            if effort in (None, "none", "low"):
-                raise
-            out, rec = ask_json(model, system, text, images, "low")
+            # A thinking model can spend its whole token budget on reasoning and return no answer, and the
+            # server is not deterministic, so a reply can also hold broken JSON. Either gets one more try,
+            # at low effort for a thinking model.
+            out, rec = ask_json(model, system, text, images, effort if effort in (None, "none", "low") else "low")
             rec["retried"] = True
         return out, rec | {"agent": agent}
 
