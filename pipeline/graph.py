@@ -339,8 +339,10 @@ def build(models, corpus):
         # material. So an open field is also searched among the passages that can supply it. Those
         # hold a number with the field's unit, or the name of one of its options. The first round
         # does this for the numeric fields, and the second for every field still missing.
+        # The second round searches with the choices the design already holds, such as alumina and direct ink writing.
+        chosen = " ".join(v for v in s.get("design", {}).values() if isinstance(v, str))
         for field in s.get("missing", UNIT):
-            query = f"{s['question']} {DESIGN[field]['description']}"
+            query = f"{s['question']} {chosen} {DESIGN[field]['description']}"
             if field in UNIT:
                 found += cp.search(corpus, query, 4, skip=seen, pattern=UNIT[field])
             for option in DESIGN[field].get("enum", ()):
@@ -395,7 +397,7 @@ def build(models, corpus):
             checker is asked a concrete question about the source alone, with the materials of the design named.
             """
             e, errors = evidence(s), {}
-            for field in ASK.keys() & design.keys():
+            for field in ASK.keys() & design.keys() - kept.keys():  # a kept field was read in an earlier call
                 try:
                     quantity = ASK[field].format(**design)
                 except KeyError:  # the question names a field the design does not have yet
@@ -422,15 +424,23 @@ def build(models, corpus):
             named = [k for k in judged[-1]["verdict"].get("change", {}) if k in design] or list(design)
             return {k: "the design repeats a candidate that the judge sent back. Change this field." for k in named}
 
-        design, sources, rejected, trace, read = {}, {}, {}, [], {}
+        # After a second search the fields that passed stay, and only the missing ones are asked for. After the
+        # judge sent a candidate back, the design starts over.
+        fresh = not s.get("design") or bool(judged) and s["design"] == judged[-1]["design"]
+        kept = {} if fresh else s["design"]
+        if kept:
+            prompt += (f"\nThese fields passed the check of their sources and stay as they are: {json.dumps(kept)}\n"
+                       f"Fill only the missing fields: {json.dumps([k for k in DESIGN if k not in kept])}")
+        design, sources, rejected, trace, read = dict(kept), {k: s["sources"][k] for k in kept}, {}, [], {}
         for attempt in range(2):  # the second attempt is the one repair, with the findings of the source check
             out, rec = ask("designer", DESIGNER, prompt)
             trace.append(rec)
             # A repair may answer only the rejected fields, so each answer adds to the fields that passed.
-            design |= {k: v for k, v in (out.get("design") or {}).items() if k in DESIGN and v is not None}
-            sources |= {k: real(str(v)) for k, v in (out.get("sources") or {}).items()}
+            design |= {k: v for k, v in (out.get("design") or {}).items() if k in DESIGN and k not in kept and v is not None}
+            sources |= {k: real(str(v)) for k, v in (out.get("sources") or {}).items() if k not in kept}
             failed = source_errors(design, sources, s) | design_errors(design) | repeats(design)
             failed |= second_reading({k: v for k, v in design.items() if k not in failed})
+            failed = {k: v for k, v in failed.items() if k not in kept}
             design = {k: v for k, v in design.items() if k not in failed}
             rejected |= failed
             if not failed:

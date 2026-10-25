@@ -282,6 +282,14 @@ TAMPER["layer_modulus_GPa"] = 999
 s, calls = run([{"design": GOOD, "sources": SRC}])
 TAMPER.clear()
 check("an input from nowhere blocks the verdict", verdicts(s) == ["incomplete"] and not judged and "fem_fracture.layer_modulus_GPa" in s["verdict"]["summary"], s["verdict"])
+prompts.clear()
+graph_ask_saved = graph.ask_json
+s = looped([{"design": {k: v for k, v in GOOD.items() if k != "interlayer_thickness_um"}, "sources": SRC},
+            {"design": {"interlayer_thickness_um": 20, "layer_modulus_GPa": 999}, "sources": SRC}], [])
+check("after a second search the passing fields stay and only the missing one is asked for", s["design"] == GOOD
+      and len(prompts) == 2 and "stay as they are" in prompts[1] and '"interlayer_thickness_um"' in prompts[1].split("Fill only")[-1]
+      and "stay as they are" not in prompts[0], s["design"])
+graph.ask_json = graph_ask_saved
 s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "ceramic"}, "sources": SRC}] * 4)
 check("an incomplete first design is reported as not simulated", s["outcome"] == "no design was simulated, and the last design is incomplete" and not s.get("candidates"), s["outcome"])
 sections = json.loads(REPORTED[-1])["sections"]
