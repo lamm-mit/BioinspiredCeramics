@@ -149,6 +149,8 @@ def spy(script):
     graph.ask_json = fake
     return graph.build(MODELS, {}).invoke({"question": "Design a layered alumina.", "folder": next(folders)}, {"recursion_limit": 100})
 s = spy([{"design": GOOD | {"layer_modulus_GPa": 380}, "sources": LABELS}, {"design": {"layer_modulus_GPa": 367}, "sources": {"layer_modulus_GPa": "E1: E_A"}}])
+check("the designer is shown the numbers each line states in each numeric unit", '"layer_modulus_GPa": ["E1: 367"]' in prompts[0]
+      and '"layer_thickness_um": ["E1: 210", "E2: 20"]' in prompts[0] and '"interlayer_thickness_um": ["E2: 20"]' in prompts[0], prompts[0][-300:])
 check("the designer reads labels, and the repair message names them", "[E1] alumina layers" in prompts[0] and "p#6" not in prompts[0] and "E1 gives 367 GPa, not 380" in prompts[1] and s["design"] == GOOD, prompts[1][-260:])
 
 s, calls = run([{"design": GOOD, "sources": LABELS | {"layer_modulus_GPa": "E99: none"}}, {"design": GOOD, "sources": LABELS}])

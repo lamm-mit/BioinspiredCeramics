@@ -369,6 +369,16 @@ def build(models, corpus):
         rows = shown(s)
         prompt = (f"Question: {s['question']}\nDesign fields: {FIELDS}\nEvidence:\n"
                   + "\n".join(f"[E{n}] {text}" for n, (_, text) in enumerate(rows, 1)))
+        # Models quote a typical value from memory and cite a line that does not state it. So the numbers each
+        # line states in the unit of each numeric field are listed, found the way the source check finds them.
+        e = evidence(s)
+        stated = {field: [f"E{n}: " + ", ".join(f"{lo:g}" if lo == hi else f"{lo:g} to {hi:g}" for lo, hi in spans[:8])
+                          for n, (i, _) in enumerate(rows, 1)
+                          for text in [e.get(i.replace("/", "_"), e.get(i, ""))]
+                          if re.search(UNIT[field], plain(text)) for spans in [quantities(text, SCALE[field])] if spans][:20]
+                  for field in SCALE}
+        prompt += ("\nNumbers that the evidence lines state in the unit of each numeric field. A numeric value must be one "
+                   "of the numbers of the line it cites:\n" + json.dumps(stated))
         judged = s.get("candidates", [])
         if judged:
             prompt += ("\nEarlier candidates of this run, with the judge's verdict and the novelty of each against the "
