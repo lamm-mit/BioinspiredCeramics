@@ -313,11 +313,12 @@ def build(models, corpus):
         model, effort = models[agent]
         try:
             out, rec = ask_json(model, system, text, images, effort)
-        except ValueError:
-            # A thinking model can spend its whole token budget on reasoning and return no answer, and the
-            # server is not deterministic, so a reply can also hold broken JSON. Either gets one more try,
-            # at low effort for a thinking model.
-            out, rec = ask_json(model, system, text, images, effort if effort in (None, "none", "low") else "low")
+        except ValueError as e:
+            # A thinking model can spend its whole token budget on reasoning and return no answer, and a reply
+            # can hold broken JSON, such as a list left open. Either gets one more try at low effort, with the
+            # error added, since at temperature 0 the same prompt gives the same reply.
+            again = f"{text}\n\nYour last reply could not be read: {str(e)[:300]}\nReply with one valid JSON object only."
+            out, rec = ask_json(model, system, again, images, effort if effort in (None, "none", "low") else "low")
             rec["retried"] = True
         return out, rec | {"agent": agent}
 
