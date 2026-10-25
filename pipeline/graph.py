@@ -113,16 +113,11 @@ Return JSON with keys
 Reply with the JSON only."""
 
 REPORTER = """Write a short report in plain markdown, without emoji, for a scientist.
-Start with the outcome as given. Then give the question, the hypothesis of the best candidate (the biological
-model, its toughening mechanism and how the design carries it into the ceramic), a table of its design fields
-with value, unit and source, the simulation results and what they mean, the judge's finding on each criterion,
-its novelty against the corpus with the closest prior records, a summary of the fabrication recipe and the print
-files, and what remains unverified. If other candidates were judged, list each with its verdict, novelty and
-reason. Use only numbers and criteria that appear in the input. Results whose method says stand-in are
-placeholders, not predictions. Say so. A recipe value whose source starts with assumption does not come from
-the evidence. Say so. If design fields are missing, no simulation ran on that design. Say which fields are
-missing, and give the reason for each field that the source check rejected. Figures, tool outputs and file
-lists are appended after your text, so leave them out."""
+Start with the outcome as given. Then write the sections listed under "sections", in that order, and no other
+section. Use only numbers, materials, criteria and steps that appear in the input, and never supply a typical or
+assumed value of your own. Results whose method says stand-in are placeholders, not predictions. Say so. A
+recipe value whose source starts with assumption does not come from the evidence. Say so. Figures, tool outputs
+and file lists are appended after your text, so leave them out."""
 
 
 class State(TypedDict, total=False):
@@ -569,6 +564,17 @@ def build(models, corpus):
         if s.get("recipe"):
             facts |= {"best": s["best"], "recipe": s["recipe"],
                       "print_files": {k: v for k, v in s["fabrication"].items() if k != "layers"}}
+        # The sections follow from what the run produced, so the report cannot describe a step that never ran.
+        facts["sections"] = (["the question"]
+                             + ["the hypothesis of the best candidate, the biological model, its toughening mechanism and how "
+                                "the design carries it into the ceramic", "a table of its design fields with value, unit and source"]
+                             * bool(s.get("recipe"))
+                             + ["the simulation results of each candidate and what they mean", "the judge's finding on each "
+                                "criterion", "the novelty of each candidate against the corpus, with the closest prior records",
+                                "the cross-checks"] * bool(judged)
+                             + ["a summary of the fabrication recipe and the print files"] * bool(s.get("recipe"))
+                             + ["the missing design fields and the reason the source check gave for each"] * bool(s.get("missing"))
+                             + ["what remains unverified"])
         reply, rec = call("reporter", [{"role": "system", "content": REPORTER}, user(json.dumps(facts))])
         return {"report": reply["content"].rstrip() + "\n\n" + appendix(s), "outcome": outcome, "trace": [rec]}
 

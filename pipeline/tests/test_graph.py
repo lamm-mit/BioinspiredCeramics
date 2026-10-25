@@ -284,6 +284,9 @@ TAMPER.clear()
 check("an input from nowhere blocks the verdict", verdicts(s) == ["incomplete"] and not judged and "fem_fracture.layer_modulus_GPa" in s["verdict"]["summary"], s["verdict"])
 s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "ceramic"}, "sources": SRC}] * 4)
 check("an incomplete first design is reported as not simulated", s["outcome"] == "no design was simulated, and the last design is incomplete" and not s.get("candidates"), s["outcome"])
+sections = json.loads(REPORTED[-1])["sections"]
+check("a report without candidates is told to write no recipe, novelty or simulation section", not any(w in " ".join(sections)
+      for w in ["recipe", "novelty", "simulation", "hypothesis"]) and any("missing" in x for x in sections), sections)
 # fabrication, novelty and reward
 graph.ask_json = graph_ask
 s, calls = run([{"design": GOOD, "sources": SRC}])
@@ -303,6 +306,7 @@ links = [l.split("](")[1].rstrip(")") for l in report.splitlines() if l.startswi
 check("the report appends candidates, figures, novelty, tool outputs, recipe and print files", all(h in report for h in [
       "## Candidates", "## Figures", "## Novelty of the best candidate", "## Simulation outputs of candidate_1", "## Recipe", "## Print files"])
       and len(links) == 3 and all((Path(s["folder"]) / l).exists() for l in links), links)
+check("a report with an accepted candidate lists every section", len(json.loads(REPORTED[-1])["sections"]) == 9, json.loads(REPORTED[-1])["sections"])
 check("the reporter is told the recipe, the novelty and the cross-checks", '"recipe"' in REPORTED[-1] and '"novelty"' in REPORTED[-1]
       and '"md_bulk"' in REPORTED[-1] and "| md_bulk | alumina | youngs_modulus_GPa = 347.8 |" in report and "with a novelty of 0.90" in s["outcome"], s["outcome"])
 
