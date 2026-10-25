@@ -1,16 +1,19 @@
 """The agent graph. Each node is one agent with its own model and instructions.
 
-planner -> retriever -> figure_reader -> designer -> geometry -> engineer <-> tools -> judge -> reporter
+planner -> retriever -> figure_reader -> designer -> geometry -> engineer <-> tools -> judge -> fabricator -> reporter
 
 The designer can send the retriever back once, for design fields that lack evidence. A check
 compares each design value with the source the designer cites, and the designer gets one repair
 with its findings. A field that still fails is dropped. A design that is still incomplete goes
 straight to the reporter, so no simulation runs on it. A complete design gets its geometry as
 STL files. The engineer then calls tools until it has every result, and each call is recorded
-in one handoff file per tool. The judge then weighs the candidate against the criteria. A
-candidate it sends back returns to the designer with its findings, for up to MAX_CANDIDATES
-candidates per run. The prompts are generic, and the problem itself is defined by design.py
-and the tools package.
+in one handoff file per tool. The judge then weighs the candidate against the criteria, and the
+candidate gets a novelty score against the corpus. Its reward is that score when the judge
+accepts it and 0 otherwise. A candidate the judge sends back, or an accepted one whose reward is
+below NOVELTY_TARGET, returns the designer to work, for up to MAX_CANDIDATES candidates per run.
+The fabricator writes the synthesis and fabrication recipe of the accepted candidate with the
+highest reward, and code turns its geometry into the print files of the chosen process. The
+prompts are generic, and the problem itself is defined by design.py and the tools package.
 """
 
 import json
@@ -25,8 +28,11 @@ from tools import RUN, TOOLS
 
 from . import corpus as cp
 from . import handoff
+from . import novelty as nv
 from .design import ASK, CRITERIA, DESIGN, RANGE, SCALE, UNIT, design_errors, make_geometry
-from .llm import ask_json, chat, user
+from .fabrication import DEFAULTS, write_fabrication
+from .llm import ask_json, chat, embed, user
+from .render import render_part
 
 # Model and reasoning effort per agent. A text model does the text jobs and a vision model
 # reads the figures, with thinking off.
@@ -36,9 +42,12 @@ MODELS = {"planner": ("gpt-oss:20b", "low"),
           "checker": ("gpt-oss:20b", "medium"),
           "engineer": ("gpt-oss:20b", "low"),
           "judge": ("gpt-oss:20b", "medium"),
+          "fabricator": ("gpt-oss:20b", "medium"),
           "reporter": ("gpt-oss:20b", "low")}
 EMBEDDING = "embeddinggemma"
 MAX_CANDIDATES = 3  # designs simulated and judged in one run
+# An accepted candidate with a novelty below this sends the designer back for a less reported combination.
+NOVELTY_TARGET = 0.5
 FIELDS = json.dumps(DESIGN)
 OPTIONS = sorted({option for field in DESIGN.values() for option in field.get("enum", ())})
 
@@ -91,14 +100,29 @@ every criterion is met. A change must stay within the options and the descriptio
 "summary": one sentence.
 Reply with the JSON only."""
 
+FABRICATOR = """You write the recipe to make one designed ceramic laminate by additive manufacturing, from the
+evidence below. Cover in order the ceramic feedstock (powder, particle size, solids loading, binder, dispersant,
+mixing), the interlayer material and how it is applied between the ceramic layers, the print on the chosen
+process, debinding, sintering and finishing. Give every number with its unit and cite the evidence id that
+states it, such as F3. A number that no evidence states is allowed only as an assumption, with the source
+"assumption: " and a reason.
+Return JSON with keys
+"steps": [{"stage": str, "instruction": str, "parameters": {name: {"value": number, "unit": str, "source": str}}}],
+"print_parameters": {name: {"value": number, "unit": str, "source": str}} for the print parameter names listed below,
+"cautions": [str].
+Reply with the JSON only."""
+
 REPORTER = """Write a short report in plain markdown, without emoji, for a scientist.
-Start with the outcome as given. Then give the question, a table of the design fields of the last
-candidate with value, unit and source, the simulation results, the judge's finding on each criterion,
-what the results mean, and what remains unverified. If earlier candidates were sent back, list each
-with the judge's reason. Use only numbers and criteria that appear in the input. Results whose method
-says stand-in are placeholders, not predictions. Say so. If design fields are missing, no simulation
-ran on that design. Say which fields are missing, and give the reason for each field that the source
-check rejected."""
+Start with the outcome as given. Then give the question, the hypothesis of the best candidate (the biological
+model, its toughening mechanism and how the design carries it into the ceramic), a table of its design fields
+with value, unit and source, the simulation results and what they mean, the judge's finding on each criterion,
+its novelty against the corpus with the closest prior records, a summary of the fabrication recipe and the print
+files, and what remains unverified. If other candidates were judged, list each with its verdict, novelty and
+reason. Use only numbers and criteria that appear in the input. Results whose method says stand-in are
+placeholders, not predictions. Say so. A recipe value whose source starts with assumption does not come from
+the evidence. Say so. If design fields are missing, no simulation ran on that design. Say which fields are
+missing, and give the reason for each field that the source check rejected. Figures, tool outputs and file
+lists are appended after your text, so leave them out."""
 
 
 class State(TypedDict, total=False):
@@ -120,6 +144,9 @@ class State(TypedDict, total=False):
     results: list
     verdict: dict
     candidates: Annotated[list, operator.add]
+    best: str
+    recipe: dict
+    fabrication: dict
     outcome: str
     report: str
     trace: Annotated[list, operator.add]
@@ -225,6 +252,65 @@ def source_errors(design, sources, s):
     return errors
 
 
+def accepted(s):
+    return [c for c in s.get("candidates", []) if c["verdict"]["verdict"] == "accept"]
+
+
+def after_judge(s):
+    """Back to the designer while candidates remain and the last was sent back, or every accepted one lacks novelty."""
+    verdict = s["verdict"]["verdict"]
+    more = len(s["candidates"]) < MAX_CANDIDATES and (
+        verdict == "revise" or verdict == "accept" and max(c["reward"] for c in accepted(s)) < NOVELTY_TARGET)
+    return "designer" if more else "fabricator" if accepted(s) else "reporter"
+
+
+def table(header, rows):
+    return "\n".join(["| " + " | ".join(header) + " |", "|" + "---|" * len(header)]
+                     + ["| " + " | ".join(str(x).replace("|", "/") for x in row) + " |" for row in rows])
+
+
+def recipe_markdown(recipe):
+    """The recipe as steps with their parameters, each value with its unit and source."""
+    lines = [f"# Recipe for {recipe['candidate']}, {recipe['process']}", ""]
+    for n, step in enumerate(recipe["steps"], 1):
+        lines += [f"{n}. {step.get('stage', '').capitalize()}. {step.get('instruction', '')}"]
+        lines += [f"   - {k}: {p.get('value')} {p.get('unit', '')} ({p.get('source')})" for k, p in step["parameters"].items()]
+    lines += ["", "Print parameters", ""] + [f"- {k}: {p.get('value')} {p.get('unit', '')} ({p.get('source')})"
+                                             for k, p in recipe["print_parameters"].items()]
+    return "\n".join(lines + ["", "Cautions", ""] + [f"- {c}" for c in recipe["cautions"]]) + "\n"
+
+
+def appendix(s):
+    """The fixed sections after the narrative, written from the state. Paths are relative to the run folder."""
+    run = Path(s["folder"])
+    rel = lambda p: Path(p).relative_to(run).as_posix()
+    judged, out = s.get("candidates", []), []
+    if judged:
+        out += ["## Candidates", "", table(
+            ["Candidate", *[k for k in DESIGN if "enum" in DESIGN[k]], "Verdict", "Novelty", "Reward"],
+            [[c["candidate"], *[c["design"].get(k, "") for k in DESIGN if "enum" in DESIGN[k]], c["verdict"]["verdict"],
+              f"{c['novelty']['score']:.2f}", f"{c['reward']:.2f}"] for c in judged]), ""]
+    if s.get("best"):
+        best = next(c for c in judged if c["candidate"] == s["best"])
+        fem = next((r["output"] for r in best["results"] if r["output"].get("damage_png")), {})
+        figures = [("Layered ceramic geometry", s["fabrication"]["files"].get("render_png")),
+                   ("Damage after the crack simulation", fem.get("damage_png")),
+                   ("Print plan", s["fabrication"]["files"].get("preview_png"))]
+        out += ["## Figures", ""] + [f"![{name}]({rel(path)})" for name, path in figures if path] + [""]
+        out += ["## Novelty of the best candidate", "", best["novelty"]["statement"], "",
+                table(["Component", "Value"], [[k, best["novelty"][k]] for k in ["score", "combination", "semantic",
+                      "max_terms_together", "records_with_max", "closest_records", "nearest_passage", "nearest_similarity"]]), ""]
+    for c in judged:
+        out += [f"## Simulation outputs of {c['candidate']}", "", table(["Tool", "Inputs", "Outputs", "Method"], [
+            [r["tool"], ", ".join(f"{k} = {v}" for k, v in r["arguments"].items() if not str(v).endswith(".json")),
+             ", ".join(f"{k} = {v}" for k, v in r["output"].items() if k != "method" and not str(v).endswith((".png", ".csv", ".json"))),
+             r["output"].get("method", "")] for r in c["results"]]), ""]
+    if s.get("recipe"):
+        out += ["## Recipe", "", recipe_markdown(s["recipe"]).split("\n", 2)[2], "## Print files", "",
+                table(["File", "Path"], [[k, rel(v)] for k, v in s["fabrication"]["files"].items()]), ""]
+    return "\n".join(out)
+
+
 def build(models, corpus):
     def ask(agent, system, text, images=()):
         model, effort = models[agent]
@@ -261,7 +347,9 @@ def build(models, corpus):
             if field in UNIT:
                 found += cp.search(corpus, query, 4, skip=seen, pattern=UNIT[field])
             for option in DESIGN[field].get("enum", ()):
-                found += cp.search(corpus, query, 1, skip=seen, pattern=f"(?i){re.escape(option)}")
+                # Papers name a process or a material in several ways, such as DLP for vat photopolymerization.
+                names = "|".join(re.escape(n) for n in [option, *nv.ALIASES.get(option, ())])
+                found += cp.search(corpus, query, 1, skip=seen, pattern=f"(?i)(?:{names})")
         # The knowledge graph is asked about the planner's entities and about every allowed design option.
         triples = cp.neighbors(corpus, s["entities"] + OPTIONS) if s["round"] == 0 else []
         return {"passages": list({p["id"]: p for p in found}.values()), "triples": triples, "round": s["round"] + 1}
@@ -284,10 +372,15 @@ def build(models, corpus):
                   + "\n".join(f"[E{n}] {text}" for n, (_, text) in enumerate(rows, 1)))
         judged = s.get("candidates", [])
         if judged:
-            prompt += ("\nEarlier candidates were simulated and a judge sent them back. Propose a different design "
-                       "that answers the judge, with evidence for every value as before. Where the judge asks to change "
-                       "a field, change it even when the question states its value.\n"
-                       + json.dumps([{"design": c["design"], "judge": c["verdict"]} for c in judged]))
+            prompt += ("\nEarlier candidates of this run, with the judge's verdict and the novelty of each against the "
+                       f"corpus, from 0 for a combination already reported together to 1 for one never reported "
+                       f"(target {NOVELTY_TARGET}):\n"
+                       + json.dumps([{"design": c["design"], "judge": c["verdict"], "novelty": c["novelty"]["score"]}
+                                     for c in judged])
+                       + "\nPropose a different design, with evidence for every value as before. Where the judge asks to "
+                       "change a field, change it even when the question states its value. Where the judge accepted a "
+                       "candidate whose novelty is below the target, choose a combination of biological model, mechanism, "
+                       "materials and process that the corpus has not reported together.")
 
         def real(text):  # E7 back to the id it stands for
             return re.sub(r"\bE(\d+)\b", lambda m: rows[int(m[1]) - 1][0] if 0 < int(m[1]) <= len(rows) else m[0], text)
@@ -406,33 +499,78 @@ def build(models, corpus):
                        "summary": out.get("summary", ""),
                        # A verdict on stand-in results holds only until the solvers are attached.
                        "provisional": any("stand-in" in str(r["output"].get("method")) for r in last.values())}
-        (Path(s["candidate"]) / "verdict.json").write_text(json.dumps(verdict, indent=1, ensure_ascii=False))
-        candidate = {"candidate": Path(s["candidate"]).name, "design": s["design"], "sources": s["sources"],
-                     "geometry": s["geometry"], "results": s["results"], "verdict": verdict}
+        novelty = nv.novelty(s["design"], corpus, lambda texts: embed(corpus["embed_model"], texts))
+        reward = novelty["score"] if verdict["verdict"] == "accept" else 0.0
+        folder = Path(s["candidate"])
+        (folder / "verdict.json").write_text(json.dumps(verdict | {"reward": reward}, indent=1, ensure_ascii=False))
+        (folder / "novelty.json").write_text(json.dumps(novelty, indent=1, ensure_ascii=False))
+        candidate = {"candidate": folder.name, "design": s["design"], "sources": s["sources"], "geometry": s["geometry"],
+                     "results": s["results"], "verdict": verdict, "novelty": novelty, "reward": reward}
         # A candidate that is sent back may take one more search for its replacement.
         return {"verdict": verdict, "candidates": [candidate], "round": 1, "trace": trace}
 
+    def fabricator(s):
+        """The recipe and the print files of the accepted candidate with the highest reward."""
+        best = max(accepted(s), key=lambda c: c["reward"])
+        d, folder = best["design"], Path(s["folder"]) / best["candidate"]
+        queries = [f"{d['process']} of {d['ceramic']}, slurry or ink, solids loading, binder and dispersant",
+                   f"{d['process']} print parameters for {d['ceramic']}, nozzle, speed, layer thickness or exposure",
+                   f"debinding and sintering of {d['ceramic']} parts made by {d['process']}",
+                   f"{d['interlayer']} interlayer applied between {d['ceramic']} layers"]
+        rows = list({p["id"]: p for q in queries for p in cp.search(corpus, q, 4)}.values())
+        out, rec = ask("fabricator", FABRICATOR, f"Design: {json.dumps(d)}\nPrint parameter names: "
+                       f"{json.dumps(DEFAULTS[d['process']])}\nEvidence:\n"
+                       + "\n".join(f"[F{n}] {p['text'][:2000]}" for n, p in enumerate(rows, 1)))
+
+        def checked(p):
+            """The parameter with its source as a passage id, kept only when that passage states the number."""
+            m, value = re.match(r"\W*F(\d+)\b", str(p.get("source", ""))), p.get("value")
+            if m and 0 < int(m[1]) <= len(rows):
+                passage = rows[int(m[1]) - 1]
+                if isinstance(value, (int, float)) and re.search(rf"(?<![\d.]){re.escape(f'{value:g}')}(?!\d)", plain(passage["text"])):
+                    return p | {"source": passage["id"]}
+                return p | {"source": f"assumption: {passage['id']} does not state {value}"}
+            source = str(p.get("source") or "no source")
+            return p | {"source": source if source.startswith("assumption") else f"assumption: {source}"}
+
+        params = lambda x: {k: checked(v) for k, v in (x or {}).items() if isinstance(v, dict)}
+        recipe = {"candidate": best["candidate"], "process": d["process"],
+                  "steps": [st | {"parameters": params(st.get("parameters"))} for st in out.get("steps") or [] if isinstance(st, dict)],
+                  "print_parameters": params(out.get("print_parameters")), "cautions": out.get("cautions") or [],
+                  "evidence": [p["id"] for p in rows]}
+        (folder / "recipe.json").write_text(json.dumps(recipe, indent=1, ensure_ascii=False))
+        (folder / "recipe.md").write_text(recipe_markdown(recipe))
+        geometry = best["geometry"]["geometry_json"]
+        made = write_fabrication(geometry, d["process"], recipe["print_parameters"], folder / "fabrication")
+        made["files"]["render_png"] = str(render_part(geometry, folder / "geometry" / "render.png"))
+        return {"best": best["candidate"], "recipe": recipe, "fabrication": made, "trace": [rec]}
+
     def reporter(s):
-        judged = s.get("candidates", [])
-        last = judged[-1]["verdict"] if judged else {}
-        if last.get("verdict") == "accept":
-            outcome = f"{judged[-1]['candidate']} was accepted" + ", provisionally, since tool results are stand-ins" * last["provisional"]
+        judged, last = s.get("candidates", []), s.get("verdict", {})
+        if accepted(s):
+            best = next(c for c in judged if c["candidate"] == s["best"])
+            outcome = (f"{best['candidate']} was accepted with a novelty of {best['reward']:.2f} against the corpus"
+                       + f", below the target of {NOVELTY_TARGET}" * (best["reward"] < NOVELTY_TARGET)
+                       + ", provisionally, since some tool results are stand-ins" * best["verdict"]["provisional"])
         elif last.get("verdict") == "incomplete":
             outcome = f"the simulation of {judged[-1]['candidate']} did not complete. {last['summary']}"
         else:
             outcome = (f"no candidate was accepted after {len(judged)} of at most {MAX_CANDIDATES}" if judged else "no design was simulated")
             outcome += ", and the last design is incomplete" * bool(s.get("missing"))
         facts = {"outcome": outcome} | {k: s[k] for k in ["question", "design", "sources", "missing", "rejected"] if k in s}
-        if not s.get("missing"):
-            facts |= {"geometry": s["geometry"], "results": [{k: r[k] for k in ["tool", "arguments", "output"]} for r in s["results"]]}
-        # Every judged candidate keeps its tool outputs, so the report sees each method string.
-        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "verdict"]}
-                               | {"results": [{"tool": r["tool"], "output": r["output"]} for r in c["results"]]} for c in judged]
+        # Every judged candidate keeps its tool outputs and novelty, so the report sees each method string.
+        facts["candidates"] = [{k: c[k] for k in ["candidate", "design", "sources", "verdict", "reward"]}
+                               | {"novelty": {k: c["novelty"][k] for k in ["score", "statement", "closest_records", "nearest_passage"]},
+                                  "results": [{"tool": r["tool"], "arguments": r["arguments"], "output": r["output"]} for r in c["results"]]}
+                               for c in judged]
+        if s.get("recipe"):
+            facts |= {"best": s["best"], "recipe": s["recipe"],
+                      "print_files": {k: v for k, v in s["fabrication"].items() if k != "layers"}}
         reply, rec = call("reporter", [{"role": "system", "content": REPORTER}, user(json.dumps(facts))])
-        return {"report": reply["content"], "outcome": outcome, "trace": [rec]}
+        return {"report": reply["content"].rstrip() + "\n\n" + appendix(s), "outcome": outcome, "trace": [rec]}
 
     g = StateGraph(State)
-    for node in [planner, retriever, figure_reader, designer, geometry, engineer, tools, judge, reporter]:
+    for node in [planner, retriever, figure_reader, designer, geometry, engineer, tools, judge, fabricator, reporter]:
         g.add_node(node.__name__, node)
     g.add_edge(START, "planner")
     g.add_edge("planner", "retriever")
@@ -442,9 +580,9 @@ def build(models, corpus):
                             else "retriever" if s["round"] < 2 else "reporter")
     g.add_conditional_edges("engineer", lambda s: "tools" if s["messages"][-1].get("tool_calls")
                             and len(s["messages"]) < 12 else "judge")
-    g.add_conditional_edges("judge", lambda s: "designer" if s["verdict"]["verdict"] == "revise"
-                            and len(s["candidates"]) < MAX_CANDIDATES else "reporter")
+    g.add_conditional_edges("judge", after_judge)
     g.add_edge("geometry", "engineer")
     g.add_edge("tools", "engineer")
+    g.add_edge("fabricator", "reporter")
     g.add_edge("reporter", END)
     return g.compile()

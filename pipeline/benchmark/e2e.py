@@ -7,7 +7,8 @@ Every value passes the source check of the graph against the evidence it cites.
 The geometry step wrote its STL files. fem_fracture returned a result. Its inputs equal the
 design values, the geometry file and the outputs of dft_cleavage and md_interface for that
 design, so nothing entered the simulation from anywhere else. The checks apply to the last
-candidate of the run. Each row also holds the judge's verdict and the number of candidates.
+candidate of the run. Each row also holds the judge's verdicts, the novelty of each candidate,
+the best candidate, the size of its recipe and whether its print files exist.
 Rows go to benchmark/results/e2e.jsonl.
 """
 
@@ -26,21 +27,23 @@ from ..graph import EMBEDDING, MODELS, build, source_errors
 here = Path(__file__).parent
 
 QUESTIONS = [
-    "Design a nacre-inspired layered alumina whose interfaces deflect cracks. Choose an interlayer and a "
-    "layer thickness, and check whether a crack deflects.",
-    "Propose a laminated alumina with a polymer interlayer for crack deflection, with layers as thin as the "
-    "printing literature supports, and check whether a crack deflects.",
-    "Would a silica glass interlayer between alumina layers deflect cracks? Use the layer thickness of "
-    "printed alumina filaments.",
-    "Design a layered alumina with graphite interlayers, with layers as thin as tape casting allows, and "
+    "Propose a bioinspired layered ceramic made by additive manufacturing whose interfaces deflect cracks. Choose the "
+    "biological model and its mechanism, the ceramic, the interlayer, the print process and the layer thicknesses, and "
     "check whether a crack deflects.",
+    "Design a nacre-inspired alumina laminate made by direct ink writing with a polymer interlayer, and check whether a "
+    "crack deflects.",
+    "Propose a bioinspired silicon carbide laminate made by additive manufacturing, with an interlayer that deflects "
+    "cracks, and check whether a crack deflects.",
+    "Design a bioinspired ceramic laminate for crack deflection that the literature has not reported, with the thinnest "
+    "layers the chosen printing process supports, and check whether a crack deflects.",
 ]
 
 
 def team(text, reader, designer_effort="medium", effort="none"):
     """One text model for the text agents, with its own effort for the designer, the checker and the judge, and one figure reader."""
     return {"planner": (text, effort), "designer": (text, designer_effort), "checker": (text, designer_effort),
-            "engineer": (text, effort), "judge": (text, designer_effort), "reporter": (text, effort),
+            "engineer": (text, effort), "judge": (text, designer_effort), "fabricator": (text, designer_effort),
+            "reporter": (text, effort),
             "figure_reader": (reader, "none")}
 
 
@@ -68,6 +71,11 @@ def checks(s):
             "grounded": not source_errors(design, s["sources"], s), "rejected": s.get("rejected", {}),
             "geometry": geometry, "simulated": bool(fea), "faithful": faithful, "design": design,
             "verdicts": [c["verdict"]["verdict"] for c in s.get("candidates", [])], "outcome": s.get("outcome"),
+            "novelty": [round(c["novelty"]["score"], 3) for c in s.get("candidates", [])], "best": s.get("best"),
+            "recipe_steps": len(s.get("recipe", {}).get("steps", [])),
+            "cited_recipe_values": sum(not str(p.get("source", "")).startswith("assumption") for st in s.get("recipe", {}).get("steps", [])
+                                       for p in st["parameters"].values()),
+            "print_files": all(Path(p).exists() for p in s.get("fabrication", {}).get("files", {}).values()) if s.get("fabrication") else None,
             "deflects": fea[-1]["output"]["crack_deflects"] if fea else None,
             "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in results]}
 

@@ -1,6 +1,7 @@
 """The design the agents fill in, and the checks on it.
 
-DESIGN lists the fields the designer takes from the corpus, and UNIT says what a passage must
+DESIGN lists the fields the designer takes from the corpus. The first three state the bioinspired
+hypothesis, and the rest make it a printable laminate. UNIT says what a passage must
 contain to supply a numeric field. SCALE and RANGE tell the source check how to find a numeric
 value in its source, and ASK is the question for the second reading of that source.
 make_geometry builds the part of a complete design, and CRITERIA is what the judge checks a simulated
@@ -10,14 +11,25 @@ Everything specific to one design problem lives in this file and in the tools pa
 
 from tools.schema import MATERIAL, number
 
+from .fabrication import PROCESSES
 from .geometry import layered_geometry
 
+
+def choice(options, description):
+    return {"type": "string", "enum": options, "description": description}
+
+
 DESIGN = {
+    "biological_model": choice(["nacre", "conch shell", "bone", "Bouligand"], "the biological material the design copies"),
+    "mechanism": choice(["crack deflection", "crack bridging", "compressive residual stress"],
+                        "the toughening mechanism of that biological material, as the evidence states"),
+    "process": choice(PROCESSES, "the additive manufacturing process that builds the ceramic layers, as the evidence "
+                                 "shows for this ceramic"),
     "ceramic": MATERIAL | {"description": "the layer material"},
     "interlayer": MATERIAL | {"description": "the material between layers, chosen so that cracks deflect along it"},
     "layer_modulus_GPa": number("Young's modulus of the ceramic, as stated in the evidence"),
     "layer_thickness_um": number("thickness of one ceramic layer, within the range of layers that the "
-                                 "evidence reports as made or tested"),
+                                 "evidence reports as made or tested with the chosen process"),
     "interlayer_thickness_um": number("thickness of the interlayer between two ceramic layers, within the range "
                                       "that the evidence reports as made or tested"),
 }
