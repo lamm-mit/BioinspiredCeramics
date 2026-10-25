@@ -27,10 +27,16 @@ env/
 
 # Pipeline run outputs and cached embeddings
 runs/
+runs_test/
 *.npy
 
-# Corpora, benchmark items and results stay out of the repo. Copies placed here for a run are not committed.
-# make_charts.py regenerates the chart items.
+# Corpora and benchmark items stay out of the repo. The figure and passage items quote published
+# papers, and copies placed here for a run are not committed. make_charts.py regenerates the chart
+# items. Benchmark results hold only ids, scores and short model replies, and are tracked.
 pipeline/examples/
-pipeline/benchmark/data/
-pipeline/benchmark/results/
+pipeline/benchmark/data/figures/
+pipeline/benchmark/data/figures.jsonl
+pipeline/benchmark/data/passages.jsonl
+pipeline/benchmark/data/ATTRIBUTION.md
+pipeline/benchmark/data/charts/
+pipeline/benchmark/data/charts.jsonl

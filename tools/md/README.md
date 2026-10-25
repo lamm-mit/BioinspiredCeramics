@@ -26,6 +26,8 @@ Each folder holds one MD code with its own README. `md_interface` keeps the stan
 
 ## md_agent
 
+[`bulk.py`](bulk.py) already uses md_agent. `md_bulk(material)` relaxes the 30-atom cell of alumina with the Pedone potential and returns its Young, bulk and shear moduli (Voigt-Reuss-Hill) and its density in about 3 s. The pipeline reports it beside the layer modulus each design takes from the literature. For alumina it gives a Young's modulus of 348 GPa, 13% below the measured value of about 400 GPa, mostly because its C44 is 114 GPa against 147 GPa measured. It raises an error for the other materials. Silica glass needs a melt-quench of about 10 min, and silicon carbide needs MACE.
+
 [`md_agent/`](md_agent/) holds the MD code of Alex Wang, copied from his repository ([SOURCE.md](md_agent/SOURCE.md)). `md_interface` does not call it yet, and `__init__.py` does not import it, so its optional dependencies (OpenMM, ASE, MACE and PyTorch) are not needed to run the pipeline. It provides:
 
 - Bulk ceramics, in `ceramics.py`. Periodic crystals from a library that includes α-alumina, 3C-SiC and α-quartz, or from a CIF file. It relaxes the lattice, computes the elastic tensor by finite strain, runs MD at a temperature with density, RDFs, coordination and diffusion, and makes glasses by melt-quench, which covers silica glass. The Pedone classical potential covers Si, Al, Mg and Ca oxides, and MACE-MP-0 covers the rest. Cells hold up to 800 atoms with the classical potential and 300 with MACE on a CPU, and runs last picoseconds.

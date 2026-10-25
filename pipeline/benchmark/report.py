@@ -126,7 +126,7 @@ for x, y, m in points:
     if not any(x2 < x and y2 >= y for x2, y2, _ in points):
         ax.annotate(label(m), (x, y), textcoords="offset points", xytext=(8, 7), ha="right", fontsize=7.5,
                     color="#0b0b0b")
-ax.set(xscale="log", xlabel="Seconds per image question", ylabel="Image questions, fraction correct", ylim=(0.4, 1))
+ax.set(xscale="log", xlabel="Time per image question (s)", ylabel="Image questions, fraction correct", ylim=(0.4, 1))
 ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(subs=(1, 2, 5)))
 ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, _: f"{x:g}"))
 ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())

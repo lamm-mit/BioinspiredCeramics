@@ -82,7 +82,7 @@ The outcome depends on the load. With the edges of the cell pulled apart instead
 
 ## Run time and files
 
-At 60 rows a call takes 30 to 80 s on six cores of the Arm CPU of a DGX Spark. The solver runs on the CPU even when JAX sees a GPU, which leaves the GPU to the served models. The first call compiles the solver for its grid in a few seconds, and later calls reuse it. `FEM_ROWS` sets the number of rows. 80 rows take 65 to 110 s, and the tests use 30 rows, a few seconds per call.
+At 60 rows a call took 30 to 80 s in the validation runs above, on six cores of the Arm CPU of a DGX Spark. On the lab's DGX Spark the same grid took 134 to 182 s per call when idle (2026-10-25) and a median of 190 s with the language models loaded (2026-10-23). XLA uses about 2 of its 20 cores, and pinning the process to one fast core cut the time to 74 to 104 s, as [../REQUESTS.md](../REQUESTS.md) shows. The solver runs on the CPU even when JAX sees a GPU, which leaves the GPU to the served models. The first call compiles the solver for its grid in a few seconds, and later calls reuse it. `FEM_ROWS` sets the number of rows. 80 rows take 65 to 110 s, and the tests use 30 rows, a few seconds per call.
 
 Each call writes two files next to `geometry_json` and replaces those of an earlier call.
 
