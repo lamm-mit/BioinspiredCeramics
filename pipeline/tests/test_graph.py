@@ -330,6 +330,10 @@ NOVELTY.update({"epoxy": 0.3, "PMMA": 0.1})
 s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}, {"design": GOOD3, "sources": SRC3}], [])
 check("with no candidate above the target, the run makes the one with the highest reward", len(s["candidates"]) == 3 and s["best"] == "candidate_2"
       and "below the target of 0.5" in s["outcome"], s["outcome"])
+NOVELTY.update({"graphite": 0.2})
+s = looped([{"design": GOOD, "sources": SRC}] + [{"design": {k: v for k, v in GOOD2.items() if k != "interlayer_thickness_um"}, "sources": SRC2}] * 4, [])
+check("an accepted candidate is made even when the search for a more novel one ends incomplete", s["best"] == "candidate_1"
+      and (folder(s, 1) / "recipe.json").exists() and "interlayer_thickness_um" in s["missing"] and "below the target" in s["outcome"], s.get("outcome"))
 NOVELTY.clear()
 s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}], [REVISE])
 check("a candidate the judge sends back has no reward", [c["reward"] for c in s["candidates"]] == [0.0, 0.9] and s["best"] == "candidate_2", [c["reward"] for c in s["candidates"]])

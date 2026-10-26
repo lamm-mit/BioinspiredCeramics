@@ -606,8 +606,9 @@ def build(models, corpus):
     g.add_edge("planner", "retriever")
     g.add_edge("retriever", "figure_reader")
     g.add_edge("figure_reader", "designer")
+    # An incomplete design after the second search ends the search. An accepted candidate is still made.
     g.add_conditional_edges("designer", lambda s: "geometry" if not s["missing"]
-                            else "retriever" if s["round"] < 2 else "reporter")
+                            else "retriever" if s["round"] < 2 else "fabricator" if accepted(s) else "reporter")
     g.add_conditional_edges("engineer", lambda s: "tools" if s["messages"][-1].get("tool_calls")
                             and len(s["messages"]) < 12 else "judge")
     g.add_conditional_edges("judge", after_judge)
