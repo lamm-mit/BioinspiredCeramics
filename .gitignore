@@ -40,3 +40,9 @@ pipeline/benchmark/data/passages.jsonl
 pipeline/benchmark/data/ATTRIBUTION.md
 pipeline/benchmark/data/charts/
 pipeline/benchmark/data/charts.jsonl
+
+# Older report images, kept local
+docs/corpus_stats.png
+docs/deliverable_3_cleaning.png
+docs/kg_panels.png
+docs/pipeline_overview.png
