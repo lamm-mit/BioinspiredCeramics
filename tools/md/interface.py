@@ -174,21 +174,39 @@ def build(name_c, name_i, calc, rng, log):
     ceiling_z = top + 2 + (THICKNESS if name_i == "silica glass" else 3 * THICKNESS + 2)
     atoms.set_constraint([FixAtoms(bottom)] + ceiling(ceiling_z))
     FIRE(atoms, maxstep=0.1, logfile=None).run(fmax=1.0, steps=200)
-    md = Langevin(atoms, 1 * units.fs, temperature_K=300, friction=0.02, rng=rng)
+    # A coupling time of 50 fs. At 500 fs the polymers packed at 500 K reached 1900 to 2600 K, and the glass ended its
+    # quench to 300 K at 1100 K.
+    md = Langevin(atoms, 1 * units.fs, temperature_K=300, friction=0.02 / units.fs, rng=rng)
     schedule = {"graphite": [(300, 0, 500)],
                 "silica glass": [(3500, 0, 1000)] + [(t, 0, 200) for t in np.linspace(3200, 300, 10)],
-                "epoxy": [(500, 1, 150) for _ in range(10)] + [(300, 0, 500)],
-                "PMMA": [(500, 1, 150) for _ in range(10)] + [(300, 0, 500)]}[name_i]
+                "epoxy": [(500, 1, 300) for _ in range(10)] + [(300, 0, 500)],
+                "PMMA": [(500, 1, 300) for _ in range(10)] + [(300, 0, 500)]}[name_i]
+    drop = (2 * THICKNESS + 2) / 10  # Å per lowering segment, ten of them down to the interlayer thickness
     for temperature, lower, steps in schedule:
-        if lower:  # ten steps down to the interlayer thickness
-            ceiling_z -= (2 * THICKNESS + 2) / 10
-            atoms.set_constraint([FixAtoms(bottom)] + ceiling(ceiling_z))
         md.set_temperature(temperature_K=temperature)
-        md.run(steps)
+        for _ in range(steps // 10):
+            # The ceiling falls 0.07 Å every 10 fs. Dropped 2.2 Å at once, it stored up to 12 eV in each atom above it
+            # and broke the molecules into 21 to 40 pieces.
+            if lower:
+                ceiling_z -= drop * 10 / steps
+                atoms.set_constraint([FixAtoms(bottom)] + ceiling(ceiling_z))
+            md.run(10)
         log(f"{name_i} on {name_c}: {temperature:.0f} K, ceiling {ceiling_z:.1f} A, {steps} steps")
     atoms.set_constraint(FixAtoms(bottom))
     FIRE(atoms, logfile=None).run(fmax=0.05, steps=1000)
+    if name_i in SMILES and not intact(atoms):
+        raise RuntimeError(f"{name_i} on {name_c}: a molecule broke or bonded to another during packing")
     return atoms, strain, len(interlayer)
+
+
+def intact(atoms):
+    """True when the heavy atoms of each molecule, one tag each, form one bonded piece apart from the other molecules.
+    Protons may move, to the surface or to another molecule."""
+    sub = atoms[(atoms.get_tags() > 0) & (np.array(atoms.get_chemical_symbols()) != "H")]
+    i, j = neighbor_list("ij", sub, natural_cutoffs(sub, mult=1.2))
+    n, piece = connected_components(coo_matrix((np.ones(len(i)), (i, j)), shape=(len(sub),) * 2))
+    tags = sub.get_tags()
+    return n == len(set(tags)) and all(len(set(tags[piece == p])) == 1 for p in range(n))
 
 
 def settle(atoms, upper, calc):
@@ -284,13 +302,13 @@ def main(name_c, name_i):
     sites, weak = separate(atoms, calc)
     log(f"{sites}")
     anneal = {"graphite": "held 0.5 ps at 300 K", "silica glass": "melted 1 ps at 3500 K and quenched to 300 K in 2 ps",
-              "epoxy": "packed by a falling ceiling over 1.5 ps at 500 K and held 0.5 ps at 300 K",
-              "PMMA": "packed by a falling ceiling over 1.5 ps at 500 K and held 0.5 ps at 300 K"}[name_i]
+              "epoxy": "packed by a ceiling falling 0.07 Å every 10 fs over 3 ps at 500 K and held 0.5 ps at 300 K",
+              "PMMA": "packed by a ceiling falling 0.07 Å every 10 fs over 3 ps at 500 K and held 0.5 ps at 300 K"}[name_i]
     result = {"separation_energy_J_m2": sites[weak]["separation_energy_J_m2"], "strength_MPa": sites[weak]["strength_MPa"],
               "failure_site": weak, "interface": sites["interface"], "interlayer": sites["interlayer"],
               "atoms": len(atoms), "interlayer_atoms": n_layer, "area_A2": round(float(np.linalg.norm(np.cross(atoms.cell[0], atoms.cell[1]))), 1),
               "method": f"MACE-MP-0 medium with D3(BJ) dispersion to 15 Å, {len(atoms)} atoms. The interlayer was {anneal} on "
-                        f"the ceramic slab, whose bottom 2 Å stay fixed, then relaxed at 0 K, with the interlayer and its upper half "
+                        f"the ceramic slab, whose bottom 2 Å stay fixed, with a Langevin thermostat of 50 fs coupling time, then relaxed at 0 K, with the interlayer and its upper half "
                         f"each moved rigidly to their height of lowest energy. Separation energy: work to "
                         f"split the cell with both parts relaxed, at the {weak}, the weaker of the interface and the middle "
                         "of the interlayer. Strength: peak traction of the rigid opening at that site",
