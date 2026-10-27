@@ -1,0 +1,22 @@
+{
+ "design": {
+  "biological_model": "nacre",
+  "mechanism": "crack deflection",
+  "process": "direct ink writing",
+  "ceramic": "alumina",
+  "interlayer": "epoxy",
+  "layer_thickness_um": 70,
+  "interlayer_thickness_um": 35,
+  "layer_modulus_GPa": 367
+ },
+ "sources": {
+  "biological_model": "10.1016_j.addma.2023.103776#0: direct write 4D‑printing strategy for nacre‑inspired composites – the question specifies nacre",
+  "mechanism": "10.1016_j.actamat.2023.118704#0: weak interlayers promote crack deflection; 10.3390_ma18184370#53: crack deflection observed in multi‑material laminate – evidence that cracks deflect along interfaces",
+  "process": "10.1016_j.addma.2023.103776#0: direct write 4D‑printing strategy – the question specifies direct ink writing",
+  "ceramic": "10.1016_j.jeurceramsoc.2023.11.009#6: Young’s modulus of alumina 367 GPa – provides the modulus value for alumina",
+  "interlayer": "10.1016_j.actamat.2023.118704#30: replace porous interlayer with compliant organic mortar such as epoxy – evidence for polymer interlayer",
+  "layer_modulus_GPa": "10.1016_j.jeurceramsoc.2023.11.009#6: Young’s modulus of alumina 367 GPa – same source as ceramic",
+  "layer_thickness_um": "10.1016_j.actamat.2023.118704#12: shell thickness 70 µm – gives the ceramic layer thickness",
+  "interlayer_thickness_um": "10.1016_j.actamat.2023.118704#12: interlayer thickness 35 µm – gives the polymer interlayer thickness"
+ }
+}

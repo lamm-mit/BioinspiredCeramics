@@ -1,6 +1,6 @@
 # Models
 
-Three open-weight models run the pipeline by default. gpt-oss-20b does every text job, Qwen3.6-35B-A3B reads the figures with thinking off, and EmbeddingGemma embeds the corpus. Together they are a 36 GB download. With this set the pipeline produced a design that the judge accepted in 9 of 12 runs on 2026-10-23, with a median of 394 s per run ([benchmark.md](benchmark.md)). Larger text models gave no measured gain in the model comparison of early October 2026.
+Three open-weight models run the pipeline by default. gpt-oss-20b does every text job, Qwen3.6-35B-A3B reads the figures with thinking off, and EmbeddingGemma embeds the corpus. Together they are a 36 GB download. With this set the pipeline made an accepted candidate with its recipe and print files in 4 of 8 runs on 2026-10-25, with a median of 21 min per run ([benchmark.md](benchmark.md)). Larger text models gave no measured gain in the model comparison of early October 2026.
 
 ## Default routing
 
@@ -12,7 +12,7 @@ Three open-weight models run the pipeline by default. gpt-oss-20b does every tex
 | checker | `gpt-oss:20b` | medium | Reads the cited source of each numeric value again, the task of the passage suite, 30/30 |
 | engineer | `gpt-oss:20b` | low | 16/16 tool steps, every argument copied exactly |
 | judge | `gpt-oss:20b` | medium | Decides each criterion from the design and the tool outputs. No suite scores it alone. The end-to-end runs score it with the rest of the pipeline |
-| fabricator | `gpt-oss:20b` | medium | Writes the synthesis and fabrication recipe of the accepted candidate. Added after the end-to-end runs of 2026-10-23 and not yet benchmarked |
+| fabricator | `gpt-oss:20b` | medium | Writes the synthesis and fabrication recipe of the accepted candidate. In the 4 runs of 2026-10-25 that made a candidate its recipes held 6 to 7 steps, with 15 to 26 values kept as cited because the cited passage states them. No suite scores it alone |
 | reporter | `gpt-oss:20b` | low | Restates the state |
 | retriever | `embeddinggemma` | | Embeds 80,792 records of a 2,880-paper corpus in about 30 minutes |
 

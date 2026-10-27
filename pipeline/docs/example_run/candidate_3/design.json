@@ -1,0 +1,22 @@
+{
+ "design": {
+  "biological_model": "bone",
+  "mechanism": "crack bridging",
+  "process": "vat photopolymerization",
+  "ceramic": "alumina",
+  "interlayer": "graphite",
+  "layer_modulus_GPa": 367,
+  "layer_thickness_um": 70,
+  "interlayer_thickness_um": 0.5
+ },
+ "sources": {
+  "biological_model": "10.3390/ma14226855: bone exhibits plastic deformation which contributes to its toughness",
+  "mechanism": "10.1007/s40145-021-0518-6: Crack bridging contributes to increased fracture toughness",
+  "process": "10.1016_j.matdes.2022.111463#3: vat photopolymerization used for alumina/zta",
+  "ceramic": "10.1016_j.matdes.2022.111463#3: alumina used in vat photopolymerization",
+  "interlayer": "10.1016/j.actamat.2023.118704: interlayer paste prepared by mixing alumina powder with graphite",
+  "layer_modulus_GPa": "10.1016_j.jeurceramsoc.2023.11.009#6: 367",
+  "layer_thickness_um": "10.1016_j.actamat.2023.118704#12: 70",
+  "interlayer_thickness_um": "10.1016_j.actamat.2023.118704#24: interlayer thickness of graphite interlayer in alumina composite is ~0.5 µm"
+ }
+}

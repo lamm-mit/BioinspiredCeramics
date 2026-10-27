@@ -1,0 +1,68 @@
+{
+ "tool": "fem_fracture",
+ "description": "Finite-element phase-field crack propagation from the notch of the layered cell into its first interlayer. Reports whether the crack deflects along the interlayer or penetrates the next layer.",
+ "candidate": "candidate_1",
+ "calls": [
+  {
+   "inputs": {
+    "geometry_json": {
+     "value": "runs/e2e/20261025-202723/candidate_1/geometry/geometry.json",
+     "from": "geometry.geometry_json"
+    },
+    "interface_fracture_energy_J_m2": {
+     "value": 0.082,
+     "unit": "J/m^2",
+     "from": "md_interface.separation_energy_J_m2"
+    },
+    "interface_strength_MPa": {
+     "value": 603,
+     "unit": "MPa",
+     "from": "md_interface.strength_MPa"
+    },
+    "layer_fracture_energy_J_m2": {
+     "value": 3,
+     "unit": "J/m^2",
+     "from": "dft_cleavage.cleavage_energy_J_m2"
+    },
+    "layer_modulus_GPa": {
+     "value": 367,
+     "unit": "GPa",
+     "from": "design.layer_modulus_GPa",
+     "source": "10.1016_j.jeurceramsoc.2023.11.009#6: Young's modulus of alumina 367 GPa"
+    },
+    "layer_thickness_um": {
+     "value": 70,
+     "unit": "µm",
+     "from": "design.layer_thickness_um",
+     "source": "10.1016_j.actamat.2023.118704#12: shell thickness 70 µm"
+    }
+   },
+   "status": "done",
+   "output": {
+    "crack_deflects": true,
+    "energy_ratio": 0.027,
+    "criterion": "deflects when the simulated crack runs along the first interlayer for more than one layer thickness on a side before it reaches the middle of the next ceramic layer",
+    "cohesive_length_over_layer_thickness": 0.0011823532577969348,
+    "he_hutchinson_deflects": true,
+    "outcome": "deflected",
+    "along_interface_left_um": 485.92,
+    "along_interface_right_um": 485.92,
+    "into_next_layer_um": 0.0,
+    "interface_reached_K_MPa_sqrt_m": 1.7838,
+    "interface_broke_ahead_of_crack": true,
+    "layer_K_MPa_sqrt_m": 1.0837,
+    "band_energy_ratio": 0.035,
+    "pixel_um": 8.167,
+    "interlayer_band_um": 32.667,
+    "energy_balance": 0.014199069790649213,
+    "converged": true,
+    "seconds": 410.5,
+    "device": "cpu:0",
+    "damage_png": "runs/e2e/20261025-202723/candidate_1/geometry/fem_damage.png",
+    "load_path_csv": "runs/e2e/20261025-202723/candidate_1/geometry/fem_load_path.csv",
+    "geometry_json": "runs/e2e/20261025-202723/candidate_1/geometry/geometry.json",
+    "method": "phase-field fracture (AT2, jax-pfczm, l = 2 pixels) on a 60 x 241 pixel plane-strain section of the cell under a mode-I K-field. The cohesive length E G / s^2 is 0.0828 um against a pixel of 8.17 um, so the fracture is controlled by energy and the interface strength does not enter"
+   }
+  }
+ ]
+}

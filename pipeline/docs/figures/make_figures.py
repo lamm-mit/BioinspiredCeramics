@@ -21,14 +21,15 @@ LABELS = ["Open bioinspired design", "Nacre alumina, polymer interlayer", "Bioin
 REPEATS = sorted({r["repeat"] for r in rows})
 
 # Outcome of every run, one cell per question and repeat.
-fig, ax = plt.subplots(figsize=(6.6, 3.2))
+fig, ax = plt.subplots(figsize=(8.2, 3.8))
 for r in rows:
     x, y = REPEATS.index(r["repeat"]), QUESTIONS.index(r["question"])
     color = BLUE if r.get("best") else ORANGE if r.get("verdicts") else GRAY
     ax.add_patch(plt.Rectangle((x - 0.5, y - 0.5), 1, 1, color=color, ec="white", lw=3))
     best = max(n for n, v in zip(r["novelty"], r["verdicts"]) if v == "accept") if r.get("best") else None
-    text = f"{len(r.get('verdicts') or [])} candidates" + (f", novelty {best:.2f}" if best is not None else "")
-    ax.text(x, y, f"{text}\n{r['seconds'] / 60:.0f} min", ha="center", va="center", fontsize=8.5,
+    n = len(r.get("verdicts") or [])
+    text = f"{n} candidate{'s' * (n != 1)}" + (f", novelty {best:.2f}" if best is not None else "")
+    ax.text(x, y, f"{text}\n{r['seconds'] / 60:.0f} min", ha="center", va="center", fontsize=8,
             color="white" if color == BLUE else INK)
 ax.set(xlim=(-0.5, len(REPEATS) - 0.5), ylim=(len(QUESTIONS) - 0.5, -0.5), xlabel="Repeat")
 ax.set_xticks(range(len(REPEATS)), [str(k + 1) for k in REPEATS])
@@ -46,20 +47,20 @@ fig.savefig(here / "e2e_outcomes.png", dpi=200)
 # Novelty of each candidate in each run, with the verdict and the target that sends the designer back.
 fig, ax = plt.subplots(figsize=(6.6, 3.4))
 MARK = {"accept": ("o", BLUE), "revise": ("s", ORANGE), "incomplete": ("X", GRAY)}
-for r in rows:
-    if not r.get("verdicts"):
-        continue
-    xs = range(1, len(r["verdicts"]) + 1)
+simulated = [r for r in rows if r.get("verdicts")]
+for k, r in enumerate(simulated):
+    # Runs often score alike, so each run is shifted a little along x to keep its points apart.
+    xs = [x + 0.08 * (k - (len(simulated) - 1) / 2) for x in range(1, len(r["verdicts"]) + 1)]
     ax.plot(xs, r["novelty"], color=GRID, lw=1, zorder=1)
     for x, n, v in zip(xs, r["novelty"], r["verdicts"]):
         marker, color = MARK[v]
         ax.scatter(x, n, marker=marker, color=color, s=55, edgecolor="white", lw=1, zorder=3)
     if r.get("best"):
-        k = int(r["best"].split("_")[1])
-        ax.scatter(k, r["novelty"][k - 1], marker="o", s=170, facecolor="none", edgecolor=INK, lw=1.2, zorder=4)
+        j = int(r["best"].split("_")[1]) - 1
+        ax.scatter(xs[j], r["novelty"][j], marker="o", s=170, facecolor="none", edgecolor=INK, lw=1.2, zorder=4)
 ax.axhline(0.5, color="#52514e", ls="--", lw=1, zorder=0)
-ax.text(3.08, 0.5, "target", fontsize=8, color="#52514e", va="center")
-ax.set(xlim=(0.7, 3.4), ylim=(0, 1), xlabel="Candidate in the run", ylabel="Novelty against the corpus")
+ax.text(3.32, 0.52, "target", fontsize=8, color="#52514e", va="bottom", ha="right")
+ax.set(xlim=(0.6, 3.4), ylim=(0, 1), xlabel="Candidate in the run", ylabel="Novelty against the corpus")
 ax.set_xticks([1, 2, 3])
 for side in ("top", "right"):
     ax.spines[side].set_visible(False)

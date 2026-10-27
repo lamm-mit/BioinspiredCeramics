@@ -1,6 +1,39 @@
 # Benchmark
 
-Twenty open-weight models were scored in 26 configurations on one DGX Spark on 1 and 2 October 2026. Image reading separates them, from 24 to 47 correct answers out of 50. Passage extraction and tool calling do not, since 20 of the 26 configurations score at least 45 out of 46. Turning thinking off left image accuracy unchanged within sampling error and cut the time per image by a factor of 1.9 to 7.5. With the chosen models the whole pipeline produced a design that the judge accepted in 9 of 12 runs on 2026-10-23, at a median of 394 s per run. The FEM tool places the switch from crack deflection to penetration next to the He-Hutchinson threshold.
+Twenty open-weight models were scored in 26 configurations on one DGX Spark on 1 and 2 October 2026. Image reading separates them, from 24 to 47 correct answers out of 50. Passage extraction and tool calling do not, since 20 of the 26 configurations score at least 45 out of 46. Turning thinking off left image accuracy unchanged within sampling error and cut the time per image by a factor of 1.9 to 7.5. With the chosen models the whole pipeline, with the novelty reward and the fabricator, made an accepted candidate with its recipe and print files in 4 of 8 runs on 2026-10-25, at a median of 21 min per run. The FEM tool places the switch from crack deflection to penetration next to the He-Hutchinson threshold.
+
+## Setup
+
+The benchmark ran on one NVIDIA DGX Spark, a GB10 Grace Blackwell with 20 Arm cores (10 Cortex-X925 and 10 Cortex-A725) and 128 GB of LPDDR5X memory shared by the CPU and the GPU at 273 GB/s. Its GPU ran at a reduced clock of 507 MHz of 3,003 MHz throughout, so every time below is an upper bound ([hardware.md](hardware.md)). The 26 configurations ran one after another on 1 and 2 October 2026, in about 18 hours, with the GPU at or below 58 °C.
+
+| Layer | Setting |
+|---|---|
+| Model server | Ollama 0.35.0, `OLLAMA_CONTEXT_LENGTH=32768`, `OLLAMA_NUM_PARALLEL=4`, `OLLAMA_KEEP_ALIVE=30m`, `OLLAMA_MAX_LOADED_MODELS=3` |
+| Model files | The default Ollama tag of each model, 4-bit Q4_K_M or MXFP4 for gpt-oss, and a community GGUF for DeepSeek-V4-Flash ([models.md](models.md)) |
+| Client | The OpenAI Python SDK 3.22.1 against Ollama's OpenAI-compatible endpoint, through the same `chat` and `ask_json` functions the agents use ([`../llm.py`](../llm.py)) |
+| Sampling | Temperature 0, at most 8,192 output tokens, each model's default reasoning unless the configuration names an effort |
+| Concurrency | Four requests in flight per suite. A configuration's next suite starts when its last item returns |
+| Scoring | Deterministic, against the stored answer and tolerance of each item, in [`../benchmark/run.py`](../benchmark/run.py). No model and no person judges an answer |
+
+## Models
+
+A model entered the benchmark when four conditions held. Its weights are open. Its license allows local use. It fits one Spark with its 32K context cache and decodes at a usable speed. It has a standard Ollama tag, with DeepSeek-V4-Flash as the one exception. Within those limits the set covers the image-capable open families available as Ollama tags in late September 2026, because the figure reader needs vision and no family was known to be best at reading plots, and the text-only reasoning models that could run the text agents. Qwen3-VL-235B (143 GB at 4 bits) and Mistral Medium 3.5 (at most about 3.4 tokens/s) were left out for size and speed.
+
+Twenty models gave 26 configurations. Five models ran a second time with thinking off (`@none`), since thinking multiplies the time per image, and gpt-oss-120b ran a second time at low reasoning effort (`@low`). The 19 image-capable configurations took all four suites. The 7 text-only configurations took passage extraction and tool calling only, and Gemma 3 skipped tool calling because it has no tool interface. [models.md](models.md) lists every model with its size, license and capabilities.
+
+## Why these suites
+
+Each suite tests one job of one agent, and each stress inside a suite reproduces a failure seen in earlier pipeline runs. A suite therefore predicts how a model behaves in its seat in the pipeline, and the end-to-end runs test the seats together.
+
+| Suite | Agent and job | Failure it reproduces, and how |
+|---|---|---|
+| Chart reading | Figure reader, reading a value off a plot | Misread log axes, so one chart type in five uses a log axis. Answers from memory of real materials, so every value is random and the sample names are neutral |
+| Paper figures | Figure reader, on real published figures | Clean charts are easier than published ones, with panels, legends and overlapping markers. Each answer is stated in the paper text, so the ground truth is the authors' number |
+| Passage extraction | Designer and checker, taking a value from a passage | Invented values, so 10 of 30 passages lack the quantity and a number there counts as invented. The wrong number from a sentence with several, as with a 140 µm layer of another material taken for a 210 µm alumina layer, so 19 of the 20 answerable passages hold competing numbers. Unit slips, so 5 need a conversion |
+| Tool calling | Engineer, passing values between tools | A mis-copied argument enters a simulation without any error, so step two checks that every input equals the design value or the earlier tool output within 0.1% |
+| Speed and memory | All agents together | The default set must fit beside the solvers in 128 GB and finish a run in minutes, so `speed.py` measures load time, memory, prefill and decode |
+
+A reply cut off at the token limit counts as wrong, because thinking models exhausted the budget in pipeline runs and returned no answer. Only generated items and items from CC BY 4.0 papers are used, so the benchmark can be shared and rerun. The suites do not test whether a design is scientifically sound, how good a hypothesis is, or the judge and the fabricator, which only the end-to-end runs exercise. [benchmark_items.md](benchmark_items.md) lists all 96 items with their answers, tolerances and how many configurations answered each correctly.
 
 ## Suites
 
@@ -124,15 +157,29 @@ Three patterns hold across the table. Mixture-of-experts models with about 3B ac
 
 ## Whole pipeline
 
-### Current pipeline, 2026-10-23
+### Toolpath patterns on the full corpus, 2026-10-26
 
-The outcomes per question and repeat show 9 accepted runs of 12, with every question accepted in at least 2 of its 3 repeats and the graphite question in all 3.
+The four questions of `e2e.py` ask since 2026-10-26 for structures that a toolpath pattern carries, open, nacre tablets, Bouligand plies and a graded modulus. They ran twice each on the full corpus with the stand-in DFT and MD tools, before the knowledge-graph proposer. All 8 runs simulated a candidate, 20 in all, and the judge accepted 5, all from the open and nacre questions. Six runs ended with a complete design whose tool inputs matched the design and the earlier tool outputs. In the other 2 the revision after the first candidate lacked a field. All 6 Bouligand candidates sent the crack through a joint, which the FEM tool does not count as deflection, since the 2D section cuts the rotated plies and their tablet ends. Their novelty was 0.41 to 0.56, against 0.19 to 0.30 for the other questions. The runs took 18 to 170 min, median 47 min, while DFT and MD runs shared the Spark.
+
+### Before toolpath patterns, 2026-10-25
+
+Four of 8 runs made a candidate, with its STL files, three handoff files, a recipe of 6 to 7 steps citing 15 to 26 values from passages that state them, and G-code for direct ink writing. The outcomes per question and repeat show that the open question and the nacre question made a candidate in 4 of 4 runs, while the silicon carbide question and the unreported-combination question made none.
 
 ![End-to-end outcomes per question and repeat](figures/e2e_outcomes.png)
 
-*Outcome and wall time of each run of the default models on the four questions of `e2e.py`, three repeats each, on 2026-10-23. Blue cells are runs that ended with a candidate the judge accepted. Orange cells are runs whose last design still lacked a field.*
+*Outcome, number of candidates simulated, novelty of the made candidate and wall time of each run of the default models on the four questions of `e2e.py`, two repeats each, on 2026-10-25. Blue cells made a candidate the judge accepted. Orange cells simulated candidates that the judge sent back. Gray cells never completed a design. Rows are in [`../benchmark/results/e2e_pipeline.jsonl`](../benchmark/results/e2e_pipeline.jsonl).*
 
-The runs used the eight-paper corpus kept outside the repository, the FEM tool at 60 pixel rows, and the stand-in DFT and MD tools. All 9 accepted runs wrote the STL files of the part and the three handoff files. The other 3 ended with a design that still lacked a field, which goes to the reporter without a simulation. The median run took 394 s, with a range of 215 to 943 s. The two accepted runs of the polymer question took 925 and 943 s, the longest of the set. Each FEM call took a median of 190 s ([hardware.md](hardware.md)). Every verdict is provisional, since two of the three tools are stand-ins.
+The runs used the eight-paper corpus kept outside the repository, the FEM tool at 60 pixel rows, the stand-in DFT and MD tools, a novelty target of 0.5 and at most 3 candidates per run. The 8 runs simulated 11 candidates, and the judge accepted 6. The silicon carbide runs ended before any simulation, because the eight papers state no layer or interlayer thickness for silicon carbide and the source check rejected every value the designer proposed. The judge sent back all 3 candidates of the unreported-combination question, since their sources report nacre-inspired alumina with graphite interlayers made by direct ink writing. The median run took 21 min, with a range of 6 to 41 min, and the 11 FEM calls took 164 to 411 s, with a median of 174 s.
+
+Every accepted candidate on this corpus scored a novelty between 0.15 and 0.23, below the target of 0.5. The one candidate above the target, at 0.55, was sent back by the judge. The reward loop therefore spent its candidates without an accepted design above the target, and each run made its accepted candidate with the highest reward. The novelty of each candidate shows this pattern.
+
+![Novelty of each candidate](figures/novelty_reward.png)
+
+*Novelty against the corpus of every simulated candidate, by its position in its run. Circles were accepted and squares sent back by the judge. A ring marks the candidate the run made. Runs are shifted slightly along x so that equal scores stay visible.*
+
+### Before the novelty reward and the fabricator, 2026-10-23
+
+Four older questions ran three times each with the judge and the FEM tool, before the hypothesis fields, the novelty reward and the fabricator were added. The judge accepted 9 of 12 runs, and the other 3 ended with a design that still lacked a field. The runs used the eight-paper corpus kept outside the repository, the FEM tool at 60 pixel rows, and the stand-in DFT and MD tools. All 9 accepted runs wrote the STL files of the part and the three handoff files. The other 3 ended with a design that still lacked a field, which goes to the reporter without a simulation. The median run took 394 s, with a range of 215 to 943 s. The two accepted runs of the polymer question took 925 and 943 s, the longest of the set. Each FEM call took a median of 190 s ([hardware.md](hardware.md)). Every verdict is provisional, since two of the three tools are stand-ins.
 
 A two-step question starts from a silicon carbide interlayer and asks to change it if cracks do not deflect. It was accepted in 1 of 4 runs across 2026-10-14 and 2026-10-23. In the accepted run the judge sent the silicon carbide candidate back, proposed epoxy, and accepted the epoxy candidate after 293 s. In one of the failed runs the replacement design cited a paper without a passage that states its interlayer thickness, the source check rejected that value, and the run ended without a candidate.
 

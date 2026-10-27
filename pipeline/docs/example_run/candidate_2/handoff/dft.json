@@ -1,0 +1,21 @@
+{
+ "tool": "dft_cleavage",
+ "description": "Density-functional energy to cleave a bulk material. Returns the cleavage energy in J/m^2.",
+ "candidate": "candidate_2",
+ "calls": [
+  {
+   "inputs": {
+    "material": {
+     "value": "alumina",
+     "from": "design.ceramic",
+     "source": "10.1016_j.jeurceramsoc.2023.11.009#6: Young’s modulus of alumina 367 GPa – provides the modulus value for alumina"
+    }
+   },
+   "status": "done",
+   "output": {
+    "cleavage_energy_J_m2": 3.0,
+    "method": "stand-in (table of surface energies), not a DFT result"
+   }
+  }
+ ]
+}

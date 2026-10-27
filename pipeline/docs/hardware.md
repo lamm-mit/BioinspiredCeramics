@@ -1,6 +1,6 @@
 # Hardware
 
-The pipeline runs on one NVIDIA DGX Spark with 128 GB of unified memory. The three default models take 36 GB of weights on its GPU. The FEM tool runs on its CPU at a median of 190 s per call, about half the median design run of 394 s. Memory is the binding limit. On 2026-10-21 a 65 GB model of another job, loaded beside the pipeline's models, left 2 GB free and stalled the machine, so the pipeline should share the Spark with no model above about 40 GB. Decode speed is bounded by the 273 GB/s memory bandwidth, which favors mixture-of-experts models with few active parameters.
+The pipeline runs on one NVIDIA DGX Spark with 128 GB of unified memory. The three default models take 36 GB of weights on its GPU. The FEM tool runs on its CPU at 164 to 411 s per call, median 174 s (n = 11), and a run with up to three candidates took a median of 21 min on 2026-10-25. Memory is the binding limit. On 2026-10-21 a 65 GB model of another job, loaded beside the pipeline's models, left 2 GB free and stalled the machine, so the pipeline should share the Spark with no model above about 40 GB. Decode speed is bounded by the 273 GB/s memory bandwidth, which favors mixture-of-experts models with few active parameters.
 
 ## Requirements
 
@@ -8,13 +8,14 @@ The pipeline runs on one NVIDIA DGX Spark with 128 GB of unified memory. The thr
 |---|---|---|---|
 | Language models, gpt-oss-20b, Qwen3.6-35B-A3B and EmbeddingGemma | Spark GPU, 36 GB of weights | median 394 s per pipeline run, n = 12, 2026-10-23 | Ollama 0.35.0, 32K context, one request at a time ([`../scripts/setup_spark.sh`](../scripts/setup_spark.sh)) |
 | FEM, `fem_fracture` with jax-pfczm (AT2 phase field) | Spark CPU | median 190 s and maximum 418 s per call at 60 pixel rows, with the default models loaded, 2026-10-23. 134 to 182 s on the idle Spark, and 74 to 104 s pinned to one fast core, 2026-10-25 ([REQUESTS.md](../../tools/REQUESTS.md)) | the pipeline environment with JAX 0.11.2 ([`../requirements.txt`](../requirements.txt)) |
-| MD, md_agent with the Pedone classical potential | Spark | 33 validation checks in 107 s, the 13 MACE checks skipped. An NPT run of alumina in 771 s. The bulk-modulus cross-check of alumina, `md_bulk`, in 2.2 to 2.5 s | ASE for the cross-check, in the pipeline environment. OpenMM, and MACE with PyTorch, are optional for its other modes ([requirements](../../tools/md/md_agent/requirements.txt)) |
-| DFT, Quantum ESPRESSO adapter of fracture-md | CPU, one MPI rank per core | its two `pw.x` tests in 22 s | a separate conda environment, `fmd-dft`, with Quantum ESPRESSO 7.5 ([README](../../tools/dft/fracture_md_qe/README.md)) |
+| MD, `md_interface` with MACE-MP-0 medium and D3(BJ) | Spark GPU | one run per pair of materials, 16 to 19 min for graphite, 47 to 58 min for a polymer and 63 to 101 min for silica glass, with two or three runs sharing the GPU, 2026-10-27 | a second environment, `~/simtools/env`, with PyTorch, MACE and torch-dftd ([README](../../tools/md/README.md)) |
+| MD, `md_bulk` with md_agent | Spark | alumina with the Pedone potential in 2.2 to 2.5 s, silicon carbide with MACE-MP-0 in about 30 s. md_agent's 33 validation checks in 107 s | ASE in the pipeline environment for alumina, the MD environment for silicon carbide ([requirements](../../tools/md/md_agent/requirements.txt)) |
+| DFT, `dft_cleavage` with Quantum ESPRESSO 7.5 | Spark CPU, 8 MPI ranks | one run per ceramic, silicon carbide in 2.5 h and alumina in 9.8 h, 2026-10-27 | a separate conda environment, `fmd-dft` ([README](../../tools/dft/README.md)) |
 | Tests | Apple M3 Pro laptop | FEM tests in 13 to 14 s, graph test in 243 s, seven test scripts with 181 checks | the pipeline environment, no model server |
 
 The GPU of the Spark ran at a reduced clock of 507 MHz during the model benchmark and the runs of 2026-10-14, so the model times in these documents are upper bounds (Known issues, below).
 
-In the pipeline, `dft_cleavage` and `md_interface` are still closed-form stand-ins that return at once, because neither code computes a cleavage energy or builds an interface yet ([../../tools/README.md](../../tools/README.md)). The MD and DFT rows give the cost of the codes that will back them. If each candidate needs one MD run of the length measured here, attaching MD adds about 13 minutes per candidate.
+`dft_cleavage` and `md_interface` depend only on the materials, so each ceramic and each pair is computed once and kept in the tool's `results/` folder. In a run they read those files and return at once. A new ceramic costs one DFT run of a few hours on the CPU, and a new interlayer one MD run of up to 2 h per ceramic on the GPU ([../../tools/README.md](../../tools/README.md)).
 
 The tests and the agents also run on a laptop. The tests need no model server and use a coarse FEM grid of 30 pixel rows. The agents reach the Spark's model server through an SSH tunnel ([../README.md](../README.md)).
 
@@ -97,6 +98,8 @@ Memory can run out without warning. The machine has no swap, and the server does
 The test unit also stopped once without any log entry. Two benchmark runs had loaded it for two hours, and a Gemma 4 model had been loaded next to another model four minutes earlier, so memory exhaustion is the likely cause. After the restart the GPU clock stayed at 507 MHz of 3,003 MHz, which halved the decode speed of mixture-of-experts models. That part is unexplained. The unit then ran the full benchmark for 18 hours without a fault, with the GPU at 58 °C or below. The two speeds given above at the normal clock were measured before the restart, and all other benchmark timings after it. The clock was still at 507 MHz during the end-to-end runs of 2026-10-14.
 
 Ollama evicts the least recently used model when a new one does not fit. Reloading a model costs 10 to 37 s.
+
+The GPU can fault on a single request. On 2026-10-26 the server process of Qwen3.6-35B-A3B hit three GPU page faults (Xid 31) within 30 s while it read one figure of the full corpus, with 90 GB of memory free. Ollama restarted the process, but the request failed. The figure reader now skips a figure the server fails on and records the error in the run's trace, so one figure no longer ends a run.
 
 ## Sources
 

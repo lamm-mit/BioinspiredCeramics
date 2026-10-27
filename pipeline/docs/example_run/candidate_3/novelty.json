@@ -1,0 +1,23 @@
+{
+ "statement": "A bone-inspired alumina laminate with graphite interlayers, made by vat photopolymerization, toughened by crack bridging.",
+ "score": 0.552734375,
+ "combination": 0.75,
+ "semantic": 0.35546875,
+ "terms": [
+  "bone",
+  "alumina",
+  "graphite",
+  "vat photopolymerization",
+  "crack bridging"
+ ],
+ "max_terms_together": 2,
+ "records_with_max": 21,
+ "closest_records": [
+  "10.1002_adem.202200520#3",
+  "10.1002_adem.202200520#14",
+  "10.1002_adem.202200520#15"
+ ],
+ "nearest_passage": "10.1016_j.actamat.2023.118704#31",
+ "nearest_similarity": 0.56038498878479,
+ "method": "Score is the mean of combination novelty, 1 - (m - 1)/(n - 1) with m the largest number of the n design terms (aliases included) that a single passage, figure caption or knowledge graph triple names, and semantic novelty, the fraction of 256 statements of random hypotheses whose nearest text passage is more similar than that of the design statement (captions excluded)."
+}

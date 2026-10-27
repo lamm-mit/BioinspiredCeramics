@@ -1,0 +1,12 @@
+{
+ "md_bulk": {
+  "youngs_modulus_GPa": 347.8,
+  "bulk_modulus_GPa": 274.4,
+  "shear_modulus_GPa": 134.9,
+  "density_g_cm3": 4.061,
+  "n_atoms": 30,
+  "seconds": 1.9,
+  "method": "md_agent, Pedone 2006 rigid-ion potential, perfect crystal relaxed at 0 K, C_ij by finite strain of 0.5% with relaxed ions, Voigt-Reuss-Hill average",
+  "design_layer_modulus_GPa": 367
+ }
+}

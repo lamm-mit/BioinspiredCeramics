@@ -1,0 +1,332 @@
+{
+ "candidate": "candidate_1",
+ "process": "direct ink writing",
+ "steps": [
+  {
+   "stage": "Ceramic feedstock preparation",
+   "instruction": "Prepare a 35 vol% alumina paste using 99.99 % Al₂O₃ powder (D₅₀ = 0.2 µm). Add 30 wt% Pluronic F‑127 as binder and 1 wt% Dolapix CA as dispersant (weight relative to powder). Mix in a planetary mixer at 2000 rpm for 2 min, repeat 4 times, then defoam at 2200 rpm for 10 min. Store at room temperature.",
+   "parameters": {
+    "powder": {
+     "value": 99.99,
+     "unit": "%",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "particle_size": {
+     "value": 0.2,
+     "unit": "µm",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "solids_loading": {
+     "value": 35,
+     "unit": "vol%",
+     "source": "10.1016_j.matdes.2022.111463#15"
+    },
+    "binder": {
+     "value": 30,
+     "unit": "wt%",
+     "source": "10.1016_j.actamat.2023.118704#4"
+    },
+    "dispersant": {
+     "value": 1,
+     "unit": "wt%",
+     "source": "10.1016_j.actamat.2023.118704#4"
+    },
+    "mixing_rpm": {
+     "value": 2000,
+     "unit": "rpm",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "mixing_time_min": {
+     "value": 2,
+     "unit": "min",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "mixing_cycles": {
+     "value": 4,
+     "unit": "",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "defoaming_rpm": {
+     "value": 2200,
+     "unit": "rpm",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "defoaming_time_min": {
+     "value": 10,
+     "unit": "min",
+     "source": "assumption: 10.1016_j.matdes.2022.111463#5 does not state 10"
+    }
+   }
+  },
+  {
+   "stage": "Interlayer (sacrificial graphite) paste preparation",
+   "instruction": "Prepare a 35 vol% graphite/Al₂O₃ paste (50 vol% graphite, 50 vol% Al₂O₃) using the same binder and dispersant as the ceramic paste. Mix identically to the ceramic paste.",
+   "parameters": {
+    "graphite_ratio": {
+     "value": 50,
+     "unit": "vol%",
+     "source": "assumption: 10.1016_j.actamat.2023.118704#5 does not state 50"
+    },
+    "alumina_ratio": {
+     "value": 50,
+     "unit": "vol%",
+     "source": "assumption: 10.1016_j.actamat.2023.118704#5 does not state 50"
+    },
+    "solids_loading": {
+     "value": 35,
+     "unit": "vol%",
+     "source": "10.1016_j.matdes.2022.111463#15"
+    },
+    "binder": {
+     "value": 30,
+     "unit": "wt%",
+     "source": "10.1016_j.actamat.2023.118704#4"
+    },
+    "dispersant": {
+     "value": 1,
+     "unit": "wt%",
+     "source": "10.1016_j.actamat.2023.118704#4"
+    },
+    "mixing_rpm": {
+     "value": 2000,
+     "unit": "rpm",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "mixing_time_min": {
+     "value": 2,
+     "unit": "min",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "mixing_cycles": {
+     "value": 4,
+     "unit": "",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "defoaming_rpm": {
+     "value": 2200,
+     "unit": "rpm",
+     "source": "10.1016_j.matdes.2022.111463#5"
+    },
+    "defoaming_time_min": {
+     "value": 10,
+     "unit": "min",
+     "source": "assumption: 10.1016_j.matdes.2022.111463#5 does not state 10"
+    }
+   }
+  },
+  {
+   "stage": "Printing",
+   "instruction": "Co‑extrude the ceramic and sacrificial interlayer pastes using a direct ink writing system. Deposit ceramic layers of 70 µm thickness and interlayer layers of 35 µm thickness. Use a 250 µm nozzle, print speed 10 mm s⁻¹, travel speed 30 mm s⁻¹, max/min layer height fraction 0.8/0.3, syringe diameter 14.5 mm, z‑hop 1 mm, tool change 30 s.",
+   "parameters": {
+    "nozzle_diameter_um": {
+     "value": 250,
+     "unit": "µm",
+     "source": "assumption: design"
+    },
+    "max_layer_height_fraction": {
+     "value": 0.8,
+     "unit": "nozzle diameters",
+     "source": "assumption: design"
+    },
+    "min_layer_height_fraction": {
+     "value": 0.3,
+     "unit": "nozzle diameters",
+     "source": "assumption: design"
+    },
+    "print_speed_mm_s": {
+     "value": 10,
+     "unit": "mm/s",
+     "source": "assumption: design"
+    },
+    "travel_speed_mm_s": {
+     "value": 30,
+     "unit": "mm/s",
+     "source": "assumption: design"
+    },
+    "syringe_diameter_mm": {
+     "value": 14.5,
+     "unit": "mm",
+     "source": "assumption: design"
+    },
+    "z_hop_mm": {
+     "value": 1,
+     "unit": "mm",
+     "source": "assumption: design"
+    },
+    "tool_change_s": {
+     "value": 30,
+     "unit": "s",
+     "source": "assumption: design"
+    }
+   }
+  },
+  {
+   "stage": "Debinding",
+   "instruction": "Dry the green part at 30 °C, 72 % RH for 2 days. Cold‑isostatically press at 300 MPa for 5 min. Heat to 350 °C at 1 °C min⁻¹, hold 1 h, then to 500 °C at 2 °C min⁻¹, hold 2 h to burn out Pluronic.",
+   "parameters": {
+    "dry_temp_c": {
+     "value": 30,
+     "unit": "°C",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "dry_humidity_percent": {
+     "value": 72,
+     "unit": "%",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "dry_time_days": {
+     "value": 2,
+     "unit": "days",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "pressure_mpa": {
+     "value": 300,
+     "unit": "MPa",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "press_time_min": {
+     "value": 5,
+     "unit": "min",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "heat_rate_start_cmin": {
+     "value": 1,
+     "unit": "°C/min",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "heat_start_c": {
+     "value": 350,
+     "unit": "°C",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "hold_start_h": {
+     "value": 1,
+     "unit": "h",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "heat_rate_burn_cmin": {
+     "value": 2,
+     "unit": "°C/min",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "heat_burn_c": {
+     "value": 500,
+     "unit": "°C",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "hold_burn_h": {
+     "value": 2,
+     "unit": "h",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    }
+   }
+  },
+  {
+   "stage": "Sintering",
+   "instruction": "Sinter the part in air at 1550 °C for 1 h with a heating rate of 5 °C min⁻¹.",
+   "parameters": {
+    "sinter_temp_c": {
+     "value": 1550,
+     "unit": "°C",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "sinter_time_h": {
+     "value": 1,
+     "unit": "h",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    },
+    "sinter_rate_cmin": {
+     "value": 5,
+     "unit": "°C/min",
+     "source": "10.1016_j.actamat.2023.118704#6"
+    }
+   }
+  },
+  {
+   "stage": "Post‑sintering infiltration",
+   "instruction": "After sintering, infiltrate PMMA into the pores left by the burnt graphite interlayer. Heat the PMMA to 120 °C and apply under vacuum for 2 h to fill the pores.",
+   "parameters": {
+    "pmma_infiltration_temp_c": {
+     "value": 120,
+     "unit": "°C",
+     "source": "assumption: infiltration temperature for PMMA"
+    },
+    "pmma_infiltration_time_h": {
+     "value": 2,
+     "unit": "h",
+     "source": "assumption: infiltration time"
+    }
+   }
+  },
+  {
+   "stage": "Finishing",
+   "instruction": "Polish the sintered part to the desired surface finish. Inspect for residual porosity and interlayer integrity.",
+   "parameters": {}
+  }
+ ],
+ "print_parameters": {
+  "nozzle_diameter_um": {
+   "value": 250,
+   "unit": "µm",
+   "source": "assumption: design"
+  },
+  "max_layer_height_fraction": {
+   "value": 0.8,
+   "unit": "nozzle diameters",
+   "source": "assumption: design"
+  },
+  "min_layer_height_fraction": {
+   "value": 0.3,
+   "unit": "nozzle diameters",
+   "source": "assumption: design"
+  },
+  "print_speed_mm_s": {
+   "value": 10,
+   "unit": "mm/s",
+   "source": "assumption: design"
+  },
+  "travel_speed_mm_s": {
+   "value": 30,
+   "unit": "mm/s",
+   "source": "assumption: design"
+  },
+  "syringe_diameter_mm": {
+   "value": 14.5,
+   "unit": "mm",
+   "source": "assumption: design"
+  },
+  "z_hop_mm": {
+   "value": 1,
+   "unit": "mm",
+   "source": "assumption: design"
+  },
+  "tool_change_s": {
+   "value": 30,
+   "unit": "s",
+   "source": "assumption: design"
+  }
+ },
+ "cautions": [
+  "Ensure the binder is fully removed before sintering to avoid cracking.",
+  "Control the heating rate to prevent rapid gas evolution from the sacrificial graphite.",
+  "PMMA infiltration must be performed under vacuum to avoid trapped air and ensure complete pore filling.",
+  "Monitor the thermal expansion mismatch between alumina and PMMA to avoid delamination during cooling.",
+  "Verify that the interlayer thickness remains 35 µm after infiltration; adjust infiltration parameters if necessary."
+ ],
+ "evidence": [
+  "10.1016_j.matdes.2022.111463#5",
+  "10.1016_j.actamat.2023.118704#5",
+  "10.1016_j.actamat.2023.118704#0",
+  "10.1016_j.matdes.2022.111463#7",
+  "10.1016_j.actamat.2023.118704#14",
+  "10.1016_j.matdes.2022.111463#15",
+  "10.1016_j.actamat.2023.118704#23",
+  "10.1016_j.addma.2023.103776#8",
+  "10.1007_s40145-021-0518-6#0",
+  "10.1016_j.actamat.2023.118704#6",
+  "10.1016_j.addma.2023.103776#0",
+  "10.1016_j.actamat.2023.118704#31",
+  "10.1002_adem.202200520#14",
+  "10.1016_j.actamat.2023.118704#4"
+ ]
+}

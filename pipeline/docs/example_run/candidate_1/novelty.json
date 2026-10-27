@@ -1,0 +1,21 @@
+{
+ "statement": "A nacre-inspired alumina laminate with PMMA interlayers, made by direct ink writing, toughened by crack deflection.",
+ "score": 0.234375,
+ "combination": 0.25,
+ "semantic": 0.21875,
+ "terms": [
+  "nacre",
+  "alumina",
+  "PMMA",
+  "direct ink writing",
+  "crack deflection"
+ ],
+ "max_terms_together": 4,
+ "records_with_max": 1,
+ "closest_records": [
+  "10.1016_j.actamat.2023.118704#30"
+ ],
+ "nearest_passage": "10.1016_j.addma.2023.103776#0",
+ "nearest_similarity": 0.5731545686721802,
+ "method": "Score is the mean of combination novelty, 1 - (m - 1)/(n - 1) with m the largest number of the n design terms (aliases included) that a single passage, figure caption or knowledge graph triple names, and semantic novelty, the fraction of 256 statements of random hypotheses whose nearest text passage is more similar than that of the design statement (captions excluded)."
+}

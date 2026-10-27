@@ -15,12 +15,30 @@ knowledge graph, choose design values with a cited source for each, write
 the part as STL files, and call DFT, MD and FEM tools. Each tool call is
 recorded in a handoff file with the origin of every input. A judge weighs
 the candidate against its simulation results and can send it back to the
-designer, for up to three candidates per run. The DFT and MD tools are
-stand-ins until their solvers are attached, and the FEM tool runs a
-phase-field simulation of the notched cell.
+designer, for up to three candidates per run. The DFT tool computes the
+cleavage energy of the ceramic with Quantum ESPRESSO, the MD tool the
+separation of the ceramic from its interlayer with a machine-learned
+potential, and the FEM tool runs a phase-field simulation of the notched
+cell from both energies.
 [pipeline/README.md](pipeline/README.md) describes the agents, the run
 output and the commands, and [tools/README.md](tools/README.md) gives
 the contract a solver must meet.
+
+### What is missing
+
+Status on 2026-10-27. The pipeline runs end to end with real DFT, MD and FEM tools, but the items below are open. [tools/REQUESTS.md](tools/REQUESTS.md) gives each tool gap with its input, output and unit.
+
+Target property. The judge tests one criterion, whether a crack from the notch deflects at the first interlayer. The planned target is the fracture toughness K_IC from a virtual test, such as a single-edge V-notched beam or chevron notch [ASTM C1421], against a monolith of the same ceramic. No agent sets up that test yet, and the design criteria in `pipeline/design.py` and the benchmark questions still name crack deflection only. Other mechanisms and properties are not scored.
+
+Materials. Designs are limited to alumina and silicon carbide layers with silica glass, graphite, epoxy or PMMA interlayers (`tools/schema.py`). The DFT cleavage energies of the two ceramics and the MD separation energies of the eight pairs are computed once and read from `tools/*/results/`. A new material needs 2.5 h to 9.8 h of DFT on 8 cores, and the tool has no job interface, so the graph blocks while it runs.
+
+Energies. All energies are 0 K minima of a sharp cut. The planned inputs are energies at 300 K. DFT covers the bare surfaces only, nonpolar SiC (110) and Al-terminated alumina (0001). The interfaces are computed with MACE-MP-0 and D3, whose error there is unknown, and which binds graphite sheets about 45 % more strongly than measured. The MD interlayers are about 1 nm thick, glass is quenched in 2 ps, epoxy has no crosslinks and PMMA is a 5-mer. Each pair is one cell with one seed, so the energies carry no uncertainty.
+
+FEM. The tool solves the 2D x-z section of the cell. A crack in rotated or Bouligand plies twists out of that plane, so those patterns report "through joint" and their toughening is missing. A 3D cell is not implemented. Interlayers take the modulus of the ceramic, so the elastic mismatch (Dundurs α near 0.9 for polymer interlayers) is absent. Interlayers thinner than 3 pixels are widened, which raises their energy ratio. The tool is quasi-static and takes a median of 190 s per call on the CPU.
+
+Evidence and novelty. The source check confirms that a cited passage exists, and a second reading can still accept a number that belongs to another quantity. The knowledge-graph proposer filters candidates with the same energy-ratio rule the FEM then tests. Accepted candidates scored a novelty of 0.15 to 0.23 on the eight-paper corpus, below the target of 0.5, and human rating of novelty is planned.
+
+Results in the repository. The example run in `pipeline/docs/example_run/` and the benchmark in `pipeline/docs/benchmark.md` date from 2026-10-25 and used stand-in DFT and MD tools. The end-to-end benchmark with the real tools started on 2026-10-27 and is not reported yet. No part has been printed or tested.
 
 The rest of this README covers the knowledge-graph build in `dataset_kg/`.
 
