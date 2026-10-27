@@ -1,0 +1,29 @@
+{
+ "separation_energy_J_m2": 0.2152,
+ "strength_MPa": 1199,
+ "failure_site": "interface",
+ "interface": {
+  "separation_energy_J_m2": 0.2152,
+  "rigid_separation_energy_J_m2": 0.2188,
+  "strength_MPa": 1199,
+  "opening_at_peak_A": 0.65,
+  "overlap_at_A": null
+ },
+ "interlayer": {
+  "separation_energy_J_m2": 0.5197,
+  "rigid_separation_energy_J_m2": 0.5204,
+  "strength_MPa": 2857,
+  "opening_at_peak_A": 0.7,
+  "overlap_at_A": null
+ },
+ "atoms": 352,
+ "interlayer_atoms": 160,
+ "area_A2": 215.0,
+ "method": "MACE-MP-0 medium with D3(BJ) dispersion to 15 \u00c5, 352 atoms. The interlayer was held 0.5 ps at 300 K on the ceramic slab, whose bottom 2 \u00c5 stay fixed, then relaxed at 0 K, with the interlayer and its upper half each moved rigidly to their height of lowest energy. Separation energy: work to split the cell with both parts relaxed, at the interface, the weaker of the interface and the middle of the interlayer. Strength: peak traction of the rigid opening at that site",
+ "computed": "2026-10-27",
+ "wall_time_s": 965,
+ "interlayer_strain": [
+  0.0025,
+  0.0232
+ ]
+}
