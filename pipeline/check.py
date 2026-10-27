@@ -22,6 +22,8 @@ from .geometry import layered_geometry
 from .graph import EMBEDDING, ENGINEER, MODELS
 from .llm import ask_json, chat, client, embed, user
 
+SMALL = {"ceramic": "alumina", "interlayer": "PMMA", "layer_modulus_GPa": 380, "layer_thickness_um": 10, "interlayer_thickness_um": 2}
+
 
 def check(name, f):
     start = time.perf_counter()
@@ -43,18 +45,16 @@ def missing_models():
 
 def tool_call():
     """The engineer's first step on a small design, with the tool it asks for actually run."""
-    design = {"ceramic": "alumina", "interlayer": "PMMA", "layer_modulus_GPa": 380, "layer_thickness_um": 10,
-              "interlayer_thickness_um": 2}
     model, effort = MODELS["engineer"]
-    given = user(json.dumps({"design": design, "geometry": {"geometry_json": "geometry.json"}}))
+    given = user(json.dumps({"design": SMALL, "geometry": {"geometry_json": "geometry.json"}}))
     reply, _ = chat(model, [{"role": "system", "content": ENGINEER}, given], TOOLS, effort)
     call = reply["tool_calls"][0]["function"]
     return call["name"], call["arguments"], RUN[call["name"]](**json.loads(call["arguments"]))
 
 
 def simulate():
-    """The three tools on a small design, with its cell written to a temporary folder for the crack tool."""
-    geometry = layered_geometry("alumina", "PMMA", 10, 2, tempfile.mkdtemp())["geometry_json"]
+    """The three tools on a small flat laminate, with its cell written to a temporary folder for the crack tool."""
+    geometry = layered_geometry(SMALL, {}, tempfile.mkdtemp())["geometry_json"]
     layer, interface = dft_cleavage("alumina"), md_interface("alumina", "PMMA")
     return fem_fracture(380, 10, layer["cleavage_energy_J_m2"], interface["separation_energy_J_m2"],
                         interface["strength_MPa"], geometry)

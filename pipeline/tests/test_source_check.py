@@ -80,4 +80,9 @@ for name, design, sources, want in gate:
     ok = sorted(got) == want
     bad += not ok
     print("ok  " if ok else "FAIL", name, "->", got)
+# A model cites the wrong line for a number that another line states, and the reason names that line.
+why = source_errors({"layer_modulus_GPa": 367}, {"layer_modulus_GPa": "p#25: E_A"}, s)["layer_modulus_GPa"]
+ok = why.startswith("p#25 gives no value in GPa. 367 GPa is stated by p#6 and l#1.")
+bad += not ok
+print("ok  " if ok else "FAIL", "the reason names the lines that state the value ->", why)
 print("FAILED" if bad else "ALL PASS", bad)

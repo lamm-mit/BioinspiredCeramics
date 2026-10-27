@@ -27,25 +27,28 @@ from tools.md import md_interface
 from .. import corpus
 from ..design import DESIGN
 from ..graph import EMBEDDING, MODELS, build, source_errors
+from ..novelty import features
 
 here = Path(__file__).parent
 
+# Until 2026-10-25 the questions also asked for a silicon carbide laminate and for an unreported combination.
+# From 2026-10-26 they ask for structures that a toolpath pattern carries.
 QUESTIONS = [
     "Propose a bioinspired layered ceramic made by additive manufacturing whose interfaces deflect cracks. Choose the "
     "biological model and its mechanism, the ceramic, the interlayer, the print process and the layer thicknesses, and "
     "check whether a crack deflects.",
-    "Design a nacre-inspired alumina laminate made by direct ink writing with a polymer interlayer, and check whether a "
-    "crack deflects.",
-    "Propose a bioinspired silicon carbide laminate made by additive manufacturing, with an interlayer that deflects "
-    "cracks, and check whether a crack deflects.",
-    "Design a bioinspired ceramic laminate for crack deflection that the literature has not reported, with the thinnest "
-    "layers the chosen printing process supports, and check whether a crack deflects.",
+    "Design a nacre-inspired alumina with staggered tablets made by direct ink writing with a polymer interlayer, and "
+    "check whether a crack deflects.",
+    "Design a Bouligand alumina made by direct ink writing with weak interlayers, and check whether a crack deflects.",
+    "Design a bioinspired alumina laminate whose Young's modulus is graded through the thickness, made by direct ink "
+    "writing, and check whether a crack deflects.",
 ]
 
 
 def team(text, reader, designer_effort="medium", effort="none"):
     """One text model for the text agents, with its own effort for the designer, the checker and the judge, and one figure reader."""
-    return {"planner": (text, effort), "designer": (text, designer_effort), "checker": (text, designer_effort),
+    return {"planner": (text, effort), "designer": (text, designer_effort), "architect": (text, designer_effort),
+            "checker": (text, designer_effort),
             "engineer": (text, effort), "judge": (text, designer_effort), "fabricator": (text, designer_effort),
             "reporter": (text, effort),
             "figure_reader": (reader, "none")}
@@ -80,7 +83,15 @@ def checks(s):
                                        for p in st["parameters"].values()),
             "print_files": all(Path(p).exists() for p in s.get("fabrication", {}).get("files", {}).values()) if s.get("fabrication") else None,
             "deflects": fea[-1]["output"]["crack_deflects"] if fea else None,
-            "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in results]}
+            "crack": fea[-1]["output"].get("outcome") if fea else None,
+            "patterns": [c["pattern"] for c in s.get("candidates", [])],
+            "pattern_labels": [[x["label"].split(":")[0] for x in c["pattern_sources"].values()] for c in s.get("candidates", [])],
+            "calls": [r["tool"] + (" failed" if "error" in r["output"] else "") for r in results],
+            "proposals": [p["design"] | {"structure": p["structure"]} for p in s.get("proposals", [])],
+            "built_structure": [any(all(c["design"].get(k) == v for k, v in p["design"].items()) and p["structure"] in features(c["pattern"])
+                                    for p in s.get("proposals", [])) for c in s.get("candidates", [])],
+            "took_proposal": [any(all(c["design"].get(k) == v for k, v in p["design"].items()) for p in s.get("proposals", []))
+                              for c in s.get("candidates", [])]}
 
 
 if __name__ == "__main__":

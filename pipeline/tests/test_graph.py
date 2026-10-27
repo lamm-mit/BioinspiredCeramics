@@ -18,18 +18,27 @@ graph.cp.search = lambda corpus, q, k, figures=False, skip=(), pattern=None: [] 
 graph.cp.neighbors = lambda corpus, entities, k=3: []
 graph.cross_checks = lambda design: {"md_bulk": {"youngs_modulus_GPa": 347.8, "method": "stub"}}
 NOVELTY = {}  # interlayer -> the novelty score the stub returns, 0.9 when absent
-graph.nv.novelty = lambda design, corpus, embed: {"statement": f"A {design['biological_model']}-inspired laminate.",
+graph.nv.novelty = lambda design, pattern, corpus, embed: {"statement": f"A {design['biological_model']}-inspired laminate.",
     "score": NOVELTY.get(design["interlayer"], 0.9), "combination": 1.0, "semantic": 0.8, "terms": [], "max_terms_together": 1,
     "records_with_max": 3, "closest_records": ["p#6"], "nearest_passage": "p#9", "nearest_similarity": 0.4, "method": "stub"}
+PROPOSALS, PLANNED, DESIGNED = [], [], []  # what the stub knowledge graph proposes, and what the planner and the designer were shown
+graph.nv.proposals = lambda corpus, question, k=3: PROPOSALS
 # The fabricator cites F1 (p#6, which states 210) and F2 (p#9, which states 20), and one number neither states.
 # A nozzle of 210 um keeps the G-code small.
 RECIPE = {"steps": [{"stage": "feedstock", "instruction": "Mix the alumina powder into an aqueous ink.",
                      "parameters": {"particle_size_um": {"value": 20, "unit": "um", "source": "F2"},
+                                    "powder": {"value": "alumina", "unit": "", "source": "F1"},
                                     "binder_wt_percent": {"value": 2, "unit": "wt%", "source": "assumption: typical"}}}],
           "print_parameters": {"nozzle_diameter_um": {"value": 210, "unit": "um", "source": "F1: nozzle"},
                                "print_speed_mm_s": {"value": 7, "unit": "mm/s", "source": "F1"}},
           "cautions": ["Dry slowly."]}
 REPORTED = []  # what the reporter was given
+ARCH, ARCH_SEEN = [], []  # what the scripted architect answers, flat layers when empty, and what it was shown
+
+
+def architect(text):
+    ARCH_SEEN.append(text)
+    return ARCH.pop(0) if ARCH else {"features": [], "pattern": {}, "sources": {}}
 TAMPER = {}  # tool inputs the scripted engineer changes on its own, which the handoff file must flag
 
 
@@ -85,15 +94,19 @@ def run(script, truncate_first=False, checker=accept_all):
     calls, answers = [], iter(script)
     def fake(model, system, text, images=(), effort=None):
         if system is graph.PLANNER:
+            PLANNED.append(text)
             return {"queries": ["q"], "entities": []}, {"model": model, "seconds": 0, "reply": {}}
         if system is graph.CHECKER:
             asked.append(text.split("\n")[0])
             return checker(text), {"model": model, "seconds": 0, "reply": {}}
         if system is graph.FABRICATOR:
             return RECIPE, {"model": model, "seconds": 0, "reply": {}}
+        if system is graph.ARCHITECT:
+            return architect(text), {"model": model, "seconds": 0, "reply": {}}
         if system is graph.JUDGE:
             judged.append(text)
             return (VERDICTS.pop(0) if VERDICTS else ACCEPT), {"model": model, "seconds": 0, "reply": {}}
+        DESIGNED.append(text)
         calls.append((effort, "rejected these fields" in text))
         if truncate_first and len(calls) == 1:
             raise ValueError("m returned no answer (finish: length, 8192 tokens)")
@@ -142,6 +155,8 @@ def spy(script):
             return {"low": 0, "high": 1e9}, {"model": model, "seconds": 0, "reply": {}}
         if system is graph.FABRICATOR:
             return RECIPE, {"model": model, "seconds": 0, "reply": {}}
+        if system is graph.ARCHITECT:
+            return architect(text), {"model": model, "seconds": 0, "reply": {}}
         if system is graph.JUDGE:
             return ACCEPT, {"model": model, "seconds": 0, "reply": {}}
         prompts.append(text)
@@ -192,17 +207,17 @@ check("one handoff file per tool, in the candidate folder", sorted(files) == ["d
 check("every call is done and holds its output", all(len(f["calls"]) == 1 and f["calls"][0]["status"] == "done" and f["calls"][0]["output"]["method"] for f in files.values()), [f["calls"][0]["status"] for f in files.values()])
 check("every input has an origin", not [k for f in files.values() for k, i in f["calls"][0]["inputs"].items() if i["from"] == "unmatched"], {k: i["from"] for k, i in inputs("fem").items()})
 check("a design input names its field and its source", inputs("md")["material_b"] == {"value": "graphite", "from": "design.interlayer", "source": "p#9: deflects"}, inputs("md")["material_b"])
-check("a tool output is named as the origin, with the unit", inputs("fem")["layer_fracture_energy_J_m2"] == {"value": 3.0, "unit": "J/m^2", "from": "dft_cleavage.cleavage_energy_J_m2"}, inputs("fem")["layer_fracture_energy_J_m2"])
+check("a tool output is named as the origin, with the unit", inputs("fem")["layer_fracture_energy_J_m2"] == {"value": files["dft"]["calls"][0]["output"]["cleavage_energy_J_m2"], "unit": "J/m^2", "from": "dft_cleavage.cleavage_energy_J_m2"}, inputs("fem")["layer_fracture_energy_J_m2"])
 check("the geometry file is named as the origin", inputs("fem")["geometry_json"]["from"] == "geometry.geometry_json", inputs("fem")["geometry_json"])
-check("the design file holds the values and their sources", json.load(open(Path(s["candidate"]) / "design.json")) == {"design": GOOD, "sources": s["sources"]}, s["candidate"])
+saved = json.load(open(Path(s["candidate"]) / "design.json"))
+check("the design file holds the values, the pattern and their sources", saved["design"] == GOOD and saved["sources"] == s["sources"]
+      and saved["pattern"] == {} and saved["pattern_sources"] == {}, saved)
 TAMPER["layer_modulus_GPa"] = 999
 s, calls = run([{"design": GOOD, "sources": SRC}])
 TAMPER.clear()
 check("an input the engineer made up is marked unmatched", next(r for r in s["results"] if r["tool"] == "fem_fracture")["inputs"]["layer_modulus_GPa"]["from"] == "unmatched", s["results"][-1]["inputs"]["layer_modulus_GPa"])
 s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "interlayer_thickness_um"}, "sources": SRC}] * 4)
 check("no interlayer thickness, so no geometry and no simulation", "interlayer_thickness_um" in s["missing"] and not s.get("results") and "geometry" not in s, s["missing"])
-s, calls = run([{"design": GOOD | {"interlayer": "alumina"}, "sources": SRC}, {"design": {"interlayer": "graphite"}, "sources": {"interlayer": "p#9: deflects"}}])
-check("an interlayer of the ceramic's own material is rejected, then repaired", s["design"] == GOOD and len(calls) == 2 and calls[1][1], (s["design"].get("interlayer"), calls))
 s, calls = run([{"design": GOOD | {"interlayer": "vitrimer"}, "sources": SRC}, {"design": {"interlayer": "graphite"}, "sources": {"interlayer": "p#9: deflects"}}])
 check("a material the tools do not accept is rejected, then repaired", s["design"] == GOOD and len(calls) == 2 and calls[1][1]
       and not any("error" in r["output"] for r in s["results"]), (s["design"].get("interlayer"), calls))
@@ -214,16 +229,16 @@ PASSAGES[:] = [{"id": "p#6", "source": "p", "text": r"alumina layers of 210 µm,
 GOOD2, SRC2 = GOOD | {"interlayer": "epoxy", "interlayer_thickness_um": 5}, SRC | {"interlayer": "p#11: deflects", "interlayer_thickness_um": "p#11: 5 µm thick"}
 GOOD3, SRC3 = GOOD | {"interlayer": "PMMA", "interlayer_thickness_um": 8}, SRC | {"interlayer": "p#12: deflects", "interlayer_thickness_um": "p#12: 8 µm thick"}
 folder = lambda s, n: Path(s["folder"]) / f"candidate_{n}"
-whole = lambda s, n: all((folder(s, n) / f).exists() for f in ["design.json", "verdict.json", "geometry/geometry.json", "geometry/bar_ceramic.stl",
+whole = lambda s, n: all((folder(s, n) / f).exists() for f in ["design.json", "verdict.json", "geometry/geometry.json", "geometry/bar_outline.stl",
                                                               "geometry/cell_interlayer.stl", "handoff/dft.json", "handoff/md.json", "handoff/fem.json",
                                                               "novelty.json", "cross_checks.json"])
 verdicts = lambda s: [c["verdict"]["verdict"] for c in s["candidates"]]
 
 s, calls = run([{"design": GOOD, "sources": SRC}])
 check("accepted at the first candidate", verdicts(s) == ["accept"] and whole(s, 1) and not folder(s, 2).exists() and len(judged) == 1 and "candidate_1 was accepted" in s["outcome"], s["outcome"])
-check("a verdict on stand-in results is provisional", s["verdict"]["provisional"] and "provisionally" in s["outcome"] and json.load(open(folder(s, 1) / "verdict.json")) == s["verdict"] | {"reward": 0.9}, s["verdict"])
+check("the verdict file holds the verdict and the reward", json.load(open(folder(s, 1) / "verdict.json")) == s["verdict"] | {"reward": 0.9}, s["verdict"])
 check("the judge reads the criteria, the design fields, the design and the tool outputs", "A crack deflects" in judged[0]
-      and "Design fields:" in judged[0] and '"enum"' in judged[0] and '"crack_deflects": true' in judged[0] and '"interlayer": "graphite"' in judged[0], judged[0][:120])
+      and "Design fields:" in judged[0] and '"enum"' in judged[0] and '"crack_deflects": ' in judged[0] and '"interlayer": "graphite"' in judged[0], judged[0][:120])
 
 VERDICTS[:] = [REVISE]
 s, calls = run([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}])
@@ -247,6 +262,8 @@ def looped(script, verdicts):
             return {"low": 0, "high": 1e9}, rec
         if system is graph.FABRICATOR:
             return RECIPE, rec
+        if system is graph.ARCHITECT:
+            return architect(text), rec
         if system is graph.JUDGE:
             return (marks.pop(0) if marks else ACCEPT), rec
         prompts.append(text)
@@ -272,7 +289,7 @@ s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD, "sources": SRC}, 
 check("a designer that only repeats ends with an incomplete design and no second simulation", verdicts(s) == ["revise"] and "interlayer" in s["missing"]
       and not folder(s, 2).exists() and "no candidate was accepted after 1" in s["outcome"] and "incomplete" in s["outcome"], (s["missing"], s["outcome"]))
 
-check("a report on an incomplete last design still sees every method string", "stand-in" in REPORTED[-1] and '"crack_deflects": true' in REPORTED[-1]
+check("a report on an incomplete last design still sees every method string", "PBE" in REPORTED[-1] and "MACE" in REPORTED[-1] and '"crack_deflects": ' in REPORTED[-1]
       and '"results"' not in REPORTED[-1].split('"candidates"')[0], REPORTED[-1][:200])
 graph.ask_json = graph_ask
 TAMPER["material"] = "unobtainium"
@@ -287,16 +304,17 @@ check("an input from nowhere blocks the verdict", verdicts(s) == ["incomplete"] 
 prompts.clear()
 graph_ask_saved = graph.ask_json
 s = looped([{"design": {k: v for k, v in GOOD.items() if k != "interlayer_thickness_um"}, "sources": SRC},
-            {"design": {"interlayer_thickness_um": 20, "layer_modulus_GPa": 999}, "sources": SRC}], [])
-check("after a second search the passing fields stay and only the missing one is asked for", s["design"] == GOOD
-      and len(prompts) == 2 and "stay as they are" in prompts[1] and '"interlayer_thickness_um"' in prompts[1].split("Fill only")[-1]
-      and "stay as they are" not in prompts[0], s["design"])
+            {"design": {"interlayer": "graphite", "interlayer_thickness_um": 20, "layer_modulus_GPa": 999}, "sources": SRC}], [])
+fill = prompts[1].split("Fill only")[-1]
+check("after a second search the passing fields stay, and the missing number and its material are asked for", s["design"] == GOOD
+      and len(prompts) == 2 and "stay as they are" in prompts[1] and '"interlayer_thickness_um"' in fill and '"interlayer"' in fill
+      and '"layer_modulus_GPa"' not in fill and "stay as they are" not in prompts[0], s["design"])
 graph.ask_json = graph_ask_saved
 s, calls = run([{"design": {k: v for k, v in GOOD.items() if k != "ceramic"}, "sources": SRC}] * 4)
 check("an incomplete first design is reported as not simulated", s["outcome"] == "no design was simulated, and the last design is incomplete" and not s.get("candidates"), s["outcome"])
-sections = json.loads(REPORTED[-1])["sections"]
-check("a report without candidates is told to write no recipe, novelty or simulation section", not any(w in " ".join(sections)
-      for w in ["recipe", "novelty", "simulation", "hypothesis"]) and any("missing" in x for x in sections), sections)
+sections = [x["title"] for x in json.loads(REPORTED[-1])["sections"]]
+check("a report without candidates is told to write no recipe, novelty or simulation section", sections == ["Question",
+      "What remains unverified"] and "## Incomplete design" in s["report"] and "| ceramic |" in s["report"], sections)
 # fabrication, novelty and reward
 graph.ask_json = graph_ask
 s, calls = run([{"design": GOOD, "sources": SRC}])
@@ -307,6 +325,7 @@ check("an accepted candidate gets a recipe, print files and a rendered part", s[
 check("the print files follow the chosen process", s["fabrication"]["process"] == "direct ink writing" and any(str(v).endswith(".gcode") for v in files.values()), list(files))
 steps, printing = s["recipe"]["steps"][0]["parameters"], s["recipe"]["print_parameters"]
 check("a recipe number keeps its passage only when that passage states it", steps["particle_size_um"]["source"] == "p#9"
+      and steps["powder"]["source"] == "p#6"
       and printing["nozzle_diameter_um"]["source"] == "p#6" and printing["print_speed_mm_s"]["source"].startswith("assumption: p#6 does not state 7")
       and steps["binder_wt_percent"]["source"] == "assumption: typical", (steps, printing))
 check("the recipe print parameters reach the print files", s["fabrication"]["parameters"]["nozzle_diameter_um"]["value"] == 210
@@ -314,11 +333,14 @@ check("the recipe print parameters reach the print files", s["fabrication"]["par
 report = s["report"]
 links = [l.split("](")[1].rstrip(")") for l in report.splitlines() if l.startswith("![")]
 check("the report appends candidates, figures, novelty, tool outputs, recipe and print files", all(h in report for h in [
-      "## Candidates", "## Figures", "## Novelty of the best candidate", "## Simulation outputs of candidate_1", "## Recipe", "## Print files"])
+      "## Candidates", "## Design of candidate_1", "## Figures", "## Novelty of the best candidate", "## Cross-checks",
+      "## Simulation outputs of candidate_1", "## Recipe", "## Print files"])
       and len(links) == 3 and all((Path(s["folder"]) / l).exists() for l in links), links)
-check("a report with an accepted candidate lists every section", len(json.loads(REPORTED[-1])["sections"]) == 9, json.loads(REPORTED[-1])["sections"])
+check("a report with an accepted candidate lists every section", [x["title"] for x in json.loads(REPORTED[-1])["sections"]] == ["Question",
+      "Hypothesis", "Simulation results", "Judge's findings", "What remains unverified"]
+      and "Design a layered alumina." in json.loads(REPORTED[-1])["sections"][0]["write"], json.loads(REPORTED[-1])["sections"])
 check("the reporter is told the recipe, the novelty and the cross-checks", '"recipe"' in REPORTED[-1] and '"novelty"' in REPORTED[-1]
-      and '"md_bulk"' in REPORTED[-1] and "| md_bulk | alumina | youngs_modulus_GPa = 347.8 |" in report and "with a novelty of 0.90" in s["outcome"], s["outcome"])
+      and '"md_bulk"' in REPORTED[-1] and "| candidate_1 | md_bulk |  | 347.8 |" in report and "with a novelty of 0.90" in s["outcome"], s["outcome"])
 
 NOVELTY.update({"graphite": 0.2, "epoxy": 0.8})
 prompts.clear()
@@ -337,4 +359,84 @@ check("an accepted candidate is made even when the search for a more novel one e
 NOVELTY.clear()
 s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD2, "sources": SRC2}], [REVISE])
 check("a candidate the judge sends back has no reward", [c["reward"] for c in s["candidates"]] == [0.0, 0.9] and s["best"] == "candidate_2", [c["reward"] for c in s["candidates"]])
+# the architect and the toolpath pattern
+# A1 is p#6 and A2 is p#9. 10.5 is 210 / 20, 20 is stated by p#9, and the rotation has no source.
+BOULIGAND = {"features": [{"feature": "rotated plies", "evidence": "A2", "parameters": ["ply_rotation_deg"]}],
+             "pattern": {"ply_rotation_deg": 15, "interlayer_placement": "shell", "break_length_h": 10.5, "road_angle_deg": 20, "break_shift": 0.37,
+                         "profile_exponent": 1.0, "not_a_parameter": 3},
+             "sources": {"ply_rotation_deg": "Assumption - a typical pitch", "break_shift": "A2: shifted", "interlayer_placement": "A2: weak interlayers",
+                         "break_length_h": "A1, A2: 210 um over 20 um", "road_angle_deg": "A2: 20"}}
+ARCH[:] = [BOULIGAND]
+ARCH_SEEN.clear()
+s, calls = run([{"design": GOOD, "sources": SRC}])
+labels = {k: x["label"] for k, x in s["pattern_sources"].items()}
+check("the architect's pattern keeps only set parameters, each with a label from code", s["pattern"] == {k: BOULIGAND["pattern"][k] for k in
+      ["ply_rotation_deg", "interlayer_placement", "break_length_h", "road_angle_deg", "break_shift"]} and labels == {
+      "ply_rotation_deg": "assumption: a typical pitch", "break_shift": "assumption: 0.37 does not appear in p#9", "interlayer_placement": "supported: p#9", "break_length_h": "derived: p#6, p#9, 210 / 20",
+      "road_angle_deg": "cited: p#9"}, labels)
+check("the architect reads the design, the parameters and evidence on the biological model", len(ARCH_SEEN) == 1 and '"biological_model": "nacre"' in ARCH_SEEN[0]
+      and "Pattern parameters:" in ARCH_SEEN[0] and "[A1]" in ARCH_SEEN[0] and "Road width: 276 um" in ARCH_SEEN[0], ARCH_SEEN[0][:200])
+geometry_spec = json.load(open(s["geometry"]["geometry_json"]))
+check("the geometry and the print files follow the pattern", geometry_spec["pattern"]["ply_rotation_deg"] == 15
+      and [p["angle_deg"] for p in geometry_spec["plies"][:3]] == [20, 35, 50] and Path(s["fabrication"]["files"]["gcode"]).exists(), geometry_spec["plies"][:3])
+check("the judge sees the structure, the pattern sources and the pattern criterion", "The pattern reproduces" in judged[0] and '"structure"' in judged[0]
+      and "derived: p#6, p#9" in judged[0] and "Pattern parameters:" in judged[0], judged[0][-200:])
+check("the report appends the structure of the best candidate", "## Structure of candidate_1" in s["report"] and "| break_length_h | 10.5 |" in s["report"]
+      and "- rotated plies (A2): ply_rotation_deg" in s["report"], s["report"].split("## Structure")[-1][:300])
+
+WAVES = {"pattern": {"road_path": "waves", "wave_amplitude_w": 1, "wave_length_w": 2, "interlayer_placement": "shell"}, "sources": {}}
+ARCH[:] = [WAVES, {"pattern": WAVES["pattern"] | {"wave_length_w": 8}, "sources": {}}]
+ARCH_SEEN.clear()
+s, calls = run([{"design": GOOD, "sources": SRC}])
+check("a pattern that fails its check is repaired once", len(ARCH_SEEN) == 2 and "wave_length_w" in ARCH_SEEN[1].split("failed these checks")[-1]
+      and s["pattern"]["wave_length_w"] == 8 and not any(f["feature"].startswith("dropped") for f in s["features"]), s["pattern"])
+ARCH[:] = [{"pattern": {"ply_rotation_deg": 15}, "sources": {}}] * 2
+s, calls = run([{"design": GOOD, "sources": SRC}])
+check("a pattern that fails twice falls back to flat layers, and the drop is recorded", s["pattern"] == {}
+      and any(f["feature"] == "dropped pattern" and "flat laminate" in f["reason"] for f in s["features"]) and verdicts(s) == ["accept"], s["features"])
+
+REVISE_PATTERN = {"criteria": [{"criterion": "The pattern reproduces the features of the biological model that the evidence describes.",
+                                "met": False, "evidence": "flat layers"}], "change": {"break_length_h": "add nacre tablets"}, "summary": "No tablets."}
+ARCH[:] = [{"pattern": {}, "sources": {}}, {"pattern": {"break_length_h": 10.5, "interlayer_placement": "shell"}, "sources": {}}]
+ARCH_SEEN.clear()
+prompts.clear()
+s = looped([{"design": GOOD, "sources": SRC}, {"design": GOOD, "sources": SRC}], [REVISE_PATTERN])
+check("a change of the pattern alone keeps the design and reaches the architect", verdicts(s) == ["revise", "accept"] and len(prompts) == 2
+      and s["candidates"][1]["design"] == GOOD and s["candidates"][1]["pattern"]["break_length_h"] == 10.5
+      and "add nacre tablets" in ARCH_SEEN[1] and s["candidates"][0]["verdict"]["change"] == {"break_length_h": "add nacre tablets"}, verdicts(s))
+# the knowledge graph proposals
+# The passages come first among the evidence lines, then the triple of each link of the proposal.
+link = lambda a, b, n, source: {"terms": [a, b], "triples": n, "example": {"head": a, "relation": "links to", "tail": b, "source": source}}
+PROPOSALS[:] = [{"design": {k: GOOD[k] for k in ["biological_model", "ceramic", "interlayer", "process", "mechanism"]}, "structure": "tablets",
+                 "weakest_link": 2, "links": [link("nacre", "crack deflection", 2, "kg/1"), link("crack deflection", "alumina", 3, "kg/2"),
+                                              link("alumina", "direct ink writing", 9, "kg/3"), link("alumina", "graphite", 4, "kg/4"),
+                                              link("nacre", "tablets", 900, "kg/5"), link("tablets", "crack deflection", 16, "kg/6")]}]
+PLANNED.clear()
+DESIGNED.clear()
+ARCH_SEEN.clear()
+first = len(PASSAGES) + 1
+s, calls = run([{"design": GOOD, "sources": SRC | {"biological_model": f"E{first}: nacre links to crack deflection"}}])
+check("the planner is told the knowledge graph proposals", '"biological_model": "nacre"' in PLANNED[0] and '"structure": "tablets"' in PLANNED[0]
+      and "no passage or triple names whole" in PLANNED[0], PLANNED[0][-200:])
+check("the designer sees each proposal with the evidence line of each link", "Hypotheses that the knowledge graph proposes" in DESIGNED[0]
+      and '"mechanism": "crack deflection"} with tablets, links' in DESIGNED[0] and f"nacre with crack deflection (E{first})" in DESIGNED[0]
+      and f"tablets with crack deflection (E{first + 5})" in DESIGNED[0], DESIGNED[0][-400:])
+check("the architect is told the structure of the proposal the design took, with the parameters that carry it and its triples",
+      "whose structure is tablets, carried by break_length_h" in ARCH_SEEN[0] and "nacre -> links to -> tablets" in ARCH_SEEN[0], ARCH_SEEN[0][-300:])
+check("a link triple is a source the check accepts", s["design"] == GOOD and s["sources"]["biological_model"].startswith("kg/1") and not s["rejected"], s["sources"])
+check("the report lists the proposals and the candidate that took one", "## Knowledge graph proposals" in s["report"]
+      and "| nacre, alumina, graphite, direct ink writing, crack deflection | tablets | nacre with crack deflection: 2;" in s["report"]
+      and "| candidate_1 |" in s["report"].split("## Knowledge graph proposals")[1].split("##")[0], s["report"].split("## Knowledge graph proposals")[-1][:400])
+# A proposal whose ceramic the evidence states no number for: the second search frees the ceramic and its numbers.
+SIC = GOOD | {"ceramic": "silicon carbide"}
+PROPOSALS[0]["design"] = {k: SIC[k] for k in PROPOSALS[0]["design"]}
+DESIGNED.clear()
+s, calls = run([{"design": SIC, "sources": SRC}] * 2 + [{"design": GOOD, "sources": SRC}],
+               checker=lambda text: {"low": None, "high": None} if "silicon carbide" in text else alumina_layers(text))
+kept = DESIGNED[2].split("stay as they are: ")[1].split("\n")[0]
+check("a missing number frees its material in the second round, without the proposals", len(DESIGNED) == 3
+      and "Hypotheses that the knowledge graph proposes" in DESIGNED[0] and "Hypotheses that the knowledge graph proposes" not in DESIGNED[2]
+      and "ceramic" not in kept and "nacre" in kept and s["design"] == GOOD and engineer(s), (kept, s["design"]))
+PROPOSALS.clear()
+graph.ask_json = graph_ask
 print("FAILED" if bad else "ALL PASS", bad)

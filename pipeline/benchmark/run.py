@@ -24,7 +24,7 @@ from pathlib import Path
 
 import httpx
 
-from tools.schema import MATERIAL, SURFACE_ENERGY, number, spec
+from tools.schema import number, spec
 
 from ..llm import ask_json, chat, client, user
 
@@ -33,6 +33,10 @@ VISION = ("Answer the question from the image. Give a label exactly as it is wri
           'Return JSON {"answer": number or string, "unit": string}.')
 EXTRACT = ("Extract the quantity the question asks for from the passage, in the unit asked. "
            'Return JSON {"value": number or null, "unit": string}. Use null when the passage does not state it.')
+# The suite feeds the model a closed form of these approximate surface energies in J/m^2, kept so that results stay comparable.
+SURFACE_ENERGY = {"alumina": 1.5, "silicon carbide": 1.8, "silica glass": 0.3,
+                  "graphite": 0.17, "epoxy": 0.045, "PMMA": 0.041}
+MATERIAL = {"type": "string", "enum": list(SURFACE_ENERGY)}
 ENGINEER = """You run the simulations for a design with the tools.
 Take every tool input from the design or from an earlier tool result, as the tool descriptions say.
 Use no other numbers. If an input is available from neither, do not call that tool and say
@@ -61,7 +65,7 @@ DESIGNS = [("alumina", "PMMA", 10, 380), ("alumina", "epoxy", 25, 390), ("alumin
 
 
 def md_interface(material_a, material_b):
-    """The tool output the suite feeds back to the model, from the same closed form as the stand-in."""
+    """The tool output the suite feeds back to the model."""
     w = 2 * min(SURFACE_ENERGY[material_a], SURFACE_ENERGY[material_b])
     return {"separation_energy_J_m2": w, "strength_MPa": round(w / (2.718281828 * 0.05e-9) / 1e6),
             "method": "stand-in (weaker-material cleavage and binding-energy relation), not an MD result"}
