@@ -21,7 +21,7 @@
 
 [`interface.py`](interface.py) uses MACE-MP-0 medium, a machine-learned potential fitted to PBE for 89 elements [Batatia 2023], with the D3(BJ) dispersion correction to 15 Å, through ASE on the GPU. PBE binds graphite layers and polymer chains almost only through dispersion, so D3 carries most of the interlayer cohesion.
 
-1. The ceramic is a slab about 7 Å thick, Al-terminated (0001) alumina or (110) silicon carbide, the planes `dft_cleavage` cleaves, in an orthogonal cell. Its bottom 2 Å stay fixed. Under graphite the cell is the one of 12 to 17.5 Å per side that strains graphene least. Under an amorphous interlayer it is the largest under 17.5 Å, 14.3 × 16.5 Å for alumina and 12.3 × 17.4 Å for silicon carbide, so that a 20 Å molecule finds room.
+1. The ceramic is a slab about 7 Å thick, Al-terminated (0001) alumina or (110) silicon carbide, the planes `dft_cleavage` cleaves, in an orthogonal cell. It is cut from the Materials Project bulk cell ([`../materials.py`](../materials.py)) at its PBE lattice, 1.0 % above the measured one for alumina and 0.1 % below it for silicon carbide. The eight results below were computed earlier from the measured lattices. Its bottom 2 Å stay fixed. Under graphite the cell is the one of 12 to 17.5 Å per side that strains graphene least. Under an amorphous interlayer it is the largest under 17.5 Å, 14.3 × 16.5 Å for alumina and 12.3 × 17.4 Å for silicon carbide, so that a 20 Å molecule finds room.
 2. The interlayer, about 1 nm thick, goes on top.
    - Graphite is two AB-stacked graphene sheets, strained by at most 3.3 % to fit the ceramic cell.
    - Silica glass is Si and O at random at 2.2 g/cm³, melted for 1 ps at 3500 K on the ceramic and quenched to 300 K in 2 ps, a rate of about 10¹⁵ K/s.

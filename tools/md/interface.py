@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 from ase import Atoms, units
-from ase.build import bulk, graphene, make_supercell, surface
+from ase.build import graphene, make_supercell, surface
 from ase.constraints import FixAtoms, Hookean
 from ase.md.langevin import Langevin
 from ase.neighborlist import natural_cutoffs, neighbor_list
@@ -26,7 +26,7 @@ from scipy.optimize import minimize_scalar
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
 
-from ..dft import CERAMICS, cut
+from ..materials import atoms, resolve
 
 HERE = Path(__file__).parent
 J_M2 = 16.02177  # J/m^2 per eV/Å^2
@@ -38,11 +38,30 @@ DENSITY = {"silica glass": 2.2, "epoxy": 1.2, "PMMA": 1.18}  # g/cm^3
 SMILES = {"epoxy": "CNCC(O)COc1ccc(cc1)C(C)(C)c1ccc(cc1)OCC(O)CNC", "PMMA": "C" + "CC(C)(C(=O)OC)" * 5}
 
 
+def cut(cell, between):
+    """The cell shifted along its third axis so that the cut lies at the cell boundary, with 6 Å of vacuum on each side.
+    The cut is the midpoint of the widest gap between two neighboring atomic planes that both hold only `between`."""
+    cell = cell.copy()
+    cell.wrap()
+    h = cell.cell[2, 2]
+    z = cell.positions[:, 2]
+    planes = np.unique(np.round(z, 1))
+    symbols = [set(np.array(cell.get_chemical_symbols())[np.abs(z - p) < 0.06]) for p in planes]
+    gaps = np.diff(np.append(planes, planes[0] + h))
+    ok = [i for i in range(len(planes)) if symbols[i] == symbols[(i + 1) % len(planes)] == {between}]
+    i = max(ok, key=lambda i: gaps[i])
+    cell.positions[:, 2] -= planes[i] + gaps[i] / 2
+    cell.wrap()
+    cell.center(vacuum=6.0, axis=2)
+    return cell
+
+
 def ceramic(name):
     """A slab of the ceramic about 7 Å thick, Al-terminated (0001) for alumina and (110) for silicon carbide, in an
-    orthogonal cell whose in-plane unit is returned for matching a crystalline interlayer."""
+    orthogonal cell whose in-plane unit is returned for matching a crystalline interlayer. The bulk cell is the
+    Materials Project one (tools.materials), at its PBE lattice."""
     if name == "alumina":
-        unit = make_supercell(CERAMICS[name]["bulk"](), [[1, 0, 0], [1, 2, 0], [0, 0, 1]])
+        unit = make_supercell(atoms(resolve(name), conventional=True), [[1, 0, 0], [1, 2, 0], [0, 0, 1]])
         slab = cut(unit, "Al")
         # Keep the upper half, from the gap between the two Al sublayers nearest the middle.
         z = slab.positions[:, 2]
@@ -50,7 +69,7 @@ def ceramic(name):
         pairs = [(a + b) / 2 for a, b in zip(al, al[1:]) if b - a < 0.7]
         slab = slab[z > min(pairs, key=lambda m: abs(m - z.mean()))]
     else:
-        slab = surface(bulk("SiC", "zincblende", a=4.3596, cubic=True), (1, 1, 0), 3, periodic=True)
+        slab = surface(atoms(resolve(name), conventional=True), (1, 1, 0), 3, periodic=True)
     slab.positions[:, 2] -= slab.positions[:, 2].min()
     slab.set_tags(0)  # the interlayer carries tags above 0
     return slab, slab.cell.lengths()[:2]

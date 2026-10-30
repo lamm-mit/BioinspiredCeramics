@@ -1,8 +1,9 @@
 """Density-functional energy to cleave a ceramic, from Quantum ESPRESSO with PBE and the SSSP 1.3.0 efficiency library.
 
-The energy depends only on the material, so each ceramic is computed once and kept in results/<material>.json, which
-later calls read. A new computation relaxes the bulk cell and then a slab cut from it, and takes hours on 8
-cores. fracture_md_qe/setup/setup_dft_env.sh installs pw.x and the pseudopotentials.
+The energy depends only on the material, so each ceramic is computed once and kept in results/<mp-id>.json, which
+later calls read. A new computation relaxes the Materials Project cell of the ceramic and then a slab cut from it on
+the plane that tools.materials chose, and takes hours on 8 cores. fracture_md_qe/setup/setup_dft_env.sh installs
+pw.x and the pseudopotentials.
 """
 
 import json
@@ -13,11 +14,10 @@ import time
 from pathlib import Path
 
 import numpy as np
-from ase.build import bulk, surface
 from ase.calculators.espresso import Espresso, EspressoProfile
 from ase.io import read
-from ase.spacegroup import crystal
 
+from ..materials import atoms, cleavage_slab, plane, resolve
 from ..schema import CERAMIC, spec
 
 HERE = Path(__file__).parent
@@ -28,41 +28,27 @@ J_M2 = 16.02177  # J/m^2 per eV/Å^2
 KSPACING = 0.3  # 1/Å, with 2π, enough for energy differences of insulators to a few mJ/m^2
 VACUUM = 12.0  # Å between periodic images of the slab
 
-# The plane of each ceramic and the pair of atomic planes the cut passes between. Corundum cut between the two Al
-# sublayers of a buckled Al layer gives the stoichiometric Al-terminated (0001) surface on both faces, the stable one
-# in vacuum. The (110) planes of 3C-SiC hold one Si and one C each, so every cut is nonpolar.
-CERAMICS = {
-    "alumina": {"plane": "(0001), Al-terminated", "cut_between": "Al",
-                "bulk": lambda: crystal(["Al", "O"], basis=[(0, 0, 0.35216), (0.30624, 0, 0.25)], spacegroup=167,
-                                        cellpar=[4.7589, 4.7589, 12.991, 90, 90, 120])},
-    "silicon carbide": {"plane": "(110) of 3C", "cut_between": None,
-                        "bulk": lambda: bulk("SiC", "zincblende", a=4.3596)},
-}
-
-
 def dft_cleavage(material):
     """Energy per area to split the ceramic on its plane into two relaxed surfaces, twice the surface energy, at 0 K.
 
     (E_slab - N e_bulk) / A, with e_bulk the energy per atom of the relaxed bulk cell, the slab cut from that cell
-    with every atom relaxed, and A the area of one face. Raises ValueError for a material that is not a ceramic.
+    with every atom relaxed, and A the area of one face. The plane is the one of lowest relaxed cleavage energy from
+    MACE-MP-0 (tools.materials.plane). Raises ValueError for a material the Materials Project does not have.
     """
-    if material not in CERAMICS:
-        raise ValueError(f"dft_cleavage computes the ceramics {list(CERAMICS)}, not {material}")
-    cached = HERE / "results" / f"{material.replace(' ', '_')}.json"
+    entry = resolve(material)
+    cached = HERE / "results" / f"{entry['material_id']}.json"
     if not cached.exists():
         cached.parent.mkdir(exist_ok=True)
-        cached.write_text(json.dumps(compute(material, cached.with_suffix("")), indent=1))
+        cached.write_text(json.dumps(compute(material, entry, cached.with_suffix("")), indent=1))
     return json.loads(cached.read_text())
 
 
-def compute(material, folder):
+def compute(material, entry, folder):
     start = time.time()
-    c = CERAMICS[material]
-    cell = c["bulk"]()
-    relaxed = pw(cell, folder / "bulk", "vc-relax")[-1]
+    choice = plane(material)
+    relaxed = pw(atoms(entry), folder / "bulk", "vc-relax")[-1]
     e_atom = relaxed.get_potential_energy() / len(relaxed)
-    # (112) of the fcc primitive cell is the cubic (110), with one Si and one C per plane; 8 planes are 12 Å.
-    slab = cut(relaxed if material == "alumina" else surface(relaxed, (1, 1, 2), 8, periodic=True), c["cut_between"])
+    slab = cleavage_slab(relaxed, choice)
     steps = pw(slab, folder / "slab", "relax")
     area = np.linalg.norm(np.cross(slab.cell[0], slab.cell[1]))
     energy = lambda s: (s.get_potential_energy() - len(slab) * e_atom) / area * J_M2
@@ -72,37 +58,19 @@ def compute(material, folder):
     version = next(line.split()[2] for line in head if "Program PWSCF" in line)
     sssp = json.loads((PSEUDO.parent / "SSSP_1.3.0_PBE_efficiency.json").read_text())
     elements = sorted(set(slab.get_chemical_symbols()))
+    plane_name = f"({''.join(map(str, choice['hkl']))}) of {entry['spacegroup']}, shift {choice['shift']:g}"
     return {"cleavage_energy_J_m2": round(energy(steps[-1]), 3),
             "unrelaxed_cleavage_energy_J_m2": round(energy(steps[0]), 3),
-            "plane": c["plane"], "slab_atoms": len(slab), "slab_thickness_A": round(np.ptp(slab.positions[:, 2]), 2),
+            "plane": plane_name, "slab_atoms": len(slab), "slab_thickness_A": round(np.ptp(slab.positions[:, 2]), 2),
             "lattice_A": [round(x, 4) for x in relaxed.cell.cellpar()[:3]],
+            "material_id": entry["material_id"], "mace_cleavage_energy_J_m2": choice["mace_cleavage_energy_J_m2"],
             "method": f"Quantum ESPRESSO {version}, PBE, SSSP 1.3.0 efficiency "
                       f"({', '.join(sssp[e]['filename'] for e in elements)}), {cutoffs(elements)[0]:g}/"
-                      f"{cutoffs(elements)[1]:g} Ry, k-spacing {KSPACING} 1/Å. Bulk cell vc-relaxed, "
-                      f"{len(slab)}-atom slab on {c['plane']} with {VACUUM:g} Å of vacuum, every atom relaxed, 0 K",
+                      f"{cutoffs(elements)[1]:g} Ry, k-spacing {KSPACING} 1/Å. Bulk cell of {entry['material_id']} "
+                      f"(Materials Project {entry['database_version']}) vc-relaxed, {len(slab)}-atom slab on {plane_name}, "
+                      f"the plane of lowest MACE-MP-0 cleavage energy, with {VACUUM:g} Å of vacuum, every atom relaxed, 0 K",
             "pseudopotential_md5": {e: sssp[e]["md5"] for e in elements},
             "computed": time.strftime("%Y-%m-%d"), "wall_time_s": round(time.time() - start)}
-
-
-def cut(atoms, between):
-    """The cell shifted along its third axis so that the cut lies at the cell boundary, with vacuum added there.
-
-    The cut is the midpoint of the gap between two neighboring atomic planes that both hold only `between`, or of the
-    widest gap when `between` is None.
-    """
-    atoms = atoms.copy()
-    atoms.wrap()
-    h = atoms.cell[2, 2]
-    z = atoms.positions[:, 2]
-    planes = np.unique(np.round(z, 1))
-    symbols = [set(np.array(atoms.get_chemical_symbols())[np.abs(z - p) < 0.06]) for p in planes]
-    gaps = np.diff(np.append(planes, planes[0] + h))
-    ok = [i for i in range(len(planes)) if between is None or symbols[i] == symbols[(i + 1) % len(planes)] == {between}]
-    i = max(ok, key=lambda i: gaps[i])
-    atoms.positions[:, 2] -= planes[i] + gaps[i] / 2
-    atoms.wrap()
-    atoms.center(vacuum=VACUUM / 2, axis=2)
-    return atoms
 
 
 def cutoffs(elements):
