@@ -4,7 +4,27 @@
 
 A team of agents turns a design question into a printable ceramic architecture modeled on a biological material. The agents search a corpus of papers and its knowledge graph, state a hypothesis (a biological model, its toughening mechanism and a printing process) and choose the materials and dimensions with a cited source for every value. An architect agent turns the structure of the biological model into a toolpath pattern, such as staggered tablets, helicoidal plies or concentric rings, and code writes the part as STL files. An engineer agent then runs a chain of simulations on it, from density-functional theory through molecular dynamics to a phase-field fracture model of the printed architecture. A judge weighs each candidate against its simulation results and can send it back to the designer. The accepted candidate gets a novelty score against the corpus, a cited synthesis and fabrication recipe, and print files for the chosen process. Every model is open-weight and runs locally on one NVIDIA DGX Spark.
 
-![The agent graph](docs/figures/architecture.png)
+![The pipeline, from the literature through design, simulation and judgment to print files](docs/figures/pipeline.png)
+
+[pipeline/README.md](pipeline/README.md) shows the full agent graph.
+
+## Knowledge graph traversal
+
+The knowledge graph holds 635,919 triples (head, relation, tail) extracted from 2,767 papers. The agents use it in two ways, both matching terms in the text of a triple.
+
+**Finding hypotheses.** Before the planner writes its queries, code looks for hypotheses that no single record states, a form of literature-based discovery [Swanson 1986]. A hypothesis fills six slots, namely biological model, mechanism, ceramic, process, interlayer and structure. The code enumerates every combination of the options and keeps those where at least one triple names each of six links.
+
+```text
+biological model ── mechanism ── ceramic ── process
+       │                │           │
+   structure ───────────┘       interlayer
+```
+
+For example, nacre with tablets has 913 triples, tablets with crack deflection 16, and crack deflection with alumina 6. Each link is well supported, while no passage, caption or triple names all six terms of the hypothesis. A combination is dropped when its interlayer separates from the ceramic at a quarter or more of the ceramic's cleavage energy, the He-Hutchinson ratio below which a crack deflects, with both energies read from the DFT and MD results. The rest rank by their weakest link, the link with the fewest triples, and the top three differ in at least half of the slots the question leaves free. One triple per link joins the evidence, and the designer may adopt a proposal and cite those triples.
+
+**Looking up evidence.** The planner names entities for the design fields. In its first search round the retriever returns, for each entity and each design option, the 3 triples that mention it together with the most other entities. These are one-hop lookups, and they sit beside the passages and figures found by cosine similarity.
+
+A triple shows only that two terms appear in one statement, so a proposal is a lead. Every numeric value in a design must still appear in the evidence line it cites. [pipeline/README.md](pipeline/README.md) gives the counts per link and question.
 
 ## Simulation chain
 
