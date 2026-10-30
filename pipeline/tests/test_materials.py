@@ -7,6 +7,7 @@ from ase.io import read
 
 from tools.dft import HERE as DFT, dft_cleavage
 from tools.materials import atoms, cleavage_slab, plane, resolve
+from tools.md.interface import ceramic
 
 bad = 0
 def check(name, ok, detail=""):
@@ -18,6 +19,11 @@ a, s = resolve("alumina"), resolve("silicon carbide")
 check("alumina is corundum, mp-1143, on the hull", (a["material_id"], a["spacegroup"], a["energy_above_hull_eV_atom"]) == ("mp-1143", "R-3c", 0.0), a["material_id"])
 check("silicon carbide is the cubic 3C polytype the tools were built on", (s["material_id"], s["spacegroup"]) == ("mp-8062", "F-43m"), s["material_id"])
 check("a formula and a common name give the same entry", resolve("Al2O3")["material_id"] == a["material_id"])
+slab = ceramic("alumina")[0]
+check("the alumina slab lies along x and y", np.allclose(slab.cell.array[:2], np.diag(slab.cell.lengths())[:2]))
+wide = slab.repeat((2, 1, 1))
+wide.set_cell(np.diag([*wide.cell.lengths()[:2], 40.0]))  # as build() does
+check("the alumina slab keeps its 1.8 A Al-O bonds under the cell build() gives it", (wide.get_all_distances(mic=True) + 9 * np.eye(len(wide))).min() > 1.7)
 c = atoms(a, conventional=True).cell.cellpar()
 check("the conventional corundum cell is hexagonal with a within 1.5% of the measured 4.759 A", abs(c[0] / 4.759 - 1) < 0.015 and round(c[5]) == 120, c.round(3))
 

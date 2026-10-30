@@ -62,6 +62,8 @@ def ceramic(name):
     Materials Project one (tools.materials), at its PBE lattice."""
     if name == "alumina":
         unit = make_supercell(atoms(resolve(name), conventional=True), [[1, 0, 0], [1, 2, 0], [0, 0, 1]])
+        # The Materials Project cell is orthogonal after this but rotated in the plane, and build() needs it along x and y.
+        unit.set_cell(np.diag(unit.cell.lengths()), scale_atoms=True)
         slab = cut(unit, "Al")
         # Keep the upper half, from the gap between the two Al sublayers nearest the middle.
         z = slab.positions[:, 2]
