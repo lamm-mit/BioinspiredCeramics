@@ -85,17 +85,3 @@ docs/              benchmark of 20 open-weight models, hardware, model choice, f
 ```
 
 [pipeline/README.md](pipeline/README.md) describes the agents, the toolpath grammar and the run output. [knowledge_graph/README.md](knowledge_graph/README.md) covers the corpus and graph build, and [docs/benchmark.md](docs/benchmark.md) the model benchmark.
-
-## Reference
-
-```bibtex
-@misc{marom2026bioinspiredceramics,
-  title  = {BioinspiredCeramics: multi-agent design of bioinspired ceramic architectures for additive manufacturing},
-  author = {Marom, Lee},
-  year   = {2026},
-  note   = {Laboratory for Atomistic and Molecular Mechanics, MIT},
-  url    = {https://github.com/lmarom/BioinspiredCeramics}
-}
-```
-
-The solvers include jax-pfczm and fracture-md by Jaime Berkovich and md_agent by Alex Wang, each with its source and license in its folder. The knowledge-graph extraction follows [GraphReasoning](https://github.com/lamm-mit/GraphReasoning). Released under the Apache 2.0 license.
