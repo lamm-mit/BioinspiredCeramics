@@ -64,6 +64,13 @@ A run writes `runs/<time>/` with the report, every agent's input and output, and
 
 ![Toolpath patterns through the fracture model](docs/figures/patterns.png)
 
+The electronic scale relaxes each cleavage surface before its energy is counted. In alumina (0001) the surface Al sinks from 0.85 Å to 0.11 Å above the O plane and the slab energy falls 4.85 eV over 18 steps. In silicon carbide (110) the surface Si sinks 0.24 Å below its C neighbor and the energy falls 1.32 eV over 13 steps. Both are the Quantum ESPRESSO runs in [tools/dft/results](tools/dft/results).
+
+<p>
+  <img src="docs/figures/dft_alumina.gif" width="49%" alt="DFT relaxation of the alumina (0001) surface">
+  <img src="docs/figures/dft_silicon_carbide.gif" width="49%" alt="DFT relaxation of the silicon carbide (110) surface">
+</p>
+
 ## Repository layout
 
 ```text
