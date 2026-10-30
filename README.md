@@ -10,7 +10,9 @@ A team of agents turns a design question into a printable ceramic architecture m
 
 ## Knowledge graph traversal
 
-The knowledge graph holds 635,919 triples (head, relation, tail) extracted from 2,767 papers. The agents use it in two ways, both matching terms in the text of a triple.
+The knowledge graph holds 635,919 triples (head, relation, tail) extracted from 2,767 papers on bioinspired materials and ceramic additive manufacturing. Merging synonyms reduces them to 144,896 concepts joined by 458,577 distinct pairs, and the figure shows the two literatures and the concepts they share. The agents use the triples in two ways, both matching terms in the text of a triple.
+
+![The bioinspired and ceramic additive manufacturing knowledge graphs and their combination, with shared concepts in purple](docs/figures/kg_corpora.png)
 
 **Finding hypotheses.** Before the planner writes its queries, code looks for hypotheses that no single record states, a form of literature-based discovery [Swanson 1986]. A hypothesis fills six slots, namely biological model, mechanism, ceramic, process, interlayer and structure. The code enumerates every combination of the options and keeps those where at least one triple names each of six links.
 
