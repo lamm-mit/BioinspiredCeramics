@@ -1,4 +1,4 @@
-"""Mesh check of the seven toolpath patterns of patterns.py, at an energy ratio of 0.2. python -m pipeline.docs.figures.mesh ROWS [fixed]
+"""Mesh check of the seven toolpath patterns of patterns.py, at an energy ratio of 0.2. python -m pipeline.figures.mesh ROWS [fixed]
 
 The AT2 length is 2 pixels, so a finer grid also shortens it. With fixed, the length stays at the 2 pixels of the
 60-row grid, 16.3 µm for these cells, and only the pixel shrinks. Each pattern gives its outcome, the applied K
@@ -14,7 +14,7 @@ from pathlib import Path
 rows, fixed = int(sys.argv[1]), sys.argv[2:] == ["fixed"]
 os.environ["FEM_ROWS"] = str(rows)
 
-from pipeline.docs.figures.patterns import DESIGN, LAYER_ENERGY, PATTERNS
+from pipeline.figures.patterns import DESIGN, LAYER_ENERGY, PATTERNS
 from pipeline.geometry import layered_geometry
 from tools.fem import cell, fem_fracture
 

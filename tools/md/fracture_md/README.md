@@ -56,7 +56,7 @@ The first call compiles. Later calls reuse a cache in `~/.cache/fracture_md/jax`
 pip install -e tools/md/fracture_md
 ```
 
-The jax and numpy pins are those of `pipeline/requirements.txt`. Run on the CPU with `JAX_PLATFORMS=cpu`, since the checks need float64. Importing `fracture_md` turns on float64 for the whole Python process, which is why `slot.py` runs it in a child process.
+The jax and numpy pins are those of `requirements.txt` at the repository root. Run on the CPU with `JAX_PLATFORMS=cpu`, since the checks need float64. Importing `fracture_md` turns on float64 for the whole Python process, which is why `slot.py` runs it in a child process.
 
 MACE-MP-0 is optional and needs its own environment, as in fracture-md: torch 2.14.0 (CPU wheel), mace-torch 0.3.16, and mace-jax installed from GitHub (ACEsuit/mace-jax at commit 19cf364a405fcf9f2f82590a98d61bc870e05881) with jax 0.11.2. Then
 

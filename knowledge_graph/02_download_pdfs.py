@@ -18,18 +18,18 @@ Reads API keys and a contact email from .env (see .env.example).
 
 Usage:
     # Download everything in the metadata CSV
-    python dataset_kg/02_download_pdfs.py \\
+    python knowledge_graph/02_download_pdfs.py \\
         --metadata data/metadata/corpus.csv \\
         --output-dir data/pdfs
 
     # Try only a subset
-    python dataset_kg/02_download_pdfs.py \\
+    python knowledge_graph/02_download_pdfs.py \\
         --metadata data/metadata/corpus.csv \\
         --output-dir data/pdfs \\
         --limit 50
 
     # Retry previously failed DOIs
-    python dataset_kg/02_download_pdfs.py \\
+    python knowledge_graph/02_download_pdfs.py \\
         --metadata data/metadata/corpus.csv \\
         --output-dir data/pdfs \\
         --retry-failed

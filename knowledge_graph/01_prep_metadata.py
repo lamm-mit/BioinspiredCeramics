@@ -6,18 +6,18 @@ The output is a CSV suitable as input to 02_download_pdfs.py.
 
 Usage:
     # Basic — new corpus from a fresh WoS export
-    python dataset_kg/01_prep_metadata.py \\
+    python knowledge_graph/01_prep_metadata.py \\
         --input data/metadata/wos_export.xls \\
         --output data/metadata/corpus.csv
 
     # Deduplicate against an existing corpus
-    python dataset_kg/01_prep_metadata.py \\
+    python knowledge_graph/01_prep_metadata.py \\
         --input data/metadata/wos_export.csv \\
         --existing data/metadata/existing_corpus.csv \\
         --output data/metadata/new_papers.csv
 
     # Skip CrossRef lookup for faster prep (DOI prefix classification only)
-    python dataset_kg/01_prep_metadata.py \\
+    python knowledge_graph/01_prep_metadata.py \\
         --input data/metadata/wos_export.csv \\
         --output data/metadata/corpus.csv \\
         --no-crossref

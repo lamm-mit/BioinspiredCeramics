@@ -6,18 +6,18 @@ The pipeline runs on one NVIDIA DGX Spark with 128 GB of unified memory. The thr
 
 | Component | Runs on | Measured | Environment |
 |---|---|---|---|
-| Language models, gpt-oss-20b, Qwen3.6-35B-A3B and EmbeddingGemma | Spark GPU, 36 GB of weights | median 394 s per pipeline run, n = 12, 2026-10-23 | Ollama 0.35.0, 32K context, one request at a time ([`../scripts/setup_spark.sh`](../scripts/setup_spark.sh)) |
-| FEM, `fem_fracture` with jax-pfczm (AT2 phase field) | Spark CPU | median 190 s and maximum 418 s per call at 60 pixel rows, with the default models loaded, 2026-10-23. 134 to 182 s on the idle Spark, and 74 to 104 s pinned to one fast core, 2026-10-25 ([REQUESTS.md](../../tools/REQUESTS.md)) | the pipeline environment with JAX 0.11.2 ([`../requirements.txt`](../requirements.txt)) |
-| MD, `md_interface` with MACE-MP-0 medium and D3(BJ) | Spark GPU | one run per pair of materials, 16 to 19 min for graphite, 47 to 58 min for a polymer and 63 to 101 min for silica glass, with two or three runs sharing the GPU, 2026-10-27. The packing fix of that day adds 1.5 ps of MD to a polymer run | a second environment, `~/simtools/env`, with PyTorch, MACE and torch-dftd ([README](../../tools/md/README.md)) |
-| MD, `md_bulk` with md_agent | Spark | alumina with the Pedone potential in 2.2 to 2.5 s, silicon carbide with MACE-MP-0 in about 30 s. md_agent's 33 validation checks in 107 s | ASE in the pipeline environment for alumina, the MD environment for silicon carbide ([requirements](../../tools/md/md_agent/requirements.txt)) |
-| DFT, `dft_cleavage` with Quantum ESPRESSO 7.5 | Spark CPU, 8 MPI ranks | one run per ceramic, silicon carbide in 2.5 h and alumina in 9.8 h, 2026-10-27 | a separate conda environment, `fmd-dft` ([README](../../tools/dft/README.md)) |
+| Language models, gpt-oss-20b, Qwen3.6-35B-A3B and EmbeddingGemma | Spark GPU, 36 GB of weights | median 394 s per pipeline run, n = 12, 2026-10-23 | Ollama 0.35.0, 32K context, one request at a time ([`../scripts/setup_spark.sh`](../pipeline/scripts/setup_spark.sh)) |
+| FEM, `fem_fracture` with jax-pfczm (AT2 phase field) | Spark CPU | median 190 s and maximum 418 s per call at 60 pixel rows, with the default models loaded, 2026-10-23. 134 to 182 s on the idle Spark, and 74 to 104 s pinned to one fast core, 2026-10-25 | the pipeline environment with JAX 0.11.2 ([`../requirements.txt`](../requirements.txt)) |
+| MD, `md_interface` with MACE-MP-0 medium and D3(BJ) | Spark GPU | one run per pair of materials, 16 to 19 min for graphite, 47 to 58 min for a polymer and 63 to 101 min for silica glass, with two or three runs sharing the GPU, 2026-10-27. The packing fix of that day adds 1.5 ps of MD to a polymer run | a second environment, `~/simtools/env`, with PyTorch, MACE and torch-dftd ([README](../tools/md/README.md)) |
+| MD, `md_bulk` with md_agent | Spark | alumina with the Pedone potential in 2.2 to 2.5 s, silicon carbide with MACE-MP-0 in about 30 s. md_agent's 33 validation checks in 107 s | ASE in the pipeline environment for alumina, the MD environment for silicon carbide ([requirements](../tools/md/md_agent/requirements.txt)) |
+| DFT, `dft_cleavage` with Quantum ESPRESSO 7.5 | Spark CPU, 8 MPI ranks | one run per ceramic, silicon carbide in 2.5 h and alumina in 9.8 h, 2026-10-27 | a separate conda environment, `fmd-dft` ([README](../tools/dft/README.md)) |
 | Tests | Apple M3 Pro laptop | FEM tests in 13 to 14 s, graph test in 243 s, seven test scripts with 181 checks | the pipeline environment, no model server |
 
 The GPU of the Spark ran at a reduced clock of 507 MHz during the model benchmark and the runs of 2026-10-14, so the model times in these documents are upper bounds (Known issues, below).
 
-`dft_cleavage` and `md_interface` depend only on the materials, so each ceramic and each pair is computed once and kept in the tool's `results/` folder. In a run they read those files and return at once. A new ceramic costs one DFT run of a few hours on the CPU, and a new interlayer one MD run of up to 2 h per ceramic on the GPU ([../../tools/README.md](../../tools/README.md)).
+`dft_cleavage` and `md_interface` depend only on the materials, so each ceramic and each pair is computed once and kept in the tool's `results/` folder. In a run they read those files and return at once. A new ceramic costs one DFT run of a few hours on the CPU, and a new interlayer one MD run of up to 2 h per ceramic on the GPU ([../../tools/README.md](../tools/README.md)).
 
-The tests and the agents also run on a laptop. The tests need no model server and use a coarse FEM grid of 30 pixel rows. The agents reach the Spark's model server through an SSH tunnel ([../README.md](../README.md)).
+The tests and the agents also run on a laptop. The tests need no model server and use a coarse FEM grid of 30 pixel rows. The agents reach the Spark's model server through an SSH tunnel ([../README.md](../pipeline/README.md)).
 
 ## Memory budget
 
@@ -89,9 +89,9 @@ Reasoning models spend most of their time thinking. With thinking on, the time p
 
 A discrete GPU fits when one mid-size model must answer fast and nothing else needs to stay resident. A Mac fits when the goal is the largest possible model and GPU JAX is not needed. The cloud fits short bursts and models above 200 billion parameters. The agents only need an OpenAI-compatible endpoint, so any of these can serve the models while the agents and the tools run elsewhere.
 
-## Known issues on the Spark
+## Operating notes for the Spark
 
-JAX reserves 75% of GPU memory at its first operation by default. On unified memory that is 96 GB (90 GiB), which the model server also needs, and the allocation fails. [`tools/fem/__init__.py`](../../tools/fem/__init__.py) sets `XLA_PYTHON_CLIENT_PREALLOCATE=false`, so JAX allocates on demand.
+JAX reserves 75% of GPU memory at its first operation by default. On unified memory that is 96 GB (90 GiB), which the model server also needs, and the allocation fails. [`tools/fem/__init__.py`](../tools/fem/__init__.py) sets `XLA_PYTHON_CLIENT_PREALLOCATE=false`, so JAX allocates on demand.
 
 Memory can run out without warning. The machine has no swap, and the server does not count two things. It keeps context checkpoints in host memory, up to 32 per slot at 0.3 to 0.8 GB each, and it under-reports the Gemma 4 models. It lists Gemma 4 31B at 11 GB, and with that model alone loaded about 100 GB was in use. With gpt-oss-120b and Gemma 4 31B loaded together, available memory fell to 0.2 GB and the whole machine stalled for 25 minutes before it recovered. The setup script therefore serves one request at a time and loads no more models than the agents use. With gpt-oss-120b, Qwen3.6-35B-A3B and EmbeddingGemma loaded, 10 to 22 GB stayed available. The stall of 2026-10-21, described under Memory budget, had the same mechanism, with a model of another job.
 

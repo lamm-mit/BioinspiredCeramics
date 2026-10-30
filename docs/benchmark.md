@@ -10,10 +10,10 @@ The benchmark ran on one NVIDIA DGX Spark, a GB10 Grace Blackwell with 20 Arm co
 |---|---|
 | Model server | Ollama 0.35.0, `OLLAMA_CONTEXT_LENGTH=32768`, `OLLAMA_NUM_PARALLEL=4`, `OLLAMA_KEEP_ALIVE=30m`, `OLLAMA_MAX_LOADED_MODELS=3` |
 | Model files | The default Ollama tag of each model, 4-bit Q4_K_M or MXFP4 for gpt-oss, and a community GGUF for DeepSeek-V4-Flash ([models.md](models.md)) |
-| Client | The OpenAI Python SDK 3.22.1 against Ollama's OpenAI-compatible endpoint, through the same `chat` and `ask_json` functions the agents use ([`../llm.py`](../llm.py)) |
+| Client | The OpenAI Python SDK 3.22.1 against Ollama's OpenAI-compatible endpoint, through the same `chat` and `ask_json` functions the agents use ([`../llm.py`](../pipeline/llm.py)) |
 | Sampling | Temperature 0, at most 8,192 output tokens, each model's default reasoning unless the configuration names an effort |
 | Concurrency | Four requests in flight per suite. A configuration's next suite starts when its last item returns |
-| Scoring | Deterministic, against the stored answer and tolerance of each item, in [`../benchmark/run.py`](../benchmark/run.py). No model and no person judges an answer |
+| Scoring | Deterministic, against the stored answer and tolerance of each item, in [`../pipeline/benchmark/run.py`](../pipeline/benchmark/run.py). No model and no person judges an answer |
 
 ## Models
 
@@ -46,7 +46,7 @@ Each suite tests one job an agent does, through the same client the agents use.
 | Passage extraction | 30 | Passages from 22 CC BY papers | The value is within 1% in the unit asked, or null when the passage does not state it | no |
 | Tool calling | 16 | Eight designs, two steps each | Step one calls `md_interface` with the right materials. Step two calls `crack_fea` with all five inputs within 0.1% | yes |
 
-The chart and tool suites run from the repository alone. `make_charts.py` regenerates every chart and answer, and `run.py` builds the 16 tool items from its list of designs. The figure and passage suites quote published papers, so their item files are kept outside the repository and `run.py` skips a suite whose file is absent. `speed.py` and `report.py` also read `passages.jsonl`, the first for its prompt and the second to find the 10 passages without an answer. The result files of all four suites are in [`../benchmark/results/`](../benchmark/results/). They hold item ids, verdicts, timings and the first 300 characters of each reply.
+The chart and tool suites run from the repository alone. `make_charts.py` regenerates every chart and answer, and `run.py` builds the 16 tool items from its list of designs. The figure and passage suites quote published papers, so their item files are kept outside the repository and `run.py` skips a suite whose file is absent. `speed.py` and `report.py` also read `passages.jsonl`, the first for its prompt and the second to find the 10 passages without an answer. The result files of all four suites are in [`../pipeline/benchmark/results/`](../pipeline/benchmark/results/). They hold item ids, verdicts, timings and the first 300 characters of each reply.
 
 The chart suite covers five chart types that recur in materials papers. They are flexural stress-strain curves, bar charts with error bars, a property map with a log axis, traction-separation laws and rising crack-resistance curves. Every value is random, so knowledge of real materials cannot replace reading, and the property maps also use neutral sample names.
 
@@ -70,7 +70,7 @@ With 20 to 30 items per suite, the 95% interval on a score spans about ±14 to �
 
 The scores per model and suite show that image reading separates the models, and that passage extraction and tool calling sit at or near full marks for 20 of the 26 configurations.
 
-![Benchmark scores per model and suite](../benchmark/results/accuracy.png)
+![Benchmark scores per model and suite](../pipeline/benchmark/results/accuracy.png)
 
 *Correct answers per model and suite, with the item count under each suite. Models above the black line read images, and models below it are text-only. Gray cells mark a suite the model cannot run. Rows are sorted by image score, then text score.*
 
@@ -104,7 +104,7 @@ Thinking costs time and can cost the answer. Five models ran with thinking on an
 
 Image accuracy against time per image puts three of the four configurations on the speed and accuracy frontier at thinking off or without a thinking mode. Only Qwen3.8-27B gains accuracy from thinking, at 29 s per image.
 
-![Image accuracy against time per image](../benchmark/results/speed_accuracy.png)
+![Image accuracy against time per image](../pipeline/benchmark/results/speed_accuracy.png)
 
 *Fraction of the 50 image questions answered correctly against the wall time per image question, with four requests in flight at the reduced GPU clock. Labeled points lie on the frontier, where no other configuration is both faster and at least as accurate.*
 
@@ -167,7 +167,7 @@ Four of 8 runs made a candidate, with its STL files, three handoff files, a reci
 
 ![End-to-end outcomes per question and repeat](figures/e2e_outcomes.png)
 
-*Outcome, number of candidates simulated, novelty of the made candidate and wall time of each run of the default models on the four questions of `e2e.py`, two repeats each, on 2026-10-25. Blue cells made a candidate the judge accepted. Orange cells simulated candidates that the judge sent back. Gray cells never completed a design. Rows are in [`../benchmark/results/e2e_pipeline.jsonl`](../benchmark/results/e2e_pipeline.jsonl).*
+*Outcome, number of candidates simulated, novelty of the made candidate and wall time of each run of the default models on the four questions of `e2e.py`, two repeats each, on 2026-10-25. Blue cells made a candidate the judge accepted. Orange cells simulated candidates that the judge sent back. Gray cells never completed a design. Rows are in [`../pipeline/benchmark/results/e2e_pipeline.jsonl`](../pipeline/benchmark/results/e2e_pipeline.jsonl).*
 
 The runs used the eight-paper corpus kept outside the repository, the FEM tool at 60 pixel rows, the stand-in DFT and MD tools, a novelty target of 0.5 and at most 3 candidates per run. The 8 runs simulated 11 candidates, and the judge accepted 6. The silicon carbide runs ended before any simulation, because the eight papers state no layer or interlayer thickness for silicon carbide and the source check rejected every value the designer proposed. The judge sent back all 3 candidates of the unreported-combination question, since their sources report nacre-inspired alumina with graphite interlayers made by direct ink writing. The median run took 21 min, with a range of 6 to 41 min, and the 11 FEM calls took 164 to 411 s, with a median of 174 s.
 
@@ -207,9 +207,9 @@ The sweep of crack outcome against energy ratio puts the switch from deflection 
 
 ![Crack deflection against energy ratio at three grid resolutions](figures/fem_validation.png)
 
-*Outcome of `fem_fracture` for each energy ratio, the interface fracture energy over the layer fracture energy, at three grid resolutions. Circles mark a crack that ran along the first interlayer, and squares one that ran into the next layer. The dashed line is the He-Hutchinson threshold. Data from the validation table in [tools/fem/README.md](../../tools/fem/README.md).*
+*Outcome of `fem_fracture` for each energy ratio, the interface fracture energy over the layer fracture energy, at three grid resolutions. Circles mark a crack that ran along the first interlayer, and squares one that ran into the next layer. The dashed line is the He-Hutchinson threshold. Data from the validation table in [tools/fem/README.md](../tools/fem/README.md).*
 
-Each point is one simulation of the notched cell, 24 in all, with alumina layers of 210 µm, interlayers of 20 µm, a modulus of 367 GPa and a layer fracture energy of 3 J/m². The thresholds of the deflection criterion were set before the sweep and not changed after it. On the 40-row grid the interlayer bands are 85 µm thick, 40% of a layer, and a diffuse band raises the energy that a crack along it meets. The energy balance closed within 1.6% at 60 rows and 2.4% at 80 rows. The pipeline runs the tool at 60 rows. [tools/fem/README.md](../../tools/fem/README.md) gives the model and its limits.
+Each point is one simulation of the notched cell, 24 in all, with alumina layers of 210 µm, interlayers of 20 µm, a modulus of 367 GPa and a layer fracture energy of 3 J/m². The thresholds of the deflection criterion were set before the sweep and not changed after it. On the 40-row grid the interlayer bands are 85 µm thick, 40% of a layer, and a diffuse band raises the energy that a crack along it meets. The energy balance closed within 1.6% at 60 rows and 2.4% at 80 rows. The pipeline runs the tool at 60 rows. [tools/fem/README.md](../tools/fem/README.md) gives the model and its limits.
 
 ## Reproducing
 

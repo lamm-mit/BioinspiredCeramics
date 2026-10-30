@@ -1,4 +1,4 @@
-"""patterns.png, seven toolpath patterns through the phase-field tool. python -m pipeline.docs.figures.patterns
+"""patterns.png, seven toolpath patterns through the phase-field tool. python -m pipeline.figures.patterns
 
 Every cell is alumina with PMMA interlayers, 70 µm layers and 35 µm interlayers, a modulus of 367 GPa and a layer
 fracture energy of 3 J/m². The interface fracture energy is set by the energy ratio, and the interface strength
@@ -19,7 +19,7 @@ from matplotlib.image import imread
 from pipeline.geometry import layered_geometry
 from tools.fem import fem_fracture
 
-here, work = Path(__file__).parent, Path("runs") / "patterns"
+here, work = Path(__file__).parents[2] / "docs" / "figures", Path("runs") / "patterns"
 DESIGN = {"ceramic": "alumina", "interlayer": "PMMA", "layer_thickness_um": 70, "interlayer_thickness_um": 35, "layer_modulus_GPa": 367}
 LAYER_ENERGY = 3.0
 PATTERNS = {"Flat layers": {},

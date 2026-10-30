@@ -31,18 +31,18 @@ to `lamm-mit/GraphAgents` which uses 0.9 with nomic-embed; Gemma's STS
 distribution shifts synonym scores down by ~0.02 vs nomic.
 
 Usage:
-    python dataset_kg/06_dedup_kg.py \\
+    python knowledge_graph/06_dedup_kg.py \\
         --triplet-dirs data/kg/triplets \\
         --output-dir data/kg/dedup
 
     # Merge KGs from two corpora into one deduplicated graph
-    python dataset_kg/06_dedup_kg.py \\
+    python knowledge_graph/06_dedup_kg.py \\
         --triplet-dirs data/kg/bioinspired/triplets \\
                        data/kg/ceramic_am/triplets \\
         --output-dir data/kg/dedup
 
     # Iterate on threshold without re-embedding
-    python dataset_kg/06_dedup_kg.py \\
+    python knowledge_graph/06_dedup_kg.py \\
         --triplet-dirs data/kg/triplets \\
         --output-dir data/kg/dedup \\
         --threshold 0.88 \\

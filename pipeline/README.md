@@ -4,7 +4,7 @@ The agents turn a design question into a bioinspired ceramic that can be printed
 
 ## Agents
 
-![The agent graph](docs/figures/architecture.png)
+![The agent graph](../docs/figures/architecture.png)
 
 | Step | Default model | Reasoning | Job |
 |---|---|---|---|
@@ -158,29 +158,6 @@ python -m pipeline.tests.test_novelty
 
 ## Hardware, models and benchmark
 
-[docs/hardware.md](docs/hardware.md) gives the hardware requirements and the memory budget, [docs/models.md](docs/models.md) the model of each agent and the alternatives, and [docs/benchmark.md](docs/benchmark.md) the benchmark of 20 open-weight models with every result.
-
+[docs/hardware.md](../docs/hardware.md) gives the hardware requirements and the memory budget, [docs/models.md](../docs/models.md) the model of each agent and the alternatives, and [docs/benchmark.md](../docs/benchmark.md) the benchmark of 20 open-weight models with every result.
 
 `benchmark/run.py` scores models on chart reading, figure reading, passage extraction and tool calling, `speed.py` measures load time, memory and decode speed, `e2e.py` runs the whole graph for three model sets, and `report.py` summarizes the result files. `make_charts.py` generates the 20 chart items. The figure and passage items are taken from published papers and are kept outside the repository, so those two suites run only when their item files are copied into `benchmark/data/`. The tool suite keeps the two-tool chain it was measured with, so its scores stay comparable.
-
-## Status
-
-On 2026-10-25 the default models ran four questions twice each on an eight-paper corpus kept outside the repository, with the FEM tool at 60 pixel rows and the stand-in DFT and MD tools. Four of 8 runs made a candidate with its STL files, three handoff files, a recipe of 6 to 7 steps citing 15 to 26 values, and G-code for direct ink writing. Six of 8 simulated at least one candidate. The silicon carbide question made no design, because the eight papers state no thickness for silicon carbide layers. Every accepted candidate scored a novelty of 0.15 to 0.23 against this corpus, below the target of 0.5. On the full corpus one run of 2026-10-25 accepted a candidate at a novelty of 0.48, but its layer modulus of 110 GPa came from a figure reading, and the MD bulk cross-check put it 68 % below the 348 GPa of alumina. A rerun on 2026-10-26 made no complete design, since no passage stated a layer modulus. The median run took 21 min, and each FEM call 164 to 411 s, on one DGX Spark whose GPU ran at a reduced clock of 507 MHz. [docs/benchmark.md](docs/benchmark.md) gives every run, and [docs/example_run/](docs/example_run/) holds the outputs of one run.
-
-## Limitations
-
-The DFT and MD energies are intrinsic Griffith energies of a sharp cut at 0 K. They leave out the plastic and viscous work that makes the measured toughness of a polymer or a glass larger, and D3 binds graphite sheets about 45 % more strongly than measured. The MD interlayers are about 1 nm thick and packed or quenched within picoseconds, PMMA is a chain of 5 monomers, and epoxy is an adduct with no crosslinks, so the energy is that of a thin film far from equilibrium. The stored MD energies predate a fix to the packing, which had broken the polymer molecules, and are to be rerun ([../tools/md/README.md](../tools/md/README.md#results)). The FEM tool takes both energies, and for flat layers of one modulus its verdict follows the He-Hutchinson rule. [../tools/REQUESTS.md](../tools/REQUESTS.md) lists what each tool still needs.
-
-The checks confirm that a cited passage states a value. They cannot tell a value of the right quantity from one of a neighboring quantity. In one run the designer took a pore size of 0.5 µm as the interlayer thickness, and in another a figure reading of 110 GPa as the modulus of alumina, which the MD cross-check put 68% below its own 348 GPa. The cross-check is reported and does not block a candidate. A person should check the source of each design value before a costly solver run.
-
-The novelty score counts which hypothesis terms and pattern features the corpus names together and how close the nearest passage lies, so it depends on what the corpus covers. A small corpus makes most combinations look reported.
-
-The recipe cites a number only when the cited passage states it. Print parameters that the corpus does not give, such as the nozzle diameter and the print speed, fall back to defaults and are marked as assumptions.
-
-The judge is a 20-billion-parameter model reading two criteria. It can apply a requirement of the question strictly, as when it sent back every candidate of a question that asked for an unreported combination.
-
-Retrieval is cosine similarity over passage embeddings, a unit filter for numeric fields and a name match in the knowledge graph. It does not rerank passages or follow multi-hop paths.
-
-The crack tool sees a pattern through one 2D section of the cell, as [Toolpath patterns](#toolpath-patterns) describes.
-
-Models run at temperature 0, and two runs can still differ, because inference on the server is not bit-for-bit deterministic.

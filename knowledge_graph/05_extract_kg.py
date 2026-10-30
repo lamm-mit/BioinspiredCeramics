@@ -16,12 +16,12 @@ analysis (community detection, embedding-based deduplication, path finding).
 
 Usage:
     # Extract triplets for every markdown paper
-    python dataset_kg/05_extract_kg.py \\
+    python knowledge_graph/05_extract_kg.py \\
         --input-dir data/markdown \\
         --output-dir data/kg
 
     # Test on 5 papers first
-    python dataset_kg/05_extract_kg.py \\
+    python knowledge_graph/05_extract_kg.py \\
         --input-dir data/markdown \\
         --output-dir data/kg \\
         --limit 5

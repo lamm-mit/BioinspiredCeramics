@@ -16,7 +16,7 @@ Three open-weight models run the pipeline by default. gpt-oss-20b does every tex
 | reporter | `gpt-oss:20b` | low | Restates the state |
 | retriever | `embeddinggemma` | | Embeds 80,792 records of a 2,880-paper corpus in about 30 minutes |
 
-The routing is the `MODELS` table in [`../graph.py`](../graph.py), one line per agent with a model and a reasoning effort, and `EMBEDDING` names the embedding model. The setup script pulls every model the table names.
+The routing is the `MODELS` table in [`../graph.py`](../pipeline/graph.py), one line per agent with a model and a reasoning effort, and `EMBEDDING` names the embedding model. The setup script pulls every model the table names.
 
 ## Alternatives
 
@@ -83,6 +83,6 @@ On one figure, Qwen3.6-35B-A3B took 12 s with `none` and 66 s with `low`. On a s
 
 gpt-oss answers with a tool call when a prompt contains tool schemas, even when the request offers no tools. The reply then has no text content. Only the engineer therefore receives the tool schemas, and every other agent sees the design fields alone.
 
-A thinking model can spend its whole output budget on reasoning and return no answer. The pipeline allows 8,192 output tokens per call and raises a clear error when a reply holds no answer ([`../llm.py`](../llm.py)). The figure reader runs with thinking off, and the gpt-oss agents at low or medium effort.
+A thinking model can spend its whole output budget on reasoning and return no answer. The pipeline allows 8,192 output tokens per call and raises a clear error when a reply holds no answer ([`../llm.py`](../pipeline/llm.py)). The figure reader runs with thinking off, and the gpt-oss agents at low or medium effort.
 
 The server under-reports the memory of the Gemma 4 models. It lists Gemma 4 31B at 11 GB, and with that model alone about 100 GB of the machine was in use. Loaded next to gpt-oss-120b it exhausted the memory. [hardware.md](hardware.md) describes the event.

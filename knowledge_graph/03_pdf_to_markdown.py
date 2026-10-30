@@ -8,18 +8,18 @@ Requires: pip install marker-pdf  (PyTorch; GPU strongly recommended)
 
 Usage:
     # Convert everything in the PDF directory
-    python dataset_kg/03_pdf_to_markdown.py \\
+    python knowledge_graph/03_pdf_to_markdown.py \\
         --pdf-dir data/pdfs \\
         --output-dir data/markdown
 
     # Process up to 10 papers
-    python dataset_kg/03_pdf_to_markdown.py \\
+    python knowledge_graph/03_pdf_to_markdown.py \\
         --pdf-dir data/pdfs \\
         --output-dir data/markdown \\
         --limit 10
 
     # Retry PDFs that produced empty/tiny output, forcing OCR
-    python dataset_kg/03_pdf_to_markdown.py \\
+    python knowledge_graph/03_pdf_to_markdown.py \\
         --pdf-dir data/pdfs \\
         --output-dir data/markdown \\
         --force-ocr

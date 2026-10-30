@@ -14,10 +14,10 @@ Operates in-place on the markdown files and deletes uncaptioned image files.
 
 Usage:
     # Trim in place
-    python dataset_kg/04_trim_markdown.py --input-dir data/markdown
+    python knowledge_graph/04_trim_markdown.py --input-dir data/markdown
 
     # Preview changes without modifying anything
-    python dataset_kg/04_trim_markdown.py --input-dir data/markdown --dry-run
+    python knowledge_graph/04_trim_markdown.py --input-dir data/markdown --dry-run
 """
 
 import argparse

@@ -6,7 +6,7 @@
 # If an Ollama server already runs on port 11434, skip the lines that install and start it.
 set -e
 python3 -m venv .venv
-.venv/bin/pip install -r pipeline/requirements.txt
+.venv/bin/pip install -r requirements.txt
 models=$(.venv/bin/python -c "from pipeline.graph import *; print(*{m for m, e in MODELS.values()}, EMBEDDING)")
 mkdir -p ~/ollama
 curl -L https://github.com/ollama/ollama/releases/download/v0.35.0/ollama-linux-arm64.tar.zst | tar --zstd -x -C ~/ollama

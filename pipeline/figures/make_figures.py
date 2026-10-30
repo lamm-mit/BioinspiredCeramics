@@ -1,4 +1,4 @@
-"""The report figures of pipeline/docs from the result files. python -m pipeline.docs.figures.make_figures
+"""The figures of docs/figures from the result files. python -m pipeline.figures.make_figures
 
 e2e_outcomes.png and novelty_reward.png read benchmark/results/e2e_pipeline.jsonl. fem_validation.png
 draws the validation table of tools/fem/README.md.
@@ -13,8 +13,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
-here = Path(__file__).parent
-rows = [json.loads(line) for line in open(here.parents[1] / "benchmark" / "results" / "e2e_pipeline.jsonl")]
+here = Path(__file__).parents[2] / "docs" / "figures"
+rows = [json.loads(line) for line in open(here.parents[1] / "pipeline" / "benchmark" / "results" / "e2e_pipeline.jsonl")]
 BLUE, ORANGE, GRAY, INK, GRID = "#2a78d6", "#eb6834", "#b4b2a9", "#0b0b0b", "#d9d9d6"
 QUESTIONS = sorted({r["question"] for r in rows}, key=[r["question"] for r in rows].index)
 LABELS = ["Open bioinspired design", "Nacre alumina, polymer interlayer", "Bioinspired silicon carbide", "Unreported combination"]
