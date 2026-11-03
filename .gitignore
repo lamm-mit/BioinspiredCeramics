@@ -46,3 +46,9 @@ docs/corpus_stats.png
 docs/deliverable_3_cleaning.png
 docs/kg_panels.png
 docs/pipeline_overview.png
+
+# Result charts, kept local for presentations
+docs/figures/e2e_outcomes.png
+docs/figures/novelty_reward.png
+docs/figures/fem_validation.png
+pipeline/benchmark/results/*.png

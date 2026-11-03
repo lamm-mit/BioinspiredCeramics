@@ -68,11 +68,7 @@ With 20 to 30 items per suite, the 95% interval on a score spans about ±14 to �
 
 ### Image-capable models
 
-The scores per model and suite show that image reading separates the models, and that passage extraction and tool calling sit at or near full marks for 20 of the 26 configurations.
-
-![Benchmark scores per model and suite](../pipeline/benchmark/results/accuracy.png)
-
-*Correct answers per model and suite, with the item count under each suite. Models above the black line read images, and models below it are text-only. Gray cells mark a suite the model cannot run. Rows are sorted by image score, then text score.*
+Image reading separates the models. Passage extraction and tool calling sit at or near full marks for 20 of the 26 configurations.
 
 | Model | Thinking | Charts | Paper figures | Images, total | Passages | Tools | Failed replies | Seconds per image |
 |---|---|---|---|---|---|---|---|---|
@@ -102,11 +98,7 @@ The top eight configurations score 43 to 47 out of 50. At 50 items the 95% inter
 
 Thinking costs time and can cost the answer. Five models ran with thinking on and off. Turning it off changed the image score by between 4 fewer and 8 more correct answers out of 50, and no change is significant at the 5% level (paired exact test, p from 0.06 to 1.0). It cut the time per image by a factor of 1.9 to 7.5. With thinking on, Qwen3.6-35B-A3B, Gemma 4 26B and Qwen3.5-122B lost 13, 11 and 9 replies because the reasoning used the whole 8,192-token budget. Qwen3.8-27B is the exception. It reasons briefly, lost no reply and reached the highest score.
 
-Image accuracy against time per image puts three of the four configurations on the speed and accuracy frontier at thinking off or without a thinking mode. Only Qwen3.8-27B gains accuracy from thinking, at 29 s per image.
-
-![Image accuracy against time per image](../pipeline/benchmark/results/speed_accuracy.png)
-
-*Fraction of the 50 image questions answered correctly against the wall time per image question, with four requests in flight at the reduced GPU clock. Labeled points lie on the frontier, where no other configuration is both faster and at least as accurate.*
+Three of the four configurations on the speed and accuracy frontier run at thinking off or without a thinking mode. Only Qwen3.8-27B gains accuracy from thinking, at 29 s per image.
 
 ### Text-only models
 
@@ -163,19 +155,11 @@ The four questions of `e2e.py` ask since 2026-10-26 for structures that a toolpa
 
 ### Before toolpath patterns, 2026-10-25
 
-Four of 8 runs made a candidate, with its STL files, three handoff files, a recipe of 6 to 7 steps citing 15 to 26 values from passages that state them, and G-code for direct ink writing. The outcomes per question and repeat show that the open question and the nacre question made a candidate in 4 of 4 runs, while the silicon carbide question and the unreported-combination question made none.
-
-![End-to-end outcomes per question and repeat](figures/e2e_outcomes.png)
-
-*Outcome, number of candidates simulated, novelty of the made candidate and wall time of each run of the default models on the four questions of `e2e.py`, two repeats each, on 2026-10-25. Blue cells made a candidate the judge accepted. Orange cells simulated candidates that the judge sent back. Gray cells never completed a design. Rows are in [`../pipeline/benchmark/results/e2e_pipeline.jsonl`](../pipeline/benchmark/results/e2e_pipeline.jsonl).*
+Four of 8 runs made a candidate, with its STL files, three handoff files, a recipe of 6 to 7 steps citing 15 to 26 values from passages that state them, and G-code for direct ink writing. The open question and the nacre question made a candidate in 4 of 4 runs, while the silicon carbide question and the unreported-combination question made none.
 
 The runs used the eight-paper corpus kept outside the repository, the FEM tool at 60 pixel rows, the stand-in DFT and MD tools, a novelty target of 0.5 and at most 3 candidates per run. The 8 runs simulated 11 candidates, and the judge accepted 6. The silicon carbide runs ended before any simulation, because the eight papers state no layer or interlayer thickness for silicon carbide and the source check rejected every value the designer proposed. The judge sent back all 3 candidates of the unreported-combination question, since their sources report nacre-inspired alumina with graphite interlayers made by direct ink writing. The median run took 21 min, with a range of 6 to 41 min, and the 11 FEM calls took 164 to 411 s, with a median of 174 s.
 
-Every accepted candidate on this corpus scored a novelty between 0.15 and 0.23, below the target of 0.5. The one candidate above the target, at 0.55, was sent back by the judge. The reward loop therefore spent its candidates without an accepted design above the target, and each run made its accepted candidate with the highest reward. The novelty of each candidate shows this pattern.
-
-![Novelty of each candidate](figures/novelty_reward.png)
-
-*Novelty against the corpus of every simulated candidate, by its position in its run. Circles were accepted and squares sent back by the judge. A ring marks the candidate the run made. Runs are shifted slightly along x so that equal scores stay visible.*
+Every accepted candidate on this corpus scored a novelty between 0.15 and 0.23, below the target of 0.5. The one candidate above the target, at 0.55, was sent back by the judge. The reward loop therefore spent its candidates without an accepted design above the target, and each run made its accepted candidate with the highest reward.
 
 ### Before the novelty reward and the fabricator, 2026-10-23
 
@@ -204,10 +188,6 @@ Four runs per set cannot rank the sets on reliability. The check shows that the 
 ## FEM tool validation
 
 The sweep of crack outcome against energy ratio puts the switch from deflection to penetration between ratios of 0.2 and 0.25 at 60 and 80 pixel rows, next to the threshold of 0.25 for elastically similar layers [He and Hutchinson 1989], and between 0.15 and 0.2 on the coarsest grid of 40 rows.
-
-![Crack deflection against energy ratio at three grid resolutions](figures/fem_validation.png)
-
-*Outcome of `fem_fracture` for each energy ratio, the interface fracture energy over the layer fracture energy, at three grid resolutions. Circles mark a crack that ran along the first interlayer, and squares one that ran into the next layer. The dashed line is the He-Hutchinson threshold. Data from the validation table in [tools/fem/README.md](../tools/fem/README.md).*
 
 Each point is one simulation of the notched cell, 24 in all, with alumina layers of 210 µm, interlayers of 20 µm, a modulus of 367 GPa and a layer fracture energy of 3 J/m². The thresholds of the deflection criterion were set before the sweep and not changed after it. On the 40-row grid the interlayer bands are 85 µm thick, 40% of a layer, and a diffuse band raises the energy that a crack along it meets. The energy balance closed within 1.6% at 60 rows and 2.4% at 80 rows. The pipeline runs the tool at 60 rows. [tools/fem/README.md](../tools/fem/README.md) gives the model and its limits.
 
