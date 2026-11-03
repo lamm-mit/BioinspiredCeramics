@@ -1,0 +1,68 @@
+&CONTROL
+   calculation      = 'relax'
+   nstep            = 150
+   tstress          = .true.
+   tprnfor          = .true.
+   outdir           = './tmp'
+   etot_conv_thr    = 0.00016
+   forc_conv_thr    = 0.001
+   disk_io          = 'low'
+   pseudo_dir       = '/home/lmarom/pipeline_dev/tools_dev/tools/dft/fracture_md_qe/weights/pseudos/SSSP_1.3.0_PBE_efficiency'
+/
+&SYSTEM
+   ecutwfc          = 45.0
+   ecutrho          = 360.0
+   occupations      = 'smearing'
+   degauss          = 0.01
+   smearing         = 'mv'
+   ntyp             = 2
+   nat              = 16
+   ibrav            = 0
+/
+&ELECTRONS
+   electron_maxstep = 200
+   conv_thr         = 1.6e-08
+   mixing_mode      = 'local-TF'
+   mixing_beta      = 0.3
+/
+&IONS
+   ion_dynamics     = 'bfgs'
+/
+&CELL
+   cell_dynamics    = 'bfgs'
+   press_conv_thr   = 0.1
+/
+&FCP
+/
+&RISM
+/
+ATOMIC_SPECIES
+Si 28.085 Si.pbe-n-rrkjus_psl.1.0.0.UPF
+C 12.011 C.pbe-n-kjpaw_psl.1.0.0.UPF
+
+K_POINTS automatic
+9 5 1  0 0 0
+
+CELL_PARAMETERS angstrom
+3.09794372686420 0.00000000000000 0.00000000000000
+-3.09794372686420 4.38115403400000 0.00000000000000
+0.00000000000000 0.00000000000000 22.84280304402470
+
+ATOMIC_POSITIONS angstrom
+Si 0.0000000000 0.0000000000 12.1958874537  
+C -1.5489718636 3.2858655254 12.1958874537  
+Si -1.5489718634 2.1905770170 13.7448593172  
+C -0.0000000001 1.0952885084 13.7448593172  
+Si 0.0000000000 0.0000000000 15.2938311806  
+C -1.5489718636 3.2858655254 15.2938311806  
+Si -1.5489718634 2.1905770170 16.8428030440  
+C -0.0000000001 1.0952885084 16.8428030440  
+Si 0.0000000000 0.0000000000 6.0000000000  
+C -1.5489718636 3.2858655254 6.0000000000  
+Si -1.5489718634 2.1905770170 7.5489718634  
+C -0.0000000001 1.0952885084 7.5489718634  
+Si 0.0000000000 0.0000000000 9.0979437269  
+C -1.5489718636 3.2858655254 9.0979437269  
+Si -1.5489718634 2.1905770170 10.6469155903  
+C -0.0000000001 1.0952885084 10.6469155903  
+

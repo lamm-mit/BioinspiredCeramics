@@ -1,0 +1,25 @@
+{
+ "hkl": [
+  1,
+  1,
+  0
+ ],
+ "shift": 0.125,
+ "mace_cleavage_energy_J_m2": 5.291,
+ "candidates": [
+  {
+   "hkl": [
+    1,
+    1,
+    0
+   ],
+   "shift": 0.125,
+   "atoms": 16,
+   "unrelaxed_J_m2": 5.628,
+   "relaxed_J_m2": 5.291
+  }
+ ],
+ "method": "MACE-MP-0 medium, float64. Bulk cell relaxed with its cell, every nonpolar, symmetric, stoichiometric slab up to Miller index 1 of the conventional cell, at least 10 \u00c5 thick with 12 \u00c5 of vacuum, relaxed at fixed cell to 0.02 eV/\u00c5, 0 K",
+ "computed": "2026-10-27",
+ "wall_time_s": 12
+}

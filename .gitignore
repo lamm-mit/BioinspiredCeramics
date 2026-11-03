@@ -3,7 +3,7 @@
 
 # Project data is shared separately (out-of-band, not via git).
 # Drop the received `data/` folder into the repo root before running scripts.
-data/
+/data/
 
 # Data archives shared out-of-band (e.g., a zipped data/ snapshot)
 *.zip
@@ -24,3 +24,31 @@ env/
 .idea/
 .vscode/
 *.swp
+
+# Pipeline run outputs and cached embeddings
+runs/
+runs_test/
+*.npy
+
+# Corpora and benchmark items stay out of the repo. The figure and passage items quote published
+# papers, and copies placed here for a run are not committed. make_charts.py regenerates the chart
+# items. Benchmark results hold only ids, scores and short model replies, and are tracked.
+pipeline/examples/
+pipeline/benchmark/data/figures/
+pipeline/benchmark/data/figures.jsonl
+pipeline/benchmark/data/passages.jsonl
+pipeline/benchmark/data/ATTRIBUTION.md
+pipeline/benchmark/data/charts/
+pipeline/benchmark/data/charts.jsonl
+
+# Older report images, kept local
+docs/corpus_stats.png
+docs/deliverable_3_cleaning.png
+docs/kg_panels.png
+docs/pipeline_overview.png
+
+# Result charts, kept local for presentations
+docs/figures/e2e_outcomes.png
+docs/figures/novelty_reward.png
+docs/figures/fem_validation.png
+pipeline/benchmark/results/*.png

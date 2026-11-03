@@ -1,167 +1,87 @@
-# Multiagent Discovery for Bioinspired Ceramics
+# BioinspiredCeramics: multi-agent design of bioinspired ceramic architectures for additive manufacturing
 
-> Ongoing research exploring multi-agent AI for materials discovery in
-> bioinspired ceramic composites. **This repository currently contains
-> the foundation:** an end-to-end pipeline that turns a Web of Science
-> search into a deduplicated, community-clustered knowledge graph of
-> scientific concepts. 
+## Summary
 
-![Knowledge graph — top concepts of a deduplicated example corpus, with each community placed in its own region of the canvas and theme labels on the highest-degree node per community](docs/kg_cover.png)
+A team of agents turns a design question into a printable ceramic architecture modeled on a biological material. The agents search a corpus of papers and its knowledge graph, state a hypothesis (a biological model, its toughening mechanism and a printing process) and choose the materials and dimensions with a cited source for every value. An architect agent turns the structure of the biological model into a toolpath pattern, such as staggered tablets, helicoidal plies or concentric rings, and code writes the part as STL files. An engineer agent then runs a chain of simulations on it, from density-functional theory through molecular dynamics to a phase-field fracture model of the printed architecture. A judge weighs each candidate against its simulation results and can send it back to the designer. The accepted candidate gets a novelty score against the corpus, a cited synthesis and fabrication recipe, and print files for the chosen process. Every model is open-weight and runs locally on one NVIDIA DGX Spark.
 
-> **Example output.** The image above is from a sample run on ~2,800
-> materials-science papers (bio-inspired materials + ceramic additive
-> manufacturing). Each colored region is a Louvain community; the labeled
-> node is its highest-degree concept. Your output will look different
-> depending on the input corpus.
->
-> **For interactive exploration** of the full graphml file produced by
-> this pipeline, open it in [Gephi](https://gephi.org) or
-> [Cytoscape](https://cytoscape.org) — both handle 100K+ node graphs
-> gracefully and have proper community filters, search, and force-directed
-> layouts.
+![The pipeline, from the literature through design, simulation and judgment to print files](docs/figures/pipeline.png)
 
-End-to-end pipeline to build a deduplicated concept-relationship knowledge
-graph from any Web of Science search. Given a WoS export, the pipeline:
+[pipeline/README.md](pipeline/README.md) shows the full agent graph.
 
-1. Deduplicates and classifies papers by publisher
-2. Downloads full-text PDFs through publisher-provided APIs
-3. Converts PDFs to markdown with GPU-accelerated OCR (Marker / Surya)
-4. Strips front/back matter and non-figure images
-5. Extracts a concept-relationship knowledge graph using the
-   [`graphPrompt`](https://github.com/lamm-mit/GraphReasoning) pipeline
-   from the LAMM lab at MIT 
-6. Merges synonymous nodes via embedding-based clustering and runs Louvain
-   community detection on the result
+## Knowledge graph traversal
 
-The data folder (`data/`) is gitignored — when you clone this repo,
-`data/` will be empty. Drop your own WoS export into `data/metadata/` and
-run the scripts; they create everything else.
+The knowledge graph holds 635,919 triples (head, relation, tail) extracted from 2,767 papers on bioinspired materials and ceramic additive manufacturing. Merging synonyms reduces them to 144,896 concepts joined by 458,577 distinct pairs, and the figure shows the two literatures and the concepts they share. The agents use the triples in two ways, both matching terms in the text of a triple.
 
-## Setup
+![The bioinspired and ceramic additive manufacturing knowledge graphs and their combination, with shared concepts in purple](docs/figures/kg_corpora.png)
 
-```bash
-# Clone, then:
-cd <this-repo>
+**Finding hypotheses.** Before the planner writes its queries, code looks for hypotheses that no single record states, a form of literature-based discovery [Swanson 1986]. A hypothesis fills six slots, namely biological model, mechanism, ceramic, process, interlayer and structure. The code enumerates every combination of the options and keeps those where at least one triple names each of six links.
 
-# Create a virtual environment and install dependencies
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Copy the env template and fill in your API keys
-cp .env.example .env
-# Edit .env — see docs/api_setup.md for where to get each key
+```text
+biological model ── mechanism ── ceramic ── process
+       │                │           │
+   structure ───────────┘       interlayer
 ```
 
-Required API keys: Wiley TDM, Elsevier, Springer Nature (OA + Meta), OpenAI.
-See [docs/api_setup.md](docs/api_setup.md) for registration links and notes on
-what each provides.
+For example, nacre with tablets has 913 triples, tablets with crack deflection 16, and crack deflection with alumina 6. Each link is well supported, while no passage, caption or triple names all six terms of the hypothesis. A combination is dropped when its interlayer separates from the ceramic at a quarter or more of the ceramic's cleavage energy, the He-Hutchinson ratio below which a crack deflects, with both energies read from the DFT and MD results. The rest rank by their weakest link, the link with the fewest triples, and the top three differ in at least half of the slots the question leaves free. One triple per link joins the evidence, and the designer may adopt a proposal and cite those triples.
+
+**Looking up evidence.** The planner names entities for the design fields. In its first search round the retriever returns, for each entity and each design option, the 3 triples that mention it together with the most other entities. These are one-hop lookups, and they sit beside the passages and figures found by cosine similarity.
+
+A triple shows only that two terms appear in one statement, so a proposal is a lead. Every numeric value in a design must still appear in the evidence line it cites. [pipeline/README.md](pipeline/README.md) gives the counts per link and question.
+
+## Simulation chain
+
+Each scale passes its result to the next. The ceramic is resolved to its crystal structure in the Materials Project.
+
+| Scale | Tool | Method | Output |
+|---|---|---|---|
+| Electronic | [`dft_cleavage`](tools/dft/) | Quantum ESPRESSO, PBE, relaxed slab on the lowest-energy plane | cleavage energy of the ceramic, 3.11 J/m² for alumina (0001) and 5.82 J/m² for silicon carbide (110) |
+| Atomistic | [`md_interface`](tools/md/) | MACE-MP-0 with D3 dispersion, interlayer packed and equilibrated at 300 K, then split at the interface and inside the interlayer | separation energy and strength of the weaker of the two |
+| Meso | [`fem_fracture`](tools/fem/) | AT2 phase field (jax-pfczm) on a section of the printed architecture, under a rising mode-I load | whether a crack from the notch deflects along the interlayer, runs through a joint of the pattern, or penetrates the next ply |
+
+[tools/README.md](tools/README.md) gives the contract each tool meets and the handoff file that records the origin of every input.
+
+## Installation
+
+```bash
+git clone git@github.com:lmarom/BioinspiredCeramics.git
+cd BioinspiredCeramics
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env   # add MP_API_KEY
+```
+
+On a DGX Spark, `bash pipeline/scripts/setup_spark.sh` also installs Ollama without root, pulls the three default models (36 GB) and runs the check. The DFT and MD tools run in their own environments, described in [tools/dft/README.md](tools/dft/README.md) and [tools/md/README.md](tools/md/README.md).
 
 ## Quick start
 
 ```bash
-# 1. Prep metadata (deduplicate, classify by publisher)
-python dataset_kg/01_prep_metadata.py \
-    --input data/metadata/wos_export.xls \
-    --output data/metadata/corpus.csv
-
-# 2. Download PDFs (uses publisher APIs)
-python dataset_kg/02_download_pdfs.py \
-    --metadata data/metadata/corpus.csv \
-    --output-dir data/pdfs
-
-# 3. Convert PDFs to markdown (GPU recommended)
-python dataset_kg/03_pdf_to_markdown.py \
-    --pdf-dir data/pdfs \
-    --output-dir data/markdown
-
-# 4. Trim front/back matter and filter non-figure images
-python dataset_kg/04_trim_markdown.py \
-    --input-dir data/markdown
-
-# 5. Extract knowledge graph triplets
-python dataset_kg/05_extract_kg.py \
-    --input-dir data/markdown \
-    --output-dir data/kg
-
-# 6. Deduplicate synonymous nodes via embeddings (GPU recommended)
-python dataset_kg/06_dedup_kg.py \
-    --triplet-dirs data/kg/triplets \
-    --output-dir data/kg/dedup
+python -m pipeline.run "Design a nacre-inspired alumina laminate made by direct ink writing with a polymer interlayer, and check whether a crack deflects." <corpus>/
 ```
 
-See [docs/pipeline.md](docs/pipeline.md) for a full walkthrough including
-expected output at each stage.
+A run writes `runs/<time>/` with the report, every agent's input and output, and per candidate the design, the geometry, the three tool handoff files, the verdict and the novelty score. [`pipeline/scripts/build_corpus.py`](pipeline/scripts/build_corpus.py) builds a corpus from papers converted to markdown and their knowledge-graph triples. [`notebooks/walkthrough.ipynb`](notebooks/walkthrough.ipynb) runs one question cell by cell.
 
-## Scripts
+## Example
 
-| Script                      | Purpose                                                       | Dependencies |
-|-----------------------------|---------------------------------------------------------------|--------------|
-| `01_prep_metadata.py`       | Parse WoS export, dedup, classify publishers                  | pandas, requests |
-| `02_download_pdfs.py`       | Download PDFs via Wiley / Elsevier / Springer / Unpaywall     | requests |
-| `03_pdf_to_markdown.py`     | Marker OCR batch conversion                                   | marker-pdf (GPU) |
-| `04_trim_markdown.py`       | Strip non-content sections and uncaptioned images             | (stdlib only) |
-| `05_extract_kg.py`          | graphPrompt triplet extraction via OpenAI API                 | openai, networkx |
-| `06_dedup_kg.py`            | Merge synonymous nodes via Gemma embeddings + community detection | sentence-transformers, python-louvain (GPU) |
+[examples/example_run/](examples/example_run/) holds one complete run, with its report, design, STL files, tool outputs and print files.
 
-## Pipeline architecture
+![Toolpath patterns through the fracture model](docs/figures/patterns.png)
 
-```
-WoS export (.xls/.csv)
-         │
-         ▼  01_prep_metadata.py
-  metadata/corpus.csv        ← deduplicated + publisher-classified
-         │
-         ▼  02_download_pdfs.py      [publisher APIs + Unpaywall]
-      pdfs/*.pdf
-         │
-         ▼  03_pdf_to_markdown.py    [Marker OCR on GPU]
-   markdown/<doi>/<doi>.md + figures
-         │
-         ▼  04_trim_markdown.py
-   trimmed markdown (title + abstract→conclusions)
-         │
-         ▼  05_extract_kg.py         [gpt-4o-mini, graphPrompt]
-   kg/triplets/<doi>.json
-   kg/knowledge_graph.graphml
-         │
-         ▼  06_dedup_kg.py           [EmbeddingGemma + community_detection on GPU]
-   kg/dedup/knowledge_graph_dedup.graphml  ← synonyms merged, Louvain communities
-   kg/dedup/canonical_map.tsv              ← original → canonical mapping
-   kg/dedup/merge_clusters.tsv             ← every merged cluster for inspection
+The electronic scale relaxes each cleavage surface before its energy is counted. In alumina (0001) the surface Al sinks from 0.85 Å to 0.11 Å above the O plane and the slab energy falls 4.85 eV over 18 steps. In silicon carbide (110) the surface Si sinks 0.24 Å below its C neighbor and the energy falls 1.32 eV over 13 steps. Both are the Quantum ESPRESSO runs in [tools/dft/results](tools/dft/results).
+
+<p>
+  <img src="docs/figures/dft_alumina.gif" width="49%" alt="DFT relaxation of the alumina (0001) surface">
+  <img src="docs/figures/dft_silicon_carbide.gif" width="49%" alt="DFT relaxation of the silicon carbide (110) surface">
+</p>
+
+## Repository layout
+
+```text
+pipeline/          agents, graph, design fields, toolpath patterns, geometry, fabrication, novelty, tests, benchmark
+tools/             dft/, md/ and fem/ solvers with their cached results, and the Materials Project resolver
+knowledge_graph/   scripts that build the knowledge graph from a Web of Science export
+notebooks/         walkthrough of one run
+examples/          outputs of one run
+docs/              benchmark of 20 open-weight models, hardware, model choice, figures
 ```
 
-## Output formats
-
-* **Metadata CSV** — WoS columns plus a `publisher` classification column
-* **PDFs** — named `{doi_with_slashes_replaced_by_underscores}.pdf`
-* **Markdown** — one subfolder per paper, containing `<doi>.md`, extracted
-  images, and `<doi>_meta.json`
-* **Knowledge graph** — one JSON file per paper with a list of
-  `{node_1, edge, node_2, paper}` triplets, plus a merged `.graphml` file
-  readable by Gephi, Cytoscape, or NetworkX
-
-## Known limitations
-
-* **Coverage is bounded by what your institution's TDM agreements allow.**
-  Publishers without bulk text-and-data-mining APIs (Taylor & Francis,
-  IOP, ACS without institutional IP, etc.) typically return only
-  abstracts through programmatic routes. 
-* Marker occasionally fails on scanned or heavily image-based PDFs. Rerun
-  with `--force-ocr` to force the OCR path.
-* Embedding-based dedup at threshold 0.88 with EmbeddingGemma's STS prompt
-  produces clean synonym merges (e.g. `alumina ↔ aluminum oxide ↔ Al2O3`)
-  while keeping most specific concepts distinct. A few related-but-distinct
-  concepts may still merge under one canonical name. Inspect
-  `data/kg/dedup/merge_clusters.tsv` after running and raise `--threshold`
-  to 0.90+ if your domain needs stricter near-identical merging.
-
-## Attribution
-
-The triplet-extraction prompt and the dedup design follow the
-[LAMM lab](https://github.com/lamm-mit)
-[`GraphReasoning`](https://github.com/lamm-mit/GraphReasoning) and
-[`GraphAgents`](https://github.com/lamm-mit/GraphAgents) work. The pipeline
-here uses [`sentence_transformers.util.community_detection`](https://sbert.net/docs/package_reference/util.html)
-in place of the brute-force similarity matrix in those repos so that the
-dedup step scales to 400K+ nodes.
+[pipeline/README.md](pipeline/README.md) describes the agents, the toolpath grammar and the run output. [knowledge_graph/README.md](knowledge_graph/README.md) covers the corpus and graph build, and [docs/benchmark.md](docs/benchmark.md) the model benchmark.

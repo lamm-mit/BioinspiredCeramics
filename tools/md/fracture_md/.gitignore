@@ -1,0 +1,5 @@
+# Written by pip install -e, by the MACE weight conversion (weights/) and by runs (outputs/). Never committed.
+*.egg-info/
+build/
+weights/
+outputs/

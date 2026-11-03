@@ -1,0 +1,186 @@
+{
+ "schema": "fracture_md.dft_reference/1",
+ "quantity": "elastic constants (relaxed ion) and lattice parameter of 3C-SiC",
+ "functional": "PBE",
+ "code": "Quantum ESPRESSO pw.x 7.5 (conda-forge qe-7.5-hc91ee90_1) through ASE",
+ "pseudopotentials": {
+  "family": "SSSP_1.3.0_PBE_efficiency",
+  "files": {
+   "C.pbe-n-kjpaw_psl.1.0.0.UPF": {
+    "element": "C",
+    "md5": "5d2aebdfa2cae82b50a7e79e9516da0f",
+    "sha256": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+    "type": "100PAW"
+   },
+   "Si.pbe-n-rrkjus_psl.1.0.0.UPF": {
+    "element": "Si",
+    "md5": "0b0bb1205258b0d07b9f9672cf965d36",
+    "sha256": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+    "type": "100US"
+   }
+  },
+  "doi": "10.24435/materialscloud:f3-ym"
+ },
+ "generated_by": "examples/15_dft_reference_sic.py report",
+ "generated_utc": "2026-10-05T10:06:39Z",
+ "labelling": "computed with DFT-PBE in this project: a model value (PBE), never a measurement",
+ "status": "literature_model_agreement",
+ "values": {
+  "a0_A": 4.381163398,
+  "C11_GPa": 383.6647271731437,
+  "C12_GPa": 127.83430386620984,
+  "C44_GPa": 239.3840767335826,
+  "C44_clamped_ion_GPa": 263.0238611194283,
+  "B_from_Cij_GPa": 213.11111163518777,
+  "B0_eos_GPa": 212.8393562414907,
+  "B0_prime": 3.952428966832265,
+  "relaxed_111_shear_modulus_GPa": 151.41769134756504
+ },
+ "settings": {
+  "ecutwfc_ry": 70.0,
+  "ecutrho_ry": 560.0,
+  "kmesh": [
+   8,
+   8,
+   8
+  ],
+  "kspacing_equivalent_per_A": 0.31203539847134215,
+  "smearing": "mv 0.01 Ry",
+  "dual": 8.0
+ },
+ "tight_settings_check": {
+  "ecutwfc_ry": 90.0,
+  "kmesh": [
+   12,
+   12,
+   12
+  ],
+  "a0_A": 4.38144917,
+  "C11": 383.5764641324996,
+  "C12": 127.65042253153462,
+  "C44": 239.35465572003454,
+  "dC_max_GPa": 0.1838813346752204,
+  "dC_vs_production_same_strain_0.01_GPa": {
+   "C11": -0.03677626693507818,
+   "C12": -0.24272336177129716,
+   "C44": -0.04413152032208245
+  },
+  "dC_max_GPa_vs_production_same_strain": 0.24272336177129716,
+  "note": "dC_max_GPa compares the tight run (d = 0.01) with the production primary tensor (d = 0.005); dC_*_same_strain (added in post-processing by dft-1, 2026-10-04) compares both at d = 0.01"
+ },
+ "literature": [
+  {
+   "record": "lattice_parameter",
+   "protocol": "vc_relax",
+   "computed": 4.381163398,
+   "reference": 4.38,
+   "unit": "angstrom",
+   "rel_diff": 0.0002656159817351811,
+   "passed": true,
+   "citation": "Rasander and Moram, J. Chem. Phys. 143, 144104 (2015), Table II, PBE, 3C-SiC doi:10.1063/1.4932334",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "lattice_parameter",
+   "protocol": "eos",
+   "computed": 4.381543721024554,
+   "reference": 4.38,
+   "unit": "angstrom",
+   "rel_diff": 0.00035244772250084256,
+   "passed": true,
+   "citation": "Rasander and Moram, J. Chem. Phys. 143, 144104 (2015), Table II, PBE, 3C-SiC doi:10.1063/1.4932334",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "bulk_modulus_eos",
+   "protocol": "eos",
+   "computed": 212.8393562414907,
+   "reference": 213.6,
+   "unit": "GPa",
+   "rel_diff": -0.0035610662851559144,
+   "passed": true,
+   "citation": "Ramakers et al., Phys. Rev. B 106, 075201 (2022), Table III, VASP-PBE B_VRH of 3C (from Cij) doi:10.1103/PhysRevB.106.075201",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "elastic_stiffness_voigt",
+   "protocol": "elastic",
+   "computed": 383.6647271731437,
+   "reference": 384.3,
+   "unit": "GPa",
+   "rel_diff": -0.0016530648630140362,
+   "passed": true,
+   "citation": "Ramakers et al., Phys. Rev. B 106, 075201 (2022), Table III, VASP-PBE C11 of 3C doi:10.1103/PhysRevB.106.075201",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "elastic_stiffness_voigt",
+   "protocol": "elastic",
+   "computed": 127.83430386620984,
+   "reference": 127.9,
+   "unit": "GPa",
+   "rel_diff": -0.0005136523361232927,
+   "passed": true,
+   "citation": "Ramakers et al., Phys. Rev. B 106, 075201 (2022), Table III, VASP-PBE C12 of 3C doi:10.1103/PhysRevB.106.075201",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "elastic_stiffness_voigt",
+   "protocol": "elastic",
+   "computed": 239.3840767335826,
+   "reference": 239.9,
+   "unit": "GPa",
+   "rel_diff": -0.002150576350218495,
+   "passed": true,
+   "citation": "Ramakers et al., Phys. Rev. B 106, 075201 (2022), Table III, VASP-PBE C44 of 3C (relaxed ion) doi:10.1103/PhysRevB.106.075201",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "elastic_stiffness_voigt",
+   "protocol": "elastic",
+   "computed": 383.6647271731437,
+   "reference": 384.0,
+   "unit": "GPa",
+   "rel_diff": -0.0008731063199382364,
+   "passed": true,
+   "citation": "Rasander and Moram, J. Chem. Phys. 143, 144104 (2015), Table III, PBE C11 of SiC doi:10.1063/1.4932334",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "elastic_stiffness_voigt",
+   "protocol": "elastic",
+   "computed": 127.83430386620984,
+   "reference": 128.0,
+   "unit": "GPa",
+   "rel_diff": -0.001294501045235652,
+   "passed": true,
+   "citation": "Rasander and Moram, J. Chem. Phys. 143, 144104 (2015), Table IV, PBE C12 of SiC doi:10.1063/1.4932334",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "elastic_stiffness_voigt",
+   "protocol": "elastic",
+   "computed": 239.3840767335826,
+   "reference": 239.0,
+   "unit": "GPa",
+   "rel_diff": 0.0016070156216844717,
+   "passed": true,
+   "citation": "Rasander and Moram, J. Chem. Phys. 143, 144104 (2015), Table V, PBE C44 of SiC doi:10.1063/1.4932334",
+   "status": "literature_model_agreement"
+  },
+  {
+   "record": "bulk_modulus_voigt",
+   "protocol": "elastic",
+   "computed": 213.11111163518777,
+   "reference": 213.6,
+   "unit": "GPa",
+   "rel_diff": -0.002288803206049747,
+   "passed": true,
+   "citation": "Ramakers et al., Phys. Rev. B 106, 075201 (2022), Table III, VASP-PBE B_V of 3C doi:10.1103/PhysRevB.106.075201",
+   "status": "literature_model_agreement"
+  }
+ ],
+ "records": "outputs/dft/stage1/SiC/records_elastic.json, records_eos.json, records_vc_relax.json",
+ "raw": "outputs/dft/stage1/SiC/summary.json",
+ "notes": "stage-1 result (docs/DFT.md sections 3-4); not recomputed in stage 2"
+}

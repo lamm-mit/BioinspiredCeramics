@@ -1,0 +1,201 @@
+{
+ "hkl": [
+  1,
+  1,
+  -1
+ ],
+ "shift": 0.166667,
+ "mace_cleavage_energy_J_m2": 1.901,
+ "candidates": [
+  {
+   "hkl": [
+    1,
+    1,
+    -1
+   ],
+   "shift": 0.166667,
+   "atoms": 72,
+   "unrelaxed_J_m2": 2.581,
+   "relaxed_J_m2": 1.901
+  },
+  {
+   "hkl": [
+    1,
+    1,
+    1
+   ],
+   "shift": 0.0,
+   "atoms": 72,
+   "unrelaxed_J_m2": 2.677,
+   "relaxed_J_m2": 2.198
+  },
+  {
+   "hkl": [
+    1,
+    1,
+    0
+   ],
+   "shift": 0.0,
+   "atoms": 48,
+   "unrelaxed_J_m2": 3.255,
+   "relaxed_J_m2": 2.279
+  },
+  {
+   "hkl": [
+    1,
+    0,
+    -1
+   ],
+   "shift": 0.125,
+   "atoms": 48,
+   "unrelaxed_J_m2": 3.364,
+   "relaxed_J_m2": 2.391
+  },
+  {
+   "hkl": [
+    0,
+    1,
+    1
+   ],
+   "shift": 0.25,
+   "atoms": 48,
+   "unrelaxed_J_m2": 3.47,
+   "relaxed_J_m2": 2.47
+  },
+  {
+   "hkl": [
+    0,
+    0,
+    1
+   ],
+   "shift": 0.0,
+   "atoms": 24,
+   "unrelaxed_J_m2": 3.518,
+   "relaxed_J_m2": 2.506
+  },
+  {
+   "hkl": [
+    1,
+    0,
+    1
+   ],
+   "shift": 0.125,
+   "atoms": 48,
+   "unrelaxed_J_m2": 3.943,
+   "relaxed_J_m2": 2.597
+  },
+  {
+   "hkl": [
+    1,
+    0,
+    0
+   ],
+   "shift": 0.0,
+   "atoms": 24,
+   "unrelaxed_J_m2": 3.534,
+   "relaxed_J_m2": 2.808
+  },
+  {
+   "hkl": [
+    1,
+    1,
+    0
+   ],
+   "shift": 0.25,
+   "atoms": 48,
+   "unrelaxed_J_m2": 4.128,
+   "relaxed_J_m2": 2.859
+  },
+  {
+   "hkl": [
+    0,
+    1,
+    1
+   ],
+   "shift": 0.0,
+   "atoms": 48,
+   "unrelaxed_J_m2": 3.985,
+   "relaxed_J_m2": 3.008
+  },
+  {
+   "hkl": [
+    1,
+    0,
+    1
+   ],
+   "shift": 0.25,
+   "atoms": 48,
+   "unrelaxed_J_m2": 4.786,
+   "relaxed_J_m2": 3.09
+  },
+  {
+   "hkl": [
+    1,
+    1,
+    1
+   ],
+   "shift": 0.166667,
+   "atoms": 72,
+   "unrelaxed_J_m2": 5.951,
+   "relaxed_J_m2": 3.115
+  },
+  {
+   "hkl": [
+    1,
+    0,
+    -1
+   ],
+   "shift": 0.0,
+   "atoms": 48,
+   "unrelaxed_J_m2": 6.763,
+   "relaxed_J_m2": 3.38
+  },
+  {
+   "hkl": [
+    1,
+    0,
+    0
+   ],
+   "shift": 0.5,
+   "atoms": 24,
+   "unrelaxed_J_m2": 6.078,
+   "relaxed_J_m2": 3.578
+  },
+  {
+   "hkl": [
+    1,
+    1,
+    -1
+   ],
+   "shift": 0.0,
+   "atoms": 72,
+   "unrelaxed_J_m2": 6.05,
+   "relaxed_J_m2": 3.737
+  },
+  {
+   "hkl": [
+    0,
+    0,
+    1
+   ],
+   "shift": 0.25,
+   "atoms": 24,
+   "unrelaxed_J_m2": 5.972,
+   "relaxed_J_m2": 3.739
+  },
+  {
+   "hkl": [
+    0,
+    1,
+    0
+   ],
+   "shift": 0.0,
+   "atoms": 24,
+   "unrelaxed_J_m2": 5.91,
+   "relaxed_J_m2": 3.949
+  }
+ ],
+ "method": "MACE-MP-0 medium, float64. Bulk cell relaxed with its cell, every nonpolar, symmetric, stoichiometric slab up to Miller index 1 of the conventional cell, at least 10 \u00c5 thick with 12 \u00c5 of vacuum, relaxed at fixed cell to 0.02 eV/\u00c5, 0 K",
+ "computed": "2026-10-27",
+ "wall_time_s": 406
+}

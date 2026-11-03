@@ -1,0 +1,62 @@
+{
+ "units": "mm",
+ "stack_axis": "z",
+ "design": {
+  "ceramic": "alumina",
+  "interlayer": "graphite",
+  "layer_thickness_um": 70,
+  "interlayer_thickness_um": 0.5,
+  "bar_mm": [
+   45.0,
+   4.0,
+   3.0
+  ],
+  "cell_layers": 5
+ },
+ "defaults": [
+  "bar_mm",
+  "cell_layers",
+  "cell size",
+  "notch"
+ ],
+ "bar": {
+  "size_mm": [
+   45.0,
+   4.0,
+   2.9605
+  ],
+  "ceramic_layers": 42,
+  "volume_mm3": {
+   "ceramic": 529.2,
+   "interlayer": 3.69
+  },
+  "triangles": 996,
+  "files": {
+   "ceramic": "runs/e2e/20261025-202723/candidate_3/geometry/bar_ceramic.stl",
+   "interlayer": "runs/e2e/20261025-202723/candidate_3/geometry/bar_interlayer.stl"
+  }
+ },
+ "cell": {
+  "size_mm": [
+   1.408,
+   0.07,
+   0.352
+  ],
+  "ceramic_layers": 5,
+  "volume_mm3": {
+   "ceramic": 0.034496,
+   "interlayer": 0.00019712
+  },
+  "triangles": 108,
+  "files": {
+   "ceramic": "runs/e2e/20261025-202723/candidate_3/geometry/cell_ceramic.stl",
+   "interlayer": "runs/e2e/20261025-202723/candidate_3/geometry/cell_interlayer.stl"
+  },
+  "notch": {
+   "plane": "x",
+   "at_mm": 0.704,
+   "from_z_mm": 0,
+   "depth_mm": 0.035
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "design": {
+  "biological_model": "nacre",
+  "mechanism": "crack deflection",
+  "process": "direct ink writing",
+  "ceramic": "alumina",
+  "interlayer_thickness_um": 35,
+  "layer_modulus_GPa": 367,
+  "interlayer": "PMMA",
+  "layer_thickness_um": 70
+ },
+ "sources": {
+  "biological_model": "10.1016_j.addma.2023.103776#0: nacre-inspired composites",
+  "mechanism": "10.1016/j.addma.2023.103776: nacre-like toughening mechanisms include crack deflection",
+  "process": "10.1016_j.addma.2023.103776#0: direct write 4D‑printing strategy for nacre‑inspired composites",
+  "ceramic": "10.1016_j.addma.2023.103776#0: alumina platelets used in nacre‑inspired composites",
+  "interlayer_thickness_um": "10.1016_j.actamat.2023.118704#12: interlayer thickness 35 µm",
+  "layer_modulus_GPa": "10.1016_j.jeurceramsoc.2023.11.009#6: Young's modulus of alumina 367 GPa",
+  "interlayer": "10.3390/ma14226855: ceramic composites can be enhanced with ductile polymers such as PMMA",
+  "layer_thickness_um": "10.1016_j.actamat.2023.118704#12: shell thickness 70 µm"
+ }
+}

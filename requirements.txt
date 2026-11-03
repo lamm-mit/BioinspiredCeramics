@@ -1,28 +1,14 @@
-# Core
-pandas>=2.0
-requests>=2.32
-python-dotenv>=1.0
-
-# PDF to markdown OCR (requires PyTorch; GPU recommended)
-marker-pdf>=1.0
-
-# Knowledge graph extraction
-openai>=1.50
-tiktoken>=0.7
-networkx>=3.0
-
-# Embedding-based node deduplication (06_dedup_kg.py)
-# EmbeddingGemma is a gated HF model — run `huggingface-cli login` once
-sentence-transformers>=3.0
-python-louvain>=0.16
-numpy>=1.24
-
-# Optional — interactive graph visualization
-pyvis>=0.3
-
-# Optional — Wiley TDM convenience wrapper
-wiley-tdm>=0.1
-
-# Optional — Excel WoS exports
-openpyxl>=3.1
-xlrd>=2.0
+langgraph==1.2.12
+openai==3.22.1
+numpy==2.5.3
+jax[cuda13]==0.11.2; sys_platform == "linux"
+jax==0.11.2; sys_platform != "linux"
+# The FEM tool measures the crack with scipy and draws it with matplotlib, which the benchmark charts also use
+scipy
+matplotlib
+# md_agent's bulk moduli, tools/md/bulk.py
+ase
+# Crystal structures for the material resolver, tools/materials.py
+pymatgen
+mp-api
+python-dotenv

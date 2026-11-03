@@ -1,0 +1,27 @@
+{
+ "tool": "md_interface",
+ "description": "Molecular dynamics separation of the interface between the ceramic and the interlayer at 300 K. Returns the separation energy in J/m^2 and the strength in MPa.",
+ "candidate": "candidate_1",
+ "calls": [
+  {
+   "inputs": {
+    "material_a": {
+     "value": "alumina",
+     "from": "design.ceramic",
+     "source": "10.1016_j.addma.2023.103776#0: alumina platelets used in nacre‑inspired composites"
+    },
+    "material_b": {
+     "value": "PMMA",
+     "from": "design.interlayer",
+     "source": "10.3390/ma14226855: ceramic composites can be enhanced with ductile polymers such as PMMA"
+    }
+   },
+   "status": "done",
+   "output": {
+    "separation_energy_J_m2": 0.082,
+    "strength_MPa": 603,
+    "method": "stand-in (weaker-material cleavage and binding-energy relation), not an MD result"
+   }
+  }
+ ]
+}

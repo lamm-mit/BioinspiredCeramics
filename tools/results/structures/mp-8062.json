@@ -1,0 +1,90 @@
+{
+ "material_id": "mp-8062",
+ "formula": "SiC",
+ "spacegroup": "F-43m",
+ "energy_above_hull_eV_atom": 0.00016855236842161503,
+ "density_g_cm3": 3.227,
+ "bulk_modulus_GPa": 212.7,
+ "shear_modulus_GPa": 187.2,
+ "database_version": "2026.09.28",
+ "retrieved": "2026-10-27",
+ "structure": {
+  "@module": "pymatgen.core.structure",
+  "@class": "Structure",
+  "charge": 0.0,
+  "lattice": {
+   "matrix": [
+    [
+     2.66626621,
+     0.0,
+     1.5393685
+    ],
+    [
+     0.88875474,
+     2.51377858,
+     1.5393685
+    ],
+    [
+     0.0,
+     0.0,
+     3.078738
+    ]
+   ],
+   "pbc": [
+    true,
+    true,
+    true
+   ],
+   "a": 3.07873852111218,
+   "b": 3.0787372599706417,
+   "c": 3.078738,
+   "alpha": 60.000002793274895,
+   "beta": 60.00001634370096,
+   "gamma": 60.00000969010736,
+   "volume": 20.634942460365664
+  },
+  "properties": {},
+  "sites": [
+   {
+    "species": [
+     {
+      "element": "Si",
+      "occu": 1.0
+     }
+    ],
+    "abc": [
+     0.25,
+     0.25,
+     0.25
+    ],
+    "properties": {},
+    "label": "Si",
+    "xyz": [
+     0.8887552375,
+     0.628444645,
+     1.53936875
+    ]
+   },
+   {
+    "species": [
+     {
+      "element": "C",
+      "occu": 1.0
+     }
+    ],
+    "abc": [
+     0.0,
+     -0.0,
+     -0.0
+    ],
+    "properties": {},
+    "label": "C",
+    "xyz": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ]
+ }
+}

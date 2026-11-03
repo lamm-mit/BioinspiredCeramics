@@ -1,0 +1,716 @@
+{
+ "schema": "fracture_md.dft_reference/1",
+ "quantity": "3C-SiC: DFT-PBE reference vs interatomic potentials",
+ "functional": "PBE",
+ "code": "Quantum ESPRESSO pw.x 7.5 (conda-forge qe-7.5-hc91ee90_1) through ASE",
+ "pseudopotentials": {
+  "family": "SSSP_1.3.0_PBE_efficiency",
+  "files": {
+   "C.pbe-n-kjpaw_psl.1.0.0.UPF": {
+    "element": "C",
+    "md5": "5d2aebdfa2cae82b50a7e79e9516da0f",
+    "sha256": "9900d1efd50b9848e31849f39094b33348486b400ee51e0f3922f716137cf3d7",
+    "type": "100PAW"
+   },
+   "Si.pbe-n-rrkjus_psl.1.0.0.UPF": {
+    "element": "Si",
+    "md5": "0b0bb1205258b0d07b9f9672cf965d36",
+    "sha256": "ae3aefd0811f9499dbc4a72f1f9ae02ef4fc7f3568bf6f559b68668719c69e2b",
+    "type": "100US"
+   }
+  },
+  "doi": "10.24435/materialscloud:f3-ym"
+ },
+ "generated_by": "examples/15_dft_reference_sic.py report",
+ "generated_utc": "2026-10-05T17:10:31Z",
+ "labelling": "computed with DFT-PBE in this project: a model value (PBE), never a measurement",
+ "admission_table_version": 2,
+ "accepted_by_user": "2026-10-05",
+ "accepted_by_user_scope": "tests E and S as admission criteria for interatomic potentials used in contact / indentation work (proposed 2026-10-05 in docs/POPIN_VALIDATION.md section 4.3)",
+ "version_history": [
+  {
+   "version": 1,
+   "date": "2026-10-05",
+   "change": "stage-2 report: DFT-PBE comparison and criteria Cij, twin (ideal shear, proposed), glide_us, isf, Pt; tests E and S proposed in docs/POPIN_VALIDATION.md section 4.3, E not in the table"
+  },
+  {
+   "version": 2,
+   "date": "2026-10-05",
+   "change": "tests E and S accepted by the user as admission criteria: E added (M(001) and M(111) against the Djemia 2004 C_ij), the ideal-shear criterion renamed S (criteria.S, criteria_tolerances.S_rel; was twin, twin_rel), per-potential E and S results and an overall verdict (admitted, failed, not_evaluated; fracture_md.engines.dft_reference.admission_verdict)"
+  }
+ ],
+ "table": [
+  {
+   "quantity": "a0 (A)",
+   "dft_pbe_this_work": 4.381163398,
+   "potentials": {
+    "T89": {
+     "value": 4.32106,
+     "rel_to_dft": -0.01371859310872474
+    },
+    "EA": {
+     "value": 4.35933,
+     "rel_to_dft": -0.0049834703745509695
+    },
+    "Vashishta": {
+     "value": 4.35817,
+     "rel_to_dft": -0.005248240230094167
+    },
+    "MACE": {
+     "value": 4.38079,
+     "rel_to_dft": -8.522804700008651e-05
+    }
+   }
+  },
+  {
+   "quantity": "C11 (GPa)",
+   "dft_pbe_this_work": 383.6647271731437,
+   "potentials": {
+    "T89": {
+     "value": 436.63,
+     "rel_to_dft": 0.13805093112704528
+    },
+    "EA": {
+     "value": 383.78,
+     "rel_to_dft": 0.0003004519797938947
+    },
+    "Vashishta": {
+     "value": 390.11,
+     "rel_to_dft": 0.016799232169048512
+    },
+    "MACE": {
+     "value": 319.63,
+     "rel_to_dft": -0.16690282592552624
+    }
+   }
+  },
+  {
+   "quantity": "C12 (GPa)",
+   "dft_pbe_this_work": 127.83430386620984,
+   "potentials": {
+    "T89": {
+     "value": 117.95,
+     "rel_to_dft": -0.07732121635014849
+    },
+    "EA": {
+     "value": 144.42,
+     "rel_to_dft": 0.12974370440620211
+    },
+    "Vashishta": {
+     "value": 142.61,
+     "rel_to_dft": 0.11558475062573408
+    },
+    "MACE": {
+     "value": 176.46,
+     "rel_to_dft": 0.38038065419968464
+    }
+   }
+  },
+  {
+   "quantity": "C44 (GPa)",
+   "dft_pbe_this_work": 239.3840767335826,
+   "potentials": {
+    "T89": {
+     "value": 256.59,
+     "rel_to_dft": 0.07187580519637633
+    },
+    "EA": {
+     "value": 239.74,
+     "rel_to_dft": 0.0014868293299789424
+    },
+    "Vashishta": {
+     "value": 136.93,
+     "rel_to_dft": -0.4279903581373404
+    },
+    "MACE": {
+     "value": 145.36,
+     "rel_to_dft": -0.39277498326768273
+    }
+   }
+  },
+  {
+   "quantity": "G(111) relaxed (GPa)",
+   "dft_pbe_this_work": 151.41769134756504,
+   "potentials": {
+    "T89": {
+     "value": 182.3,
+     "rel_to_dft": 0.20395442816221218
+    },
+    "EA": {
+     "value": 143.5,
+     "rel_to_dft": -0.05229039801822579
+    },
+    "Vashishta": {
+     "value": 128.1,
+     "rel_to_dft": -0.1539958187187089
+    },
+    "MACE": {
+     "value": 86.1,
+     "rel_to_dft": -0.4313742388109355
+    }
+   }
+  },
+  {
+   "quantity": "tau_ideal (111)[11-2] twin (GPa)",
+   "dft_pbe_this_work": 27.758653473716052,
+   "potentials": {
+    "T89": {
+     "value": 35.31,
+     "rel_to_dft": 0.27203576475473223
+    },
+    "EA": {
+     "value": 32.9,
+     "rel_to_dft": 0.18521599151602056
+    },
+    "Vashishta": {
+     "value": 14.13,
+     "rel_to_dft": -0.4909695452850647
+    },
+    "MACE": {
+     "value": 37.03,
+     "rel_to_dft": 0.33399842449356365
+    }
+   }
+  },
+  {
+   "quantity": "tau_ideal (111)[-1-12] anti-twin (GPa)",
+   "dft_pbe_this_work": 47.56530023125333,
+   "potentials": {
+    "T89": {
+     "value": 74.42,
+     "rel_to_dft": 0.5645859405529723
+    },
+    "EA": {
+     "value": 81.21,
+     "rel_to_dft": 0.7073370630516912
+    },
+    "Vashishta": {
+     "value": 21.63,
+     "rel_to_dft": -0.5452567334834616
+    },
+    "MACE": {
+     "value": 39.17,
+     "rel_to_dft": -0.17650052013625472
+    }
+   }
+  },
+  {
+   "quantity": "tau_ideal (111)[1-10] (GPa)",
+   "dft_pbe_this_work": 30.587797046263017,
+   "potentials": {
+    "T89": {
+     "value": 41.8,
+     "rel_to_dft": 0.36655804067154296
+    },
+    "EA": {
+     "value": 40.29,
+     "rel_to_dft": 0.3171919487716858
+    },
+    "Vashishta": {
+     "value": 16.11,
+     "rel_to_dft": -0.4733193771478814
+    },
+    "MACE": {
+     "value": 28.0,
+     "rel_to_dft": -0.08460226940662188
+    }
+   }
+  },
+  {
+   "quantity": "gamma_us glide [11-2], z-relaxed (J/m^2)",
+   "dft_pbe_this_work": 2.839765921857139,
+   "potentials": {
+    "T89": {
+     "value": 3.43,
+     "rel_to_dft": 0.2078460318154893
+    },
+    "EA": {
+     "value": 2.93,
+     "rel_to_dft": 0.03177518169661332
+    },
+    "Vashishta": {
+     "value": 2.67,
+     "rel_to_dft": -0.05978166036520227
+    },
+    "MACE": {
+     "value": 2.48,
+     "rel_to_dft": -0.12668858341037512
+    }
+   }
+  },
+  {
+   "quantity": "gamma_us glide [11-2], rigid (J/m^2)",
+   "dft_pbe_this_work": 3.516618955578488,
+   "potentials": {
+    "T89": {
+     "value": 7.3,
+     "rel_to_dft": 1.0758575473239298
+    },
+    "EA": {
+     "value": 4.42,
+     "rel_to_dft": 0.2568890902975027
+    },
+    "Vashishta": {
+     "value": 4.69,
+     "rel_to_dft": 0.33366738314373035
+    },
+    "MACE": {
+     "value": 3.0,
+     "rel_to_dft": -0.14690785726413844
+    }
+   }
+  },
+  {
+   "quantity": "ISF, z-relaxed (mJ/m^2)",
+   "dft_pbe_this_work": 7.643909719524982,
+   "potentials": {
+    "T89": {
+     "value": 0.0,
+     "rel_to_dft": -1.0
+    },
+    "EA": {
+     "value": 0.0,
+     "rel_to_dft": -1.0
+    },
+    "Vashishta": {
+     "value": 191.0,
+     "rel_to_dft": 23.987212958850776
+    },
+    "MACE": {
+     "value": null,
+     "rel_to_dft": null
+    }
+   }
+  },
+  {
+   "quantity": "gamma_us shuffle [1-10], z-relaxed (J/m^2)",
+   "dft_pbe_this_work": 3.7875663146358356,
+   "potentials": {
+    "T89": {
+     "value": 5.5,
+     "rel_to_dft": 0.4521197896250723
+    },
+    "EA": {
+     "value": 7.69,
+     "rel_to_dft": 1.030327487675783
+    },
+    "Vashishta": {
+     "value": 1.83,
+     "rel_to_dft": -0.5168401427247487
+    },
+    "MACE": {
+     "value": 3.08,
+     "rel_to_dft": -0.18681291780995948
+    }
+   }
+  },
+  {
+   "quantity": "gamma_us shuffle [1-10], rigid (J/m^2)",
+   "dft_pbe_this_work": 3.825101334006967,
+   "potentials": {
+    "T89": {
+     "value": 6.52,
+     "rel_to_dft": 0.7045300060508473
+    },
+    "EA": {
+     "value": 8.95,
+     "rel_to_dft": 1.339807293582068
+    },
+    "Vashishta": {
+     "value": 2.23,
+     "rel_to_dft": -0.4170089089734065
+    },
+    "MACE": {
+     "value": 3.12,
+     "rel_to_dft": -0.18433533452781534
+    }
+   }
+  },
+  {
+   "quantity": "gamma max shuffle [11-2], rigid (J/m^2)",
+   "dft_pbe_this_work": 5.997077169850057,
+   "potentials": {
+    "T89": {
+     "value": 6.57,
+     "rel_to_dft": 0.09553367647664741
+    },
+    "EA": {
+     "value": 8.95,
+     "rel_to_dft": 0.4923936688684921
+    },
+    "Vashishta": {
+     "value": 2.58,
+     "rel_to_dft": -0.5697904284155632
+    },
+    "MACE": {
+     "value": 3.75,
+     "rel_to_dft": -0.3746953901388999
+    }
+   }
+  },
+  {
+   "quantity": "E(B1) - E(B3) (eV/atom)",
+   "dft_pbe_this_work": 0.7368824161146961,
+   "potentials": {
+    "T89": {
+     "value": 1.492,
+     "rel_to_dft": 1.024746373874349
+    },
+    "EA": {
+     "value": 1.921,
+     "rel_to_dft": 1.6069288097939842
+    },
+    "Vashishta": {
+     "value": 0.921,
+     "rel_to_dft": 0.2498601945966994
+    },
+    "MACE": {
+     "value": 0.743,
+     "rel_to_dft": 0.00830198109158262
+    }
+   }
+  },
+  {
+   "quantity": "P_t B3 -> B1, static (GPa)",
+   "dft_pbe_this_work": 65.29605840299232,
+   "potentials": {
+    "T89": {
+     "value": 336.3,
+     "rel_to_dft": 4.150387454085413
+    },
+    "EA": {
+     "value": 366.6,
+     "rel_to_dft": 4.614427715336641
+    },
+    "Vashishta": {
+     "value": 89.3,
+     "rel_to_dft": 0.36761700758200216
+    },
+    "MACE": {
+     "value": 71.4,
+     "rel_to_dft": 0.0934810116613098
+    }
+   }
+  }
+ ],
+ "criteria": {
+  "Cij": "C11, C12 and C44 each within 5 % of DFT (lit-sic recommendation)",
+  "E": "test E: indentation modulus M(hkl) of the indented face (Vlassak-Nix, from the potential's relaxed-ion C_ij) within 10 % of M(hkl) from the measured single-crystal C_ij of 3C-SiC (Djemia 2004); faces (001) and (111), passes only when every face passes (passes_by_face per face); accepted by the user 2026-10-05",
+  "S": "test S: (111)[11-2] easy-sense (twinning-sense) relaxed ideal shear strength within 15 % of this project's same-protocol DFT-PBE value, at 0 GPa (under the contact pressure once DFT has it); accepted by the user 2026-10-05",
+  "glide_us": "glide-set gamma_us within 15 % of DFT (LS-R6)",
+  "isf": "0 < ISF <= 50 mJ/m^2 (LS-R6 window; ISF = 0 leaves Shockley partials unbound)",
+  "Pt": "B3 -> B1 static P_t within 10 GPa of DFT (LS-R5)"
+ },
+ "criteria_tolerances": {
+  "Cij_rel": 0.05,
+  "E_rel": 0.1,
+  "S_rel": 0.15,
+  "glide_us_rel": 0.15,
+  "isf_window_mJ_m2": [
+   0.0,
+   50.0
+  ],
+  "Pt_abs_GPa": 10.0
+ },
+ "criteria_status": {
+  "Cij": "admission criterion of this table since version 1 (lit-sic recommendation); not part of the 2026-10-05 decision",
+  "E": "accepted: proposed 2026-10-05 in docs/POPIN_VALIDATION.md section 4.3, accepted by the user 2026-10-05 as an admission criterion for interatomic potentials used in contact / indentation work",
+  "S": "accepted: proposed 2026-10-05 in docs/POPIN_VALIDATION.md section 4.3, accepted by the user 2026-10-05 as an admission criterion for interatomic potentials used in contact / indentation work (the ideal-shear criterion of version 1, then 'proposed here' and keyed twin)",
+  "glide_us": "admission criterion of this table since version 1 (LS-R6); not part of the 2026-10-05 decision",
+  "isf": "admission criterion of this table since version 1 (LS-R6); not part of the 2026-10-05 decision",
+  "Pt": "admission criterion of this table since version 1 (LS-R5); not part of the 2026-10-05 decision"
+ },
+ "admission_tests": {
+  "E": {
+   "name": "indentation modulus of the indented face",
+   "criterion": "test E: indentation modulus M(hkl) of the indented face (Vlassak-Nix, from the potential's relaxed-ion C_ij) within 10 % of M(hkl) from the measured single-crystal C_ij of 3C-SiC (Djemia 2004); faces (001) and (111), passes only when every face passes (passes_by_face per face); accepted by the user 2026-10-05",
+   "rel_tol": 0.1,
+   "status": "accepted: proposed 2026-10-05 in docs/POPIN_VALIDATION.md section 4.3, accepted by the user 2026-10-05 as an admission criterion for interatomic potentials used in contact / indentation work",
+   "proposed": "2026-10-05, docs/POPIN_VALIDATION.md section 4.3",
+   "accepted_by_user": "2026-10-05",
+   "needs_md": false,
+   "reference": {
+    "kind": "measured single-crystal elastic constants of 3C-SiC (Brillouin scattering, room temperature); a measurement, not a model value",
+    "C11_C12_C44_GPa": [
+     395.0,
+     123.0,
+     236.0
+    ],
+    "doi": "10.1063/1.1642281",
+    "source": "P. Djemia, Y. Roussigne, G. F. Dirras, K. M. Jackson, J. Appl. Phys. 95, 2324 (2004); data/reference_values/sic_3c.json; verified in outputs/indent_derisk/verify/lit-sic-chunk5.json (data/indentation/canonical_values.json experiment.sic3c_cij_GPa)",
+    "faces": [
+     "001",
+     "111"
+    ],
+    "M_GPa": {
+     "001": 426.1991791333803,
+     "111": 463.9328790578807
+    },
+    "method": "Vlassak-Nix indentation modulus of the anisotropic half-space (fracture_md.physics.popin.vlassak_nix_modulus_cubic_GPa through fracture_md.engines.dft_reference.indentation_modulus_test)"
+   },
+   "temperature_basis": "the potential's 300 K relaxed-ion C_ij where the repository has them (Vashishta 2007), else its 0 K relaxed-ion C_ij of this table; verdicts.<potential>.E.basis",
+   "faces_rule": "passes only when every face passes; passes_by_face gives each face for a study that indents one face",
+   "dft_pbe_comparison": {
+    "M_GPa": {
+     "001": 418.1896144632116,
+     "111": 460.14208216204395
+    },
+    "deviation_from_measured": {
+     "001": -0.018793008204415318,
+     "111": -0.008171002890622447
+    },
+    "note": "the DFT-PBE C_ij of this work against the measured M (information, not a criterion)"
+   }
+  },
+  "S": {
+   "name": "easy-sense ideal shear strength",
+   "criterion": "test S: (111)[11-2] easy-sense (twinning-sense) relaxed ideal shear strength within 15 % of this project's same-protocol DFT-PBE value, at 0 GPa (under the contact pressure once DFT has it); accepted by the user 2026-10-05",
+   "rel_tol": 0.15,
+   "status": "accepted: proposed 2026-10-05 in docs/POPIN_VALIDATION.md section 4.3, accepted by the user 2026-10-05 as an admission criterion for interatomic potentials used in contact / indentation work (the ideal-shear criterion of version 1, then 'proposed here' and keyed twin)",
+   "proposed": "2026-10-05, docs/POPIN_VALIDATION.md section 4.3",
+   "accepted_by_user": "2026-10-05",
+   "needs_md": false,
+   "reference": {
+    "kind": "DFT-PBE, this project (a model value, never a measurement)",
+    "quantity": "tau_ideal (111)[11-2] twin (GPa)",
+    "value_GPa": 27.758653473716052,
+    "source": "data/dft_reference/sic_3c_ideal_shear_pbe.json (cases.twin; examples/15_dft_reference_sic.py)",
+    "protocol": "affine simple shear, ions and the five other stress components relaxed; the potentials' values use the same protocol (potential_sources.ideal_shear)"
+   },
+   "pressure": "at 0 GPa; at the contact pressure (20-40 GPa) once the DFT track has computed it (not yet)"
+  }
+ },
+ "verdicts": {
+  "T89": {
+   "label": "Tersoff 1989",
+   "passes": {
+    "Cij": false,
+    "E": false,
+    "S": false,
+    "glide_us": false,
+    "isf": false,
+    "Pt": false
+   },
+   "admitted": false,
+   "failed": [
+    "Cij",
+    "E",
+    "S",
+    "glide_us",
+    "isf",
+    "Pt"
+   ],
+   "not_evaluated": [],
+   "E": {
+    "basis": "0 K relaxed-ion C_ij of this table (no 300 K C_ij of this potential in the repository)",
+    "C_ij_GPa": [
+     436.63,
+     117.95,
+     256.59
+    ],
+    "M_GPa": {
+     "001": 470.50409922244523,
+     "111": 507.4920052043366
+    },
+    "M_reference_GPa": {
+     "001": 426.1991791333803,
+     "111": 463.9328790578807
+    },
+    "deviation": {
+     "001": 0.10395355565712983,
+     "111": 0.09389100905051695
+    },
+    "passes_by_face": {
+     "001": false,
+     "111": true
+    },
+    "passes": false
+   },
+   "S": {
+    "value_GPa": 35.31,
+    "reference_GPa": 27.758653473716052,
+    "deviation": 0.27203576475473223,
+    "passes": false
+   },
+   "note": "anti-twin strength cutoff-controlled; ISF = 0 (first-neighbour model)"
+  },
+  "EA": {
+   "label": "Erhart-Albe 2005 (ij)",
+   "passes": {
+    "Cij": false,
+    "E": true,
+    "S": false,
+    "glide_us": true,
+    "isf": false,
+    "Pt": false
+   },
+   "admitted": false,
+   "failed": [
+    "Cij",
+    "S",
+    "isf",
+    "Pt"
+   ],
+   "not_evaluated": [],
+   "E": {
+    "basis": "0 K relaxed-ion C_ij of this table (no 300 K C_ij of this potential in the repository)",
+    "C_ij_GPa": [
+     383.78,
+     144.42,
+     239.74
+    ],
+    "M_GPa": {
+     "001": 415.4633423475737,
+     "111": 460.21037653466027
+    },
+    "M_reference_GPa": {
+     "001": 426.1991791333803,
+     "111": 463.9328790578807
+    },
+    "deviation": {
+     "001": -0.02518971718255425,
+     "111": -0.008023795448125592
+    },
+    "passes_by_face": {
+     "001": true,
+     "111": true
+    },
+    "passes": true
+   },
+   "S": {
+    "value_GPa": 32.9,
+    "reference_GPa": 27.758653473716052,
+    "deviation": 0.18521599151602053,
+    "passes": false
+   },
+   "note": "published (ik) LAMMPS form: shuffle (1-10) 6.52 (8.03) J/m^2, P_t 349.5 GPa, other values equal"
+  },
+  "Vashishta": {
+   "label": "Vashishta 2007",
+   "passes": {
+    "Cij": false,
+    "E": false,
+    "S": false,
+    "glide_us": true,
+    "isf": false,
+    "Pt": false
+   },
+   "admitted": false,
+   "failed": [
+    "Cij",
+    "E",
+    "S",
+    "isf",
+    "Pt"
+   ],
+   "not_evaluated": [],
+   "E": {
+    "basis": "300 K relaxed-ion C_ij (data/indentation/canonical_values.json vashishta_2007.cij_300K_relaxed_GPa), the temperature of the measurement",
+    "C_ij_GPa": [
+     369.32,
+     134.26,
+     129.5
+    ],
+    "M_GPa": {
+     "001": 331.834028604583,
+     "111": 336.06035648124174
+    },
+    "M_reference_GPa": {
+     "001": 426.1991791333803,
+     "111": 463.9328790578807
+    },
+    "deviation": {
+     "001": -0.2214109157147519,
+     "111": -0.2756272045997531
+    },
+    "passes_by_face": {
+     "001": false,
+     "111": false
+    },
+    "passes": false,
+    "M_0K_GPa": {
+     "001": 350.45771520981265,
+     "111": 355.1105325104032
+    },
+    "deviation_0K": {
+     "001": -0.1777137724140575,
+     "111": -0.2345648507785557
+    },
+    "passes_by_face_0K": {
+     "001": false,
+     "111": false
+    }
+   },
+   "S": {
+    "value_GPa": 14.13,
+    "reference_GPa": 27.758653473716052,
+    "deviation": -0.49096954528506465,
+    "passes": false
+   },
+   "note": "production potential of the indentation runs (S1, pop-in)"
+  },
+  "MACE": {
+   "label": "MACE-MP-0 small",
+   "passes": {
+    "Cij": false,
+    "E": false,
+    "S": false,
+    "glide_us": true,
+    "isf": null,
+    "Pt": true
+   },
+   "admitted": false,
+   "failed": [
+    "Cij",
+    "E",
+    "S"
+   ],
+   "not_evaluated": [
+    "isf"
+   ],
+   "E": {
+    "basis": "0 K relaxed-ion C_ij of this table (no 300 K C_ij of this potential in the repository)",
+    "C_ij_GPa": [
+     319.63,
+     176.46,
+     145.36
+    ],
+    "M_GPa": {
+     "001": 292.4709323051415,
+     "111": 318.42402593296805
+    },
+    "M_reference_GPa": {
+     "001": 426.1991791333803,
+     "111": 463.9328790578807
+    },
+    "deviation": {
+     "001": -0.31376936741210415,
+     "111": -0.31364203679722136
+    },
+    "passes_by_face": {
+     "001": false,
+     "111": false
+    },
+    "passes": false
+   },
+   "S": {
+    "value_GPa": 37.03,
+    "reference_GPa": 27.758653473716052,
+    "deviation": 0.33399842449356365,
+    "passes": false
+   },
+   "note": "glide gamma_us on a coarse grid; P_t inside a volume window (collapse holes at short Si-C distance)"
+  }
+ },
+ "admission_rule": "admitted = every criterion passes (fracture_md.engines.dft_reference.admission_verdict: False when any fails, null when none fails but some are not evaluated); E and S are required in every verdict",
+ "potential_sources": {
+  "elastic": "outputs/indent_derisk/potential-diagnostics/elastic_table_tersof_erhart_erhart_vashis.json, outputs/indent_derisk/potential-diagnostics/elastic_table_mace_m.json",
+  "ideal_shear": "outputs/indent_derisk/potential-diagnostics/ideal_summary.json (ideal_<potential>_<case>_relaxed.json)",
+  "gsfe": "outputs/indent_derisk/potential-diagnostics/gsfe_<potential>.json, gsfe_mace_*.json",
+  "b3_b1": "outputs/indent_derisk/potential-diagnostics/eos_summary.json",
+  "notes": "outputs/indent_derisk/potential-diagnostics/notes.md"
+ },
+ "markdown": "| quantity | DFT-PBE (this work) | Tersoff 1989 | Erhart-Albe 2005 (ij) | Vashishta 2007 | MACE-MP-0 small |\n|---|---|---|---|---|---|\n| a0 (A) | 4.381 | 4.321 (-1 %) | 4.359 (-0.5 %) | 4.358 (-0.5 %) | 4.381 (-0.0 %) |\n| C11 (GPa) | 383.7 | 436.6 (+14 %) | 383.8 (+0.0 %) | 390.1 (+2 %) | 319.6 (-17 %) |\n| C12 (GPa) | 127.8 | 118 (-8 %) | 144.4 (+13 %) | 142.6 (+12 %) | 176.5 (+38 %) |\n| C44 (GPa) | 239.4 | 256.6 (+7 %) | 239.7 (+0.1 %) | 136.9 (-43 %) | 145.4 (-39 %) |\n| G(111) relaxed (GPa) | 151.4 | 182.3 (+20 %) | 143.5 (-5 %) | 128.1 (-15 %) | 86.1 (-43 %) |\n| tau_ideal (111)[11-2] twin (GPa) | 27.76 | 35.31 (+27 %) | 32.9 (+19 %) | 14.13 (-49 %) | 37.03 (+33 %) |\n| tau_ideal (111)[-1-12] anti-twin (GPa) | 47.57 | 74.42 (+56 %) | 81.21 (+71 %) | 21.63 (-55 %) | 39.17 (-18 %) |\n| tau_ideal (111)[1-10] (GPa) | 30.59 | 41.8 (+37 %) | 40.29 (+32 %) | 16.11 (-47 %) | 28 (-8 %) |\n| gamma_us glide [11-2], z-relaxed (J/m^2) | 2.84 | 3.43 (+21 %) | 2.93 (+3 %) | 2.67 (-6 %) | 2.48 (-13 %) |\n| gamma_us glide [11-2], rigid (J/m^2) | 3.517 | 7.3 (+108 %) | 4.42 (+26 %) | 4.69 (+33 %) | 3 (-15 %) |\n| ISF, z-relaxed (mJ/m^2) | 7.644 | 0 (-100 %) | 0 (-100 %) | 191 (+2399 %) | n/a |\n| gamma_us shuffle [1-10], z-relaxed (J/m^2) | 3.788 | 5.5 (+45 %) | 7.69 (+103 %) | 1.83 (-52 %) | 3.08 (-19 %) |\n| gamma_us shuffle [1-10], rigid (J/m^2) | 3.825 | 6.52 (+70 %) | 8.95 (+134 %) | 2.23 (-42 %) | 3.12 (-18 %) |\n| gamma max shuffle [11-2], rigid (J/m^2) | 5.997 | 6.57 (+10 %) | 8.95 (+49 %) | 2.58 (-57 %) | 3.75 (-37 %) |\n| E(B1) - E(B3) (eV/atom) | 0.7369 | 1.492 (+102 %) | 1.921 (+161 %) | 0.921 (+25 %) | 0.743 (+0.8 %) |\n| P_t B3 -> B1, static (GPa) | 65.3 | 336.3 (+415 %) | 366.6 (+461 %) | 89.3 (+37 %) | 71.4 (+9 %) |",
+ "markdown_admission": "| potential | C_ij each within 5 % | E: M(001), M(111) within 10 % of experiment | S: twin-sense strength within 15 % | glide gamma_us within 15 % | 0 < ISF <= 50 mJ/m^2 | P_t within 10 GPa | admitted |\n|---|---|---|---|---|---|---|---|\n| Tersoff 1989 | fail (C11 +13.8 %) | fail ((001) +10.4 % fail, (111) +9.4 % pass; 0 K) | fail (+27 %) | fail (+21 %) | fail (0 mJ/m^2) | fail (336.3 GPa) | no (fails Cij, E, S, glide_us, isf, Pt) |\n| Erhart-Albe 2005 (ij) | fail (C12 +13.0 %) | pass ((001) -2.5 % pass, (111) -0.8 % pass; 0 K) | fail (+18.5 %) | pass (+3.2 %) | fail (0 mJ/m^2) | fail (366.6 GPa) | no (fails Cij, S, isf, Pt) |\n| Vashishta 2007 | fail (C44 -43 %) | fail ((001) -22 % fail, (111) -28 % fail; 300 K) | fail (-49 %) | pass (-6.0 %) | fail (191 mJ/m^2) | fail (89.3 GPa) | no (fails Cij, E, S, isf, Pt) |\n| MACE-MP-0 small | fail (C44 -39 %) | fail ((001) -31 % fail, (111) -31 % fail; 0 K) | fail (+33 %) | pass (-12.7 %) | not computed | pass (71.4 GPa) | no (fails Cij, E, S) |",
+ "notes": "Potential values: same protocols (0 K, relaxed ions and lateral stresses, (111) tilted-cell GSFE, static enthalpy crossing) computed earlier in this project; relative differences are to the DFT-PBE values of this work.  PBE itself underestimates measured stiffness by a few % (docs/DFT.md section 4).  Test E compares with measured C_ij, not with DFT."
+}
