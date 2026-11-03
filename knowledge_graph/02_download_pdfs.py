@@ -11,7 +11,7 @@ Tries publisher-sanctioned text-and-data-mining (TDM) routes only:
 This script does not bypass paywalls, spoof user-agents, or evade rate
 limits. The default rate limit is one request every 5 seconds. You are
 responsible for ensuring your usage complies with each publisher's API
-terms and your institution's TDM agreement — see docs/api_setup.md for
+terms and your institution's TDM agreement — see knowledge_graph/api_setup.md for
 the legal framing.
 
 Reads API keys and a contact email from .env (see .env.example).
