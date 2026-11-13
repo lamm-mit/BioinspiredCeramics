@@ -1,6 +1,6 @@
 # Knowledge graph
 
-The scripts in this folder turn a Web of Science search into a deduplicated, community-clustered knowledge graph of scientific concepts. The pipeline reads its triples, together with the passages and figures of the same papers, as its corpus ([../pipeline/README.md](../pipeline/README.md#corpus)).
+The scripts in this folder turn a Web of Science search into a deduplicated, community-clustered knowledge graph of scientific concepts. The pipeline reads its triples, together with the passages and figures of the same papers, as its corpus ([../pipeline/README.md](../pipeline/README.md#corpus)). The knowledge graph and the DOI list can be found in [graph/](graph).
 
 ![Knowledge graph, top concepts of a deduplicated example corpus, with each community placed in its own region of the canvas and theme labels on the highest-degree node per community](kg_cover.png)
 
